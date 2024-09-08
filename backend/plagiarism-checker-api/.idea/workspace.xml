@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="df4281c2-8a2d-45d7-9f7b-aea53fd50806" name="Changes" comment="Fix opentelemetry" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="user-feedback-service" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="user-feedback-service" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="user-feedback-service" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="pilot-feedback-service" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;sabexzero&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/sabexzero/copypaste.git&quot;,
+    &quot;accountId&quot;: &quot;24d5fb3a-5e18-44f2-bd0c-2653f24a8cb9&quot;
+  }
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2ibJHxRf6SsdTamh90GPKPLOqI0" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DELOMBOK_PRE_COMMIT": "false",
+    "Downloaded.Files.Path.Enabled": "false",
+    "Gradle.Build user-feedback-service.executor": "Run",
+    "Gradle.user-feedback-service [build].executor": "Run",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "Spring Boot.FeedbackServiceApplication.executor": "Run",
+    "Spring Boot.UserFeedbackServiceApplication.executor": "Run",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/sabex/OneDrive/Рабочий стол/copypaste/backend/plagiarism-checker-api",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="org.example.feedbackservice.service.user.impl" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\sabex\OneDrive\Рабочий стол\shuttle-microservices\user-feedback-service" />
+      <recent name="C:\Users\sabex\OneDrive\Рабочий стол\shuttle-microservices\user-feedback-service\src\main\java\org\example\feedbackservice\service\kafka" />
+      <recent name="C:\Users\sabex\OneDrive\Рабочий стол\shuttle-microservices\feedback-service\src\main\java\org\example\feedbackservice\service\kafka" />
+      <recent name="C:\Users\sabex\OneDrive\Рабочий стол\shuttle-microservices\feedback-service\src\main\java\org\example\feedbackservice\domain\pilot" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="org.example.feedbackservice.service.kafka.messages" />
+      <recent name="org.example.feedbackservice.configuration" />
+      <recent name="org.example.feedbackservice.repository" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Gradle.user-feedback-service [build]">
+    <configuration default="true" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="SHORTEN_COMMAND_LINE" value="ARGS_FILE" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="user-feedback-service [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="UserFeedbackServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="plagiarism-checker-api-service.main" />
+      <option name="SHORTEN_COMMAND_LINE" value="MANIFEST" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="org.example.feedbackservice.UserFeedbackServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserFeedbackServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="user-feedback-service.main" />
+      <option name="SHORTEN_COMMAND_LINE" value="MANIFEST" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="org.example.feedbackservice.UserFeedbackServiceApplication" />
+      <option name="VM_PARAMETERS" value="-Dotel.java.global-autoconfigure.enabled=true" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="SHORTEN_COMMAND_LINE" value="ARGS_FILE" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.user-feedback-service [build]" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.20224.300" />
+        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-IU-242.20224.300" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="df4281c2-8a2d-45d7-9f7b-aea53fd50806" name="Changes" comment="" />
+      <created>1719753259266</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1719753259266</updated>
+      <workItem from="1719753260305" duration="70000" />
+      <workItem from="1719753444606" duration="6217000" />
+      <workItem from="1719852782853" duration="355000" />
+      <workItem from="1719853192755" duration="6079000" />
+      <workItem from="1719859460716" duration="2208000" />
+      <workItem from="1719939169085" duration="1536000" />
+      <workItem from="1719943028141" duration="10000" />
+      <workItem from="1719943142514" duration="4485000" />
+      <workItem from="1720035774033" duration="937000" />
+      <workItem from="1720039895158" duration="4594000" />
+      <workItem from="1720211013948" duration="2187000" />
+      <workItem from="1720216804896" duration="1928000" />
+      <workItem from="1720348983126" duration="169000" />
+      <workItem from="1720349202632" duration="2701000" />
+      <workItem from="1720352120397" duration="3436000" />
+      <workItem from="1720453429425" duration="375000" />
+      <workItem from="1720454784151" duration="4018000" />
+      <workItem from="1720535099493" duration="1166000" />
+      <workItem from="1720641764662" duration="9370000" />
+      <workItem from="1720781438236" duration="661000" />
+      <workItem from="1720799867536" duration="8423000" />
+      <workItem from="1720904854398" duration="1867000" />
+      <workItem from="1720987892983" duration="847000" />
+      <workItem from="1720990995170" duration="746000" />
+      <workItem from="1721159944640" duration="678000" />
+      <workItem from="1721165107393" duration="1551000" />
+      <workItem from="1721682091360" duration="18000" />
+      <workItem from="1721768792278" duration="4639000" />
+      <workItem from="1721986510271" duration="5000" />
+      <workItem from="1722862753819" duration="12474000" />
+      <workItem from="1725749016123" duration="129000" />
+      <workItem from="1725805388431" duration="451000" />
+    </task>
+    <task id="LOCAL-00001" summary="to delete all branches">
+      <option name="closed" value="true" />
+      <created>1719942357216</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1719942357216</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Add missed files">
+      <option name="closed" value="true" />
+      <created>1719943726066</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1719943726066</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Implement one-thread feedback system">
+      <option name="closed" value="true" />
+      <created>1720453553818</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1720453553818</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Change configuration structure">
+      <option name="closed" value="true" />
+      <created>1720644893690</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1720644893690</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Change configuration-server config typo">
+      <option name="closed" value="true" />
+      <created>1720645243854</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1720645243854</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fix typo in configuration">
+      <option name="closed" value="true" />
+      <created>1720816582002</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1720816582002</updated>
+    </task>
+    <task id="LOCAL-00007" summary="fix typo in configuration">
+      <option name="closed" value="true" />
+      <created>1720817340298</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1720817340298</updated>
+    </task>
+    <task id="LOCAL-00008" summary="fix typo in configuration">
+      <option name="closed" value="true" />
+      <created>1720818064635</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1720818064635</updated>
+    </task>
+    <task id="LOCAL-00009" summary="fix typo in configuration">
+      <option name="closed" value="true" />
+      <created>1720818298945</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1720818298945</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Implement station-information-service.yml initial state">
+      <option name="closed" value="true" />
+      <created>1721167505861</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1721167505861</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Fix opentelemetry">
+      <option name="closed" value="true" />
+      <created>1721771590906</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1721771590906</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Fix opentelemetry">
+      <option name="closed" value="true" />
+      <created>1721771595210</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1721771595210</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="to delete all branches" />
+    <MESSAGE value="Add missed files" />
+    <MESSAGE value="Implement one-thread feedback system" />
+    <MESSAGE value="Change configuration structure" />
+    <MESSAGE value="Change configuration-server config typo" />
+    <MESSAGE value="fix typo in configuration" />
+    <MESSAGE value="Implement station-information-service.yml initial state" />
+    <MESSAGE value="Fix opentelemetry" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix opentelemetry" />
+  </component>
+</project>

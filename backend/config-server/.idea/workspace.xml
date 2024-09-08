@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="25f8c5af-cfbd-4932-ad22-d68bc2d2c24b" name="Changes" comment="try to fix config">
+      <change afterPath="$PROJECT_DIR$/../pilot-feedback-service/opentelemetry-javaagent.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../user-feedback-service/opentelemetry-javaagent.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../discovery-service/.gradle/8.7/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../discovery-service/.gradle/8.7/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../discovery-service/.gradle/8.7/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../discovery-service/.gradle/8.7/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../discovery-service/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../discovery-service/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../discovery-service/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/../discovery-service/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../docker/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../docker/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../docker/otel-collector-config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../docker/otel-collector-config.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pilot-feedback-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../pilot-feedback-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/configuration/kafka/KafkaConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/configuration/kafka/KafkaConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/configuration/kafka/KafkaConsumersTopics.java" beforeDir="false" afterPath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/configuration/kafka/KafkaConsumersTopics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/configuration/kafka/KafkaProducersTopics.java" beforeDir="false" afterPath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/configuration/kafka/KafkaProducersTopics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/service/kafka/KafkaConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/service/kafka/KafkaConsumer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/service/kafka/KafkaPublisher.java" beforeDir="false" afterPath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/service/kafka/KafkaPublisher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/service/pilot/PilotRatingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/service/pilot/PilotRatingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/service/pilot/impl/PilotRatingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../pilot-feedback-service/src/main/java/org/example/pilotfeedbackservice/service/pilot/impl/PilotRatingServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../user-feedback-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../user-feedback-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../user-feedback-service/src/main/java/org/example/feedbackservice/configuration/kafka/KafkaConsumersTopics.java" beforeDir="false" afterPath="$PROJECT_DIR$/../user-feedback-service/src/main/java/org/example/feedbackservice/configuration/kafka/KafkaConsumersTopics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../user-feedback-service/src/main/java/org/example/feedbackservice/configuration/kafka/KafkaProducersTopics.java" beforeDir="false" afterPath="$PROJECT_DIR$/../user-feedback-service/src/main/java/org/example/feedbackservice/configuration/kafka/KafkaProducersTopics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../user-feedback-service/src/main/java/org/example/feedbackservice/configuration/opentelemetry/OpenTelemetryConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../user-feedback-service/src/main/java/org/example/feedbackservice/service/kafka/KafkaPublisher.java" beforeDir="false" afterPath="$PROJECT_DIR$/../user-feedback-service/src/main/java/org/example/feedbackservice/service/kafka/KafkaPublisher.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="config-server" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="vitaliy.kuksa-user-service" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2ggajVwda2RlKCYSJIf7mk24Y8h" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DELOMBOK_PRE_COMMIT&quot;: &quot;false&quot;,
+    &quot;Gradle.Build config-server.executor&quot;: &quot;Run&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;Spring Boot.ConfigServerApplication.executor&quot;: &quot;Run&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;android.gradle.sync.needed&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/sabex/OneDrive/Рабочий стол/shuttle-microservices/discovery-service&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="ConfigServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="config-server.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.configserver.ConfigServerApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="25f8c5af-cfbd-4932-ad22-d68bc2d2c24b" name="Changes" comment="" />
+      <created>1716121810204</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1716121810204</updated>
+      <workItem from="1716121811193" duration="301000" />
+      <workItem from="1716122243023" duration="6000" />
+      <workItem from="1716123160842" duration="1499000" />
+      <workItem from="1716130464587" duration="606000" />
+      <workItem from="1716485086321" duration="8000" />
+      <workItem from="1719174327973" duration="30000" />
+      <workItem from="1719174698665" duration="3950000" />
+      <workItem from="1719943021475" duration="4000" />
+      <workItem from="1719943039903" duration="723000" />
+      <workItem from="1720040076132" duration="769000" />
+      <workItem from="1720211027978" duration="3205000" />
+      <workItem from="1720349154702" duration="4000" />
+      <workItem from="1720349199161" duration="1648000" />
+      <workItem from="1720644647485" duration="5140000" />
+      <workItem from="1720815646183" duration="5106000" />
+      <workItem from="1720904850062" duration="844000" />
+      <workItem from="1721768815674" duration="2998000" />
+      <workItem from="1722862811312" duration="632000" />
+    </task>
+    <task id="LOCAL-00001" summary="config-server init">
+      <option name="closed" value="true" />
+      <created>1716124539411</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1716124539411</updated>
+    </task>
+    <task id="LOCAL-00002" summary="try to fix config">
+      <option name="closed" value="true" />
+      <created>1720646097538</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1720646097538</updated>
+    </task>
+    <task id="LOCAL-00003" summary="try to fix config">
+      <option name="closed" value="true" />
+      <created>1720646304471</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1720646304471</updated>
+    </task>
+    <task id="LOCAL-00004" summary="try to fix config">
+      <option name="closed" value="true" />
+      <created>1720646526986</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1720646526986</updated>
+    </task>
+    <task id="LOCAL-00005" summary="try to fix config">
+      <option name="closed" value="true" />
+      <created>1720646682830</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1720646682830</updated>
+    </task>
+    <task id="LOCAL-00006" summary="try to fix config">
+      <option name="closed" value="true" />
+      <created>1720647695130</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1720647695130</updated>
+    </task>
+    <task id="LOCAL-00007" summary="try to fix config">
+      <option name="closed" value="true" />
+      <created>1720652622190</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1720652622190</updated>
+    </task>
+    <task id="LOCAL-00008" summary="try to fix config">
+      <option name="closed" value="true" />
+      <created>1720652653120</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1720652653120</updated>
+    </task>
+    <task id="LOCAL-00009" summary="try to fix config">
+      <option name="closed" value="true" />
+      <created>1720652726090</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1720652726090</updated>
+    </task>
+    <task id="LOCAL-00010" summary="try to fix config">
+      <option name="closed" value="true" />
+      <created>1720819035399</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1720819035399</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="config-server init" />
+    <MESSAGE value="try to fix config" />
+    <option name="LAST_COMMIT_MESSAGE" value="try to fix config" />
+  </component>
+</project>
