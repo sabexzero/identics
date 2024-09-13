@@ -5,7 +5,7 @@ import org.example.feedbackservice.domain.user.UserType;
 import org.example.feedbackservice.domain.geo.City;
 import org.example.feedbackservice.domain.geo.EducationalOrganization;
 
-public record CreateUserRequest(
+public record UserCreateRequest(
         String name,
         String surname,
         String patronymic,
@@ -16,14 +16,14 @@ public record CreateUserRequest(
         UserType type
 ) {
     public User toDomain() {
-        return User.builder(){
-            .name(name)
-            .surname(surname)
-            .patronymic(patronymic)
-            .city(city)
-            .educationalOrganization(educationalOrganization)
-            .type(type)
-            .build();
-        }
+        return User.builder()
+                .id(null)
+                .name(name)
+                .surname(surname)
+                .patronymic(patronymic)
+                .city(city)
+                .educationalOrganization(educationalOrganization)
+                .type(type)
+                .build();
     }
 }
