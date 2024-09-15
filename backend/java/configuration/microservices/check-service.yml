@@ -1,0 +1,8 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://check-service:vnxctAZ1dHOLx1Fi3S0l2O2Ts@185.212.148.20:5432/check-service-db
+      database: check-service-db
+
+server:
+  port: 8080
