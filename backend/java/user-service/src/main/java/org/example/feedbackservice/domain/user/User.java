@@ -18,10 +18,16 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private String surname;
+
     private String patronymic;
+
     private City city;
+
     private EducationalOrganization educationalOrganization;
+
     private UserType type;
 }
