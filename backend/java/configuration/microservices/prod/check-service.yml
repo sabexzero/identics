@@ -1,0 +1,8 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://check-service:{$MONGO_DB_PROD_PASSWORD}@{$MONGO_DB_PROD_IP}:{$MONGO_DB_PROD_PORT}/{$MONGO_DB_PROD_NAME}
+      database: {$MONGO_DB_PROD_NAME}
+
+server:
+  port: {$CHECK_SERVICE_PORT}

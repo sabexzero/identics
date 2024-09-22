@@ -1,0 +1,10 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://{$EUREKA_PROD_IP}:{$EUREKA_PROD_PORT}/eureka/
+    instance:
+      prefer-ip-address: true
+      
+logging:
+  level:
+    org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer: DEBUG
