@@ -23,7 +23,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'echo "Logging in to Docker"'
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-                        sh "docker build --no-cache -t ${DOCKER_USERNAME}/${DOCKER_IMAGE}" -f backend/java/config-server/package/Dockerfile backend/java/config-server/"
+                        sh "docker build --no-cache -t ${DOCKER_USERNAME}/${DOCKER_IMAGE} -f backend/java/config-server/package/Dockerfile backend/java/config-server/"
                         // Пуш Docker-образа
                         sh "docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE}"
                     }
