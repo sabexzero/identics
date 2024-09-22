@@ -19,7 +19,7 @@ pipeline {
                     // Используем credentials для Docker логина
                     withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'sudo echo "Logging in to Docker"'
-                        sh 'sudo echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                        sh 'sudo echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin'
                         
                         // Пуш Docker-образа
                         sh "sudo docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE}"
@@ -33,7 +33,7 @@ pipeline {
                     echo "Deployment to the test server was successful."
                     withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'sudo echo "Logging in to Docker"'
-                        sh 'sudo echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                        sh 'sudo echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin'
                         
                         // Деплой на тестовый сервер
                         sh """
