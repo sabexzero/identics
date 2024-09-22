@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = credentials('CONFIG_SERVER_IMAGE_NAME')
+        DOCKER_IMAGE = credentials('CONFIG_SERVER_IMAGE_NAME').toLowerCase()
 	PORT = credentials('CONFIG_SERVICE_PORT')
     }
     stages {
