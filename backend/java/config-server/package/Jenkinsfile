@@ -1,15 +1,18 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = credentials('CONFIG_SERVER_IMAGE_NAME')
-        PORT = credentials('CONFIG_SERVICE_PORT')
+        DOCKER_IMAGE = credentials('EUREKA_SERVER_IMAGE_NAME')
+		PORT = credentials('DISCOVERY_SERVICE_PORT')
     }
     stages {
         stage('Build') {
             steps {
                 script {
-                    // Используем Gradle для сборки
-                    sh 'backend/java/config-server/gradlew clean build -x test'
+					// Устанавливаем права на выполнение gradlew
+					sh 'chmod +x backend/java/config-server/gradlew'
+					
+					// Выполняем сборку с помощью Gradle
+					sh 'backend/java/config-server/gradlew clean build -x test'
                 }
             }
         }
