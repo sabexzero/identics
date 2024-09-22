@@ -9,7 +9,7 @@ pipeline {
             steps {
                 script {
                     // Используем Gradle для сборки
-                    sh './gradlew -p backend/java/config-server clean build -x test'
+                    sh 'backend/java/config-server/gradlew clean build -x test'
                 }
             }
         }
