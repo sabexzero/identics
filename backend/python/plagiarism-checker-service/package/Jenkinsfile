@@ -3,6 +3,8 @@ pipeline {
     environment {
         DOCKER_IMAGE = credentials('PLAGIARISM_CHECKER_SERVICE_IMAGE_NAME')
         PORT = credentials('PLAGIARISM_CHECKER_SERVICE_PORT')
+        KAFKA_IMAGE = credentials('KAFKA_IMAGE')
+        KAFKA_PORT = credentials('KAFKA_PORT')
     }
     stages {
         stage('Build') {
