@@ -11,6 +11,8 @@ import org.identics.checkservice.service.kafka.KafkaPublisher;
 import org.identics.checkservice.web.requests.CheckRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CheckServiceImpl implements CheckService {
@@ -43,5 +45,10 @@ public class CheckServiceImpl implements CheckService {
                 message.getPlagiarismCheckResult(),
                 message.getAiCheckResult()
         ));
+    }
+
+    @Override
+    public List<Check> getAll() {
+        return checkRepository.findAll();
     }
 }

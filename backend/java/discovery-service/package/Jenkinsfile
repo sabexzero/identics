@@ -8,8 +8,11 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Используем Gradle для сборки
-                    sh './gradlew -p backend/java/config-server clean build -x test'
+					// Устанавливаем права на выполнение gradlew
+					sh 'chmod +x backend/java/config-server/gradlew'
+					
+					// Выполняем сборку с помощью Gradle
+					sh 'backend/java/config-server/gradlew clean build -x test'
                 }
             }
         }
