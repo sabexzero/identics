@@ -5,6 +5,7 @@ pipeline {
         PORT = credentials('PLAGIARISM_CHECKER_SERVICE_PORT')
         KAFKA_IMAGE_NAME = credentials('KAFKA_IMAGE_NAME')
         KAFKA_PORT = credentials('KAFKA_PORT')
+        DOCKER_NETWORK_NAME = credentials('DOCKER_NETWORK_NAME')
     }
     stages {
         stage('Build') {
@@ -30,6 +31,18 @@ pipeline {
                 }
             }
         }
+        stage('Check Docker Network') {
+            steps {
+                script {
+                    // Проверка существования Docker сети и создание, если не существует
+                    sh """
+                        if ! docker network ls | grep -w ${DOCKER_NETWORK_NAME}; then
+                            docker network create ${DOCKER_NETWORK_NAME}
+                        fi
+                    """
+                }
+            }
+        }
         stage('Deploy to Test Environment') {
             steps {
                 script {
@@ -43,7 +56,7 @@ pipeline {
                             docker stop ${DOCKER_IMAGE} || true
                             docker rm ${DOCKER_IMAGE} || true
                             docker pull ${DOCKER_USERNAME}/${DOCKER_IMAGE}
-                            docker run -d --name ${DOCKER_IMAGE} -p ${PORT}:${PORT} -e KAFKA_IMAGE_NAME=${KAFKA_IMAGE_NAME} -e KAFKA_PORT=${KAFKA_PORT} ${DOCKER_USERNAME}/${DOCKER_IMAGE}
+                            docker run -d --name ${DOCKER_IMAGE} --network ${DOCKER_NETWORK_NAME} -p ${PORT}:${PORT} -e KAFKA_IMAGE_NAME=${KAFKA_IMAGE_NAME} -e KAFKA_PORT=${KAFKA_PORT} ${DOCKER_USERNAME}/${DOCKER_IMAGE}
                         """
                     }
                 }
