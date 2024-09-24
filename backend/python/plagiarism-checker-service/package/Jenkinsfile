@@ -42,6 +42,7 @@ pipeline {
                             docker rm ${DOCKER_IMAGE} || true
                             docker pull ${DOCKER_USERNAME}/${DOCKER_IMAGE}
                             docker run -d --name ${DOCKER_IMAGE} -p ${PORT}:${PORT} ${DOCKER_USERNAME}/${DOCKER_IMAGE}
+                            sudo docker run -d --name ${DOCKER_IMAGE} -p ${PORT}:${PORT} -e KAFKA_IMAGE_NAME=${KAFKA_IMAGE_NAME} -e KAFKA_PORT=${KAFKA_PORT} ${DOCKER_USERNAME}/${DOCKER_IMAGE}
                         """
                     }
                 }
