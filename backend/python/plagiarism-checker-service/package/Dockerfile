@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY backend/python/plagiarism-checker-service/package/requirements.txt /app/requirements.txt
 
-COPY . /app
+COPY backend/python/plagiarism-checker-service/. /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
