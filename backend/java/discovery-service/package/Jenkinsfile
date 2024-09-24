@@ -2,17 +2,17 @@ pipeline {
     agent any
     environment {
         DOCKER_IMAGE = credentials('EUREKA_SERVER_IMAGE_NAME')
-		PORT = credentials('DISCOVERY_SERVICE_PORT')
+	PORT = credentials('DISCOVERY_SERVICE_PORT')
     }
     stages {
         stage('Build') {
             steps {
                 script {
-					// Устанавливаем права на выполнение gradlew
-					sh 'chmod +x backend/java/config-server/gradlew'
-					
-					// Выполняем сборку с помощью Gradle
-					sh 'backend/java/config-server/gradlew clean build -x test'
+                  // Устанавливаем права на выполнение gradlew
+                  sh 'chmod +x backend/java/config-server/gradlew'
+
+                  // Выполняем сборку с помощью Gradle
+                  sh 'backend/java/config-server/gradlew clean build -x test'
                 }
             }
         }
@@ -23,7 +23,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'echo "Logging in to Docker"'
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-                        
+                        sh "docker build --no-cache -t ${DOCKER_USERNAME}/${DOCKER_IMAGE} -f backend/java/config-server/package/Dockerfile backend/java/config-server/"
                         // Пуш Docker-образа
                         sh "docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE}"
                     }
@@ -40,10 +40,10 @@ pipeline {
                         
                         // Деплой на тестовый сервер
                         sh """
-                            sudo docker stop ${DOCKER_IMAGE} || true
-                            sudo docker rm ${DOCKER_IMAGE} || true
-                            sudo docker pull ${DOCKER_USERNAME}/${DOCKER_IMAGE}
-                            sudo docker run -d --name ${DOCKER_IMAGE} -p ${PORT}:${PORT} -e SPRING_PROFILES_ACTIVE=dev ${DOCKER_USERNAME}/${DOCKER_IMAGE}
+                            docker stop ${DOCKER_IMAGE} || true
+                            docker rm ${DOCKER_IMAGE} || true
+                            docker pull ${DOCKER_USERNAME}/${DOCKER_IMAGE}
+                            docker run -d --name ${DOCKER_IMAGE} -p ${PORT}:${PORT} -e SPRING_PROFILES_ACTIVE=dev ${DOCKER_USERNAME}/${DOCKER_IMAGE}
                         """
                     }
                 }
