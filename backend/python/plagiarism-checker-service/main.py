@@ -22,6 +22,9 @@ class CheckCompleteMessage(BaseModel):
 KAFKA_IP = os.getenv('KAFKA_IMAGE_NAME')
 KAFKA_PORT = os.getenv('KAFKA_PORT')
 
+if not KAFKA_IP or not KAFKA_PORT:
+    raise ValueError("KAFKA_IMAGE_NAME and KAFKA_PORT environment variables must be set")
+
 CHECK_REQUEST_TOPIC = 'check-request-topic'
 CHECK_COMPLETE_TOPIC = 'check-complete-topic'
 
@@ -41,16 +44,12 @@ async def process_check_request(consumer: AIOKafkaConsumer, producer: AIOKafkaPr
         await producer.send_and_wait(CHECK_COMPLETE_TOPIC, check_complete_message.json().encode('utf-8'))
 
 async def main():
-    loop = asyncio.get_event_loop()
-
     consumer = AIOKafkaConsumer(
         CHECK_REQUEST_TOPIC,
-        loop=loop,
         bootstrap_servers=f"{KAFKA_IP}:{KAFKA_PORT}",
         group_id="check_request_group"
     )
     producer = AIOKafkaProducer(
-        loop=loop,
         bootstrap_servers=f"{KAFKA_IP}:{KAFKA_PORT}"
     )
 
