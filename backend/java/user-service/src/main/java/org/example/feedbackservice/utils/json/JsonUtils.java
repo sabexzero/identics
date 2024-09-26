@@ -3,9 +3,11 @@ package org.example.feedbackservice.utils.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.feedbackservice.validation.Defect;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 
 public class JsonUtils {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -23,5 +25,9 @@ public class JsonUtils {
     // Generic method to read JSON into a specific TypeReference
     public static <T extends Serializable> T readJson(String json, TypeReference<T> typeReference) throws IOException {
         return mapper.readValue(json, typeReference);
+    }
+
+    public static String objectToJson(List<Defect> errors) throws JsonProcessingException {
+        return mapper.writeValueAsString(errors);
     }
 }
