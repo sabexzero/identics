@@ -3,14 +3,14 @@ spring:
     traces:
       exporter:
         otlp:
-          endpoint: http://{$OPENTELEMETRY_TEST_IP}:{$OPENTELEMETRY_TEST_PORT}
+          endpoint: http://${OPENTELEMETRY_TEST_IP}:${OPENTELEMETRY_TEST_PORT}
       sampler:
         probability: 1.0
   metrics:
     export:
       otlp:
         enabled: true
-        endpoint: http://{$OPENTELEMETRY_TEST_IP}:{$OPENTELEMETRY_TEST_PORT}
+        endpoint: http://${OPENTELEMETRY_TEST_IP}:${OPENTELEMETRY_TEST_PORT}
 management:
   endpoints:
     web:
