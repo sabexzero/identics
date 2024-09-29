@@ -1,7 +1,7 @@
 eureka:
   client:
     service-url:
-      defaultZone: http://{$EUREKA_TEST_IP}:{$EUREKA_TEST_PORT}/eureka/
+      defaultZone: http://${EUREKA_TEST_IP}:${EUREKA_TEST_PORT}/eureka/
     instance:
       prefer-ip-address: true
       
