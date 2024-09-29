@@ -8,11 +8,10 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                  // Устанавливаем права на выполнение gradlew
-                  sh 'chmod +x backend/java/discovery-service/gradlew'
-
-                  // Выполняем сборку с помощью Gradle
-                  sh 'backend/java/discovery-service/gradlew clean build -x test'
+                    dir('backend/java/discovery-service') {
+                        sh 'chmod +x gradlew'
+                        sh './gradlew clean build -x test'
+                    }
                 }
             }
         }
