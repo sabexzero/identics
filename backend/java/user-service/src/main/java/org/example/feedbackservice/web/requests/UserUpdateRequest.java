@@ -6,9 +6,10 @@ import org.example.feedbackservice.domain.user.User;
 import org.example.feedbackservice.domain.user.UserType;
 import org.example.feedbackservice.domain.geo.City;
 import org.example.feedbackservice.domain.geo.EducationalOrganization;
-import java.util.Optional;
+import org.example.feedbackservice.validation.annotations.UserExists;
 
 public record UserUpdateRequest(
+        @UserExists
         Long id,
         @NotBlank
         @Size(min = 2, max = 50)
@@ -18,28 +19,20 @@ public record UserUpdateRequest(
         String surname,
         @Size(max = 50)
         String patronymic,
-
         City city,
         EducationalOrganization educationalOrganization,
         @NotBlank
-        String userType
+        UserType type
 ) {
     public User toDomain() {
-        User.UserBuilder builder = User.builder()
-                .id(id);
-        Optional.ofNullable(name).ifPresent(builder::name);
-        Optional.ofNullable(surname).ifPresent(builder::surname);
-        Optional.ofNullable(patronymic).ifPresent(builder::patronymic);
-        Optional.ofNullable(city).ifPresent(builder::city);
-        Optional.ofNullable(educationalOrganization).ifPresent(builder::educationalOrganization);
-        Optional.ofNullable(userType).ifPresent(type -> {
-            try {
-                UserType userTypeEnum = UserType.valueOf(type.toUpperCase());
-                builder.type(userTypeEnum);
-            } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Invalid user type: " + type);
-            }
-        });
-        return builder.build();
+        return  User.builder()
+                .id(id)
+                .name(name)
+                .surname(surname)
+                .patronymic(patronymic)
+                .city(city)
+                .educationalOrganization(educationalOrganization)
+                .type(type)
+                .build();
     }
 }

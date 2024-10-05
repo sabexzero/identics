@@ -1,6 +1,8 @@
 package org.example.feedbackservice.service.user.impl;
 
-import jakarta.persistence.EntityNotFoundException;
+import org.example.feedbackservice.validation.Defect;
+import org.example.feedbackservice.validation.ValidationException;
+import org.example.feedbackservice.validation.defects.UserDefects;
 import org.example.feedbackservice.domain.user.User;
 import org.example.feedbackservice.repository.UserRepository;
 import org.example.feedbackservice.web.requests.UserCreateRequest;
@@ -9,12 +11,20 @@ import lombok.RequiredArgsConstructor;
 import org.example.feedbackservice.web.requests.UserUpdateRequest;
 import org.springframework.stereotype.Service;
 
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
+import jakarta.validation.Valid;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
+    private final Validator validator;
     @Override
     public User createUser(UserCreateRequest request) {
         User user = request.toDomain();
@@ -22,9 +32,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(UserUpdateRequest request) {
-        User currentUser = userRepository.findById(request.id())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + request.id()));
+    public User updateUser(@Valid UserUpdateRequest request) {
+        BindingResult bindingResult = new BeanPropertyBindingResult(request, "userUpdateRequest");
+        validator.validate(request, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            List<Defect> defects = new ArrayList<>();
+            defects.add(new Defect("userUpdateRequest", UserDefects.USER_NOT_EXIST));
+
+            throw new ValidationException(defects);
+        }
+
         User updatedUser = request.toDomain();
         return userRepository.save(updatedUser);
     }
