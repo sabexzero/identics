@@ -5,7 +5,7 @@
     border-radius: 12px;
     border: 1px solid black;
     color: black;
-    padding: 0px 58px;
+    padding: auto;
     font-size: 20px;
     text-decoration: none;
     font-family: "Orbit", sans-serif;
@@ -42,7 +42,7 @@
     border: 0;
     border-radius: 12px;
     color: white;
-    padding: 5px 25px;
+    padding: auto;
     font-size: 20px;
     text-decoration: none;
     font-family: "Orbit", sans-serif;
@@ -69,4 +69,12 @@
 
 .button__black:hover {
     color: white;
+}
+
+.button__black p{
+    margin: 0;
+
+}
+.button__white p{
+    margin: 0;
 }

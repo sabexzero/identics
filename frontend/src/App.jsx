@@ -2,14 +2,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage/LoginPage';
 import MainPage from './pages/MainPage/MainPage';
 import RegistrationPage from './pages/RegistrationPage/RegistrationPage';
-// import PersonalAccount from './pages/PersonalAccount/PersonalAccount';
+import PersonalAccount from './pages/PersonalAccount/PersonalAccount';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path='/mainpage' element={<MainPage />} />
-        {/* <Route path='/profile' element={<PersonalAccount />} /> */}
+        <Route path='/profile' element={<PersonalAccount />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/register' element={<RegistrationPage />} />
       </Routes>

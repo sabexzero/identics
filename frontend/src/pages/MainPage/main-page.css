@@ -1,4 +1,4 @@
-.container{
+.main-container{
     width: 76%;
     margin-top: 5%;
     margin-left: auto;
@@ -15,7 +15,7 @@
 }
 
 
-.container h1{
+.main-container h1{
     margin: 0 auto 0 auto;
     width: 648px;
 

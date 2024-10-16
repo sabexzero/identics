@@ -1,0 +1,90 @@
+.profile-container{
+    /* background-color: #0074DF; */
+    width: auto;
+    margin: 0 6%;
+}
+.up_bar {
+    height: 102px;
+    display: flex;
+    justify-content: space-between;
+}
+.up_bar h1{
+    font-family: "Questrial", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 39px;
+    letter-spacing: 19px;
+}
+.up_bar button{
+    width: 123px;
+    height: 40px;
+    margin: auto 0;
+}
+.black_block h2{
+    margin: 0;
+    color: white;
+}
+.up_bar button{
+    width: 123px;
+    height: 40px;
+}
+
+
+
+
+
+.black_block{
+    height: 121px;
+    display: flex;
+    align-items: flex-end; /* Прижимаем содержимое к нижней границе */
+    justify-content: center; /* Центрируем содержимое по горизонтали */
+    width: 100%;
+    background: #131313;
+    padding: 0;
+    margin: 0;
+}
+.black_block button{
+    width: 123px;
+    height: 40px;
+    background: #0074DF;
+    border-radius: 26px;
+    color: white;
+}
+.content_block{
+    display: flex;
+    margin: 0 auto;
+    width: 935px;
+    height: 193px;
+    justify-content: space-between; /* Размещаем текст и картинку по сторонам */
+    align-items: flex-end; /* Картинка будет прижата к низу */
+    width: 935px;
+}
+.content_block img{
+    width: 285px;
+    height: 193px;
+}
+.text_or_doc{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    margin: 0 auto;
+    /* background-color: #0074DF; */
+    width: 512px;
+    height: 121px;
+}
+.text_or_doc button{
+    margin: 0 48px;
+}
+.text_or_doc h2{
+    padding-top: 10px;
+    font-family: "Questrial", sans-serif;
+    font-weight: bold;
+    font-style: normal;
+    font-size: 32px;
+    letter-spacing: 2.9px;
+}
+
+.button_container{
+    padding-bottom: 10px;
+}
