@@ -1,0 +1,13 @@
+.inputClass {
+    background: rgb(255, 255, 255);
+    width: 300px; /* Ширина поля ввода */
+    height: 30px;
+    padding: 10px;
+    margin-bottom: 16px;
+    border: 1px solid #000000;
+    border-radius: 12px; /* Закругленные углы поля */
+    font-family: "Orbit", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 19px;
+}

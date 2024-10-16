@@ -12,7 +12,7 @@ import LinkButton from '../../components/LinkButton/LinkButton';
 const MainPage = () => {
     return (
         <>
-        <div className="container">
+        <div className="main-container">
             <h1>IDENTICS</h1>
             <div className="content">
                 <div className="text_block">

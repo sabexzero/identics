@@ -6,7 +6,7 @@ const Button = ({ children, isWhite = false }) => {
 
     return (
         <button className={buttonClass}>
-            {children}            
+            <p>{children}</p>            
         </button>
     );
 };
