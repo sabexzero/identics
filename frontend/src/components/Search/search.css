@@ -1,13 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
 .inputClass {
     background: rgb(255, 255, 255);
-    width: 300px; /* Ширина поля ввода */
+    width: 550px; /* Ширина поля ввода */
     height: 30px;
-    padding: 10px;
-    margin-bottom: 16px;
+    padding: 10px 0 10px 50px;
+    margin: 0 0 0 0;
     border: 1px solid #000000;
-    border-radius: 12px; /* Закругленные углы поля */
+    border-radius: 26px; /* Закругленные углы поля */
     font-family: "Orbit", sans-serif;
     font-weight: 400;
     font-style: normal;
     font-size: 19px;
+}
+.Search_icon{
+    position: absolute;
+    padding: 15px 0 0 20px;
+}
+.inputClass::placeholder{
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 20;
+    color: #131313;
 }

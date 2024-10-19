@@ -4,7 +4,7 @@ import Button from '../../components/Button/Button';
 // import Input from '../../components/Input/Input';
 import Img_man from '../../assets/images/img_man.png';
 import Search from '../../components/Search/Search';
-import Search_icon from '../../assets/images/search_icon.png';
+// import Search_icon from '../../assets/images/search_icon.png';
 
 const PersonalAccount = () => {
     return (
@@ -29,7 +29,9 @@ const PersonalAccount = () => {
                 </div>
             </div>
             <div className="profile-container">
-                <Search placeholder={"Поиск документа"}></Search>
+                <div className="search_profile">
+                    <Search placeholder={"Поиск документа"}></Search>
+                </div>
             </div>
         </>
     );

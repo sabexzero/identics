@@ -1,3 +1,4 @@
+
 .profile-container{
     /* background-color: #0074DF; */
     width: auto;
@@ -87,4 +88,7 @@
 
 .button_container{
     padding-bottom: 10px;
+}
+.search_profile{
+    margin-top: 2%;
 }
