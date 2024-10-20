@@ -1,15 +1,21 @@
 package org.example.feedbackservice.validation;
 
 import com.netflix.config.validation.ValidationException;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class Validator<T> {
-    private final T fieldValue;
-    private final String fieldName;
+    private  T fieldValue;
+    private  String fieldName;
     private final List<Validator<?>> subResults = new ArrayList<>();
     private final List<DefectId> errors = new ArrayList<>();
+
+    public Validator() {}
 
     public Validator(T fieldValue) {
         this.fieldValue = fieldValue;
@@ -54,6 +60,13 @@ public class Validator<T> {
 
     public void validate() {
         List<Defect> errors = getAllErrors();
+        if (!errors.isEmpty()) {
+            throw new ValidationException(String.valueOf(errors));
+        }
+    }
+
+    public void validate(BindingResult bindingResult) {
+        List<ObjectError> errors = bindingResult.getAllErrors();
         if (!errors.isEmpty()) {
             throw new ValidationException(String.valueOf(errors));
         }
