@@ -1,20 +1,25 @@
-import './registration-page.css';
-import Button from '../../components/Button/Button';
-import LinkButton from '../../components/LinkButton/LinkButton';
-import Input from '../../components/Input/Input';
+import * as React from "react";
+import { CssVarsProvider } from "@mui/joy/styles";
+import Box from "@mui/joy/Box";
+import CssBaseline from "@mui/joy/CssBaseline";
+import framesxTheme from "../../components/theme/theme";
+import Layout from "./Layout";
 
-const RegisterPage = () => {
+export default function RegistrationPage() {
     return (
-        <div className="register_form">
-            <h1>Регистрация</h1>
-            <p>Ваша почта и пароль будут использоваться для входа в аккаунт</p>
-            <Input className="inputClass" placeholder="Почта" />
-            <Input className="inputClass" placeholder="Введите пароль" />
-            <Input className="inputClass" placeholder="Повторите пароль" />
-            <LinkButton className = "link_button" isWhite = {false} to="/login">Войти</LinkButton>
-            <LinkButton className = "link_button" isWhite = {false} to="/register">Зарегистрироваться</LinkButton>
-        </div>
+        <CssVarsProvider disableTransitionOnChange theme={framesxTheme}>
+            <CssBaseline />
+            <Box
+                sx={{
+                    maxHeight: "90vh",
+                    scrollSnapType: "y mandatory",
+                    "& > div": {
+                        scrollSnapAlign: "start",
+                    },
+                }}
+            >
+                <Layout />
+            </Box>
+        </CssVarsProvider>
     );
-};
-
-export default RegisterPage;
+}

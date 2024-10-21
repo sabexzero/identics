@@ -1,20 +1,25 @@
-import './login-page.css';
-import Button from '../../components/Button/Button';
-import Input from '../../components/Input/Input';
-import LinkButton from '../../components/LinkButton/LinkButton';
+import * as React from "react";
+import { CssVarsProvider } from "@mui/joy/styles";
+import Box from "@mui/joy/Box";
+import CssBaseline from "@mui/joy/CssBaseline";
+import framesxTheme from "../../components/theme/theme";
+import Layout from "./Layout";
 
-const LoginPage = () => {
+export default function LoginPage() {
     return (
-        <div className="login_form">
-            <h1>Вход</h1>
-            <p>Ваша почта и пароль будут использоваться для входа в аккаунт</p>
-            <Input className="inputClass" placeholder="Почта" />
-            <Input className="inputClass" placeholder="Пароль" />
-            <LinkButton className = "link_button" isWhite = {false} to="/register">Войти</LinkButton>
-            <LinkButton className = "link_button" isWhite = {false} to="/register">Забыли пароль?</LinkButton>
-            <span>Нет аккаунта? <a href=""> Создайте его </a></span>
-        </div>
+        <CssVarsProvider disableTransitionOnChange theme={framesxTheme}>
+            <CssBaseline />
+            <Box
+                sx={{
+                    maxHeight: "90vh",
+                    scrollSnapType: "y mandatory",
+                    "& > div": {
+                        scrollSnapAlign: "start",
+                    },
+                }}
+            >
+                <Layout />
+            </Box>
+        </CssVarsProvider>
     );
-};
-
-export default LoginPage;
+}
