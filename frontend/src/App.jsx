@@ -6,6 +6,7 @@ import { useState, useMemo } from "react";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import MainPage from "./pages/MainPage/MainPage";
 import RegistrationPage from "./pages/RegistrationPage/RegistrationPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import PersonalAccount from "./pages/PersonalAccount/PersonalAccount";
 import ColorSchemeToggle from "./components/ColorSchemeToggle/ColorSchemeToggle";
 import { CssVarsProvider } from "@mui/joy/styles";
@@ -40,7 +41,8 @@ function App() {
 
                 <Routes>
                     <Route path="/" element={<MainPage />} />
-                    <Route path="/profile" element={<PersonalAccount />} />
+                    <Route path="/profile" element={<ProfilePage    />} />
+                    <Route path="/profileold" element={<PersonalAccount />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegistrationPage />} />
                 </Routes>
