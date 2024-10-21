@@ -65,7 +65,7 @@ export default function ProfilePage() {
                             fontSize: 'clamp(1rem, 1rem + 2.1818vw, 2rem)',
                             fontFamily: 'Questrial, sans-serif',
                             letterSpacing: '20px'}}>
-              IDENTICsssssssssssssssS
+              IDENTICS
             </Typography>
 
 
