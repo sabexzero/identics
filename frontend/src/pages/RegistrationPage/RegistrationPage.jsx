@@ -10,13 +10,17 @@ export default function RegistrationPage() {
         <CssVarsProvider disableTransitionOnChange theme={framesxTheme}>
             <CssBaseline />
             <Box
-                sx={{
-                    maxHeight: "90vh",
+                sx={(theme) => ({
+                    minHeight: "100vh",
+                    overflow: "hidden",
                     scrollSnapType: "y mandatory",
                     "& > div": {
                         scrollSnapAlign: "start",
                     },
-                }}
+                    [theme.getColorSchemeSelector("dark")]: {
+                        backgroundColor: "#0F1214",
+                    },
+                })}
             >
                 <Layout />
             </Box>
