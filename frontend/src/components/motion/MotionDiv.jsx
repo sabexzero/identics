@@ -8,8 +8,8 @@ const MotionDiv = ({ children, pic = false, reversed = false }) => {
                 pic
                     ? { opacity: 0, scale: 0.9 }
                     : reversed
-                      ? { x: -50, opacity: 0, scale: 0.9 }
-                      : { x: 200, opacity: 0, scale: 0.9 }
+                        ? { x: -50, opacity: 0, scale: 0.9 }
+                        : { x: 200, opacity: 0, scale: 0.9 }
             }
             animate={
                 pic ? { opacity: 1, scale: 1 } : { x: 0, opacity: 1, scale: 1 }
