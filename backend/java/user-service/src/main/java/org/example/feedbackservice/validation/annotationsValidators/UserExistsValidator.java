@@ -1,4 +1,4 @@
-package org.example.feedbackservice.validation;
+package org.example.feedbackservice.validation.annotationsValidators;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
