@@ -18,12 +18,11 @@ import org.springframework.validation.BindingResult;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final Validator<UserUpdateRequest> userUpdateValidator;
-    private final Validator<UserCreateRequest> userCreateValidator;
+    private final Validator userValidator;
     @Override
     public User createUser(UserCreateRequest request) {
         BindingResult bindingResult = new BeanPropertyBindingResult(request, "userCreateRequest");
-        userCreateValidator.validate(bindingResult);
+        userValidator.validate(bindingResult);
         User user = request.toDomain();
         return userRepository.save(user);
     }
@@ -31,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(UserUpdateRequest request) {
         BindingResult bindingResult = new BeanPropertyBindingResult(request, "userUpdateRequest");
-        userUpdateValidator.validate(bindingResult);
+        userValidator.validate(bindingResult);
         User updatedUser = request.toDomain();
         return userRepository.save(updatedUser);
     }

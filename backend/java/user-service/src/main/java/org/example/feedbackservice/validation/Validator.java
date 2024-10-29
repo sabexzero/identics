@@ -9,33 +9,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class Validator<T> {
-    private  T fieldValue;
-    private  String fieldName;
-    private final List<Validator<?>> subResults = new ArrayList<>();
+public class Validator {
+    private String fieldName;
+    private final List<Validator> subResults = new ArrayList<>();
     private final List<DefectId> errors = new ArrayList<>();
 
     public Validator() {}
 
-    public Validator(T fieldValue) {
-        this.fieldValue = fieldValue;
-        this.fieldName = "";
-    }
-
-    public Validator(T fieldValue, String fieldName) {
-        this.fieldValue = fieldValue;
-        this.fieldName = fieldName;
-    }
-
-    public Validator<T> check(boolean checkResult, DefectId defectId) {
+    public Validator check(boolean checkResult, DefectId defectId) {
         if (!checkResult) {
             errors.add(defectId);
         }
         return this;
     }
 
-    public <I> Validator<I> item(I fieldValue, String fieldName) {
-        Validator<I> validator = new Validator<>(fieldValue, fieldName);
+    public <I> Validator item(I fieldValue, String fieldName) {
+        Validator validator = new Validator();
         subResults.add(validator);
         return validator;
     }
@@ -45,7 +34,7 @@ public class Validator<T> {
         for (DefectId defectId : errors) {
             resultList.add(new Defect(fieldName, defectId));
         }
-        for (Validator<?> subValidator : subResults) {
+        for (Validator subValidator : subResults) {
             List<Defect> subErrors = subValidator.getAllErrors();
             for (Defect defect : subErrors) {
                 if (!fieldName.isEmpty()) {
