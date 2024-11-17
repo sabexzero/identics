@@ -8,27 +8,23 @@ import MotionDiv from "../motion/MotionDiv.jsx";
 const TwoSidedLayout = ({ children, reversed }) => {
     return (
         <Container
-            sx={[
-                (theme) => ({
-                    position: "relative",
-                    minHeight: "100vh",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    py: 0,
-                    gap: 4,
-                    [theme.breakpoints.up(834)]: {
-                        flexDirection: reversed ? "row-reverse" : "row",
-                        gap: 3,
-                    },
-                    [theme.breakpoints.up(1199)]: {
-                        gap: 2,
-                    },
-                }),
-                reversed
-                    ? { flexDirection: "column-reverse" }
-                    : { flexDirection: "column" },
-            ]}
+            sx={(theme) => ({
+                position: "relative",
+                minHeight: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-start", // Align content to the top
+                py: 0,
+                gap: 4,
+                [theme.breakpoints.up(834)]: {
+                    flexDirection: reversed ? "row-reverse" : "row",
+                    gap: 3,
+                },
+                [theme.breakpoints.up(1199)]: {
+                    gap: 2,
+                },
+            })}
         >
             <MotionDiv reversed={reversed}>
                 <Box
@@ -69,6 +65,9 @@ const TwoSidedLayout = ({ children, reversed }) => {
                     borderRadius: "sm",
                     bgcolor: "transparent",
                     flexBasis: "50%",
+                    [theme.breakpoints.down(834)]: {
+                        marginTop: "20px", // Add top margin for the image on mobile
+                    },
                 })}
             >
                 <MotionDiv pic>

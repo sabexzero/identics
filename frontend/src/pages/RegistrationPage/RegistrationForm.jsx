@@ -15,16 +15,21 @@ export default function RegistrationForm() {
     return (
         <Box
             sx={(theme) => ({
-                width: { xs: "100%" },
+                width: "100%",
                 transition: "width var(--Transition-duration)",
-                transitionDelay: "calc(var(--Transition-duration) + 0.1s)",
                 position: "relative",
                 zIndex: 1,
                 display: "flex",
-                justifyContent: "flex-end",
+                justifyContent: "center",
                 backdropFilter: "blur(12px)",
                 [theme.getColorSchemeSelector("dark")]: {
                     backgroundColor: "#0F1214",
+                },
+                padding: { xs: "16px", sm: "24px" },
+                minHeight: "100vh", // Ensure the container takes full height
+                overflow: "auto", // Allow scrolling if content overflows
+                [theme.breakpoints.down("sm")]: {
+                    overflow: "hidden", // Disable scrolling on small screens
                 },
             })}
         >
@@ -33,45 +38,41 @@ export default function RegistrationForm() {
                     display: "flex",
                     flexDirection: "column",
                     width: "100%",
-                    px: 2,
+                    maxWidth: 480,
+                    px: { xs: 2, sm: 4 },
+                    my: "auto", // Center the content vertically
                 }}
             >
                 <Box
                     component="main"
                     sx={{
-                        my: "auto",
-                        py: 2,
-                        pb: 5,
+                        py: { xs: 2, sm: 3 },
+                        pb: { xs: 4, sm: 5 },
                         display: "flex",
                         flexDirection: "column",
                         gap: 2,
-                        width: 400,
-                        maxWidth: "100%",
-                        mx: "auto",
+                        width: "100%",
                         borderRadius: "sm",
                         "& form": {
                             display: "flex",
                             flexDirection: "column",
                             gap: 2,
                         },
-                        [`& .MuiFormLabel-asterisk`]: {
-                            visibility: "hidden",
-                        },
                     }}
                 >
-                    <Stack sx={{ gap: 4, mb: 2 }}>
+                    <Stack sx={{ gap: 3, mb: 2 }}>
                         <Stack sx={{ gap: 1 }}>
                             <Box
                                 sx={{
                                     display: "flex",
-                                    gap: "2",
                                     alignItems: "center",
+                                    gap: 0,
                                 }}
                             >
                                 <Link component={RouterLink} to="/">
-                                    <ArrowBackIos fontSize="xl" />
+                                    <ArrowBackIos fontSize="large" />
                                 </Link>
-                                <Typography component="h1" level="h3">
+                                <Typography component="h1" level="h3" sx={{ width: "100%" }}>
                                     Зарегистрироваться
                                 </Typography>
                             </Box>
@@ -88,7 +89,7 @@ export default function RegistrationForm() {
                         </Stack>
                     </Stack>
 
-                    <Stack sx={{ gap: 4, mt: 2 }}>
+                    <Stack sx={{ gap: 3, mt: 2 }}>
                         <form
                             onSubmit={(event) => {
                                 event.preventDefault();
@@ -102,24 +103,25 @@ export default function RegistrationForm() {
                                 alert(JSON.stringify(data, null, 2));
                             }}
                         >
-                            <FormControl required>
+                            <FormControl required sx={{ width: "100%" }}>
                                 <FormLabel>Email</FormLabel>
-                                <Input type="email" name="email" />
+                                <Input type="email" name="email" sx={{ width: "100%" }} />
                             </FormControl>
-                            <FormControl required>
+                            <FormControl required sx={{ width: "100%" }}>
                                 <FormLabel>Password</FormLabel>
-                                <Input type="password" name="password" />
+                                <Input type="password" name="password" sx={{ width: "100%" }} />
                             </FormControl>
-                            <FormControl required>
+                            <FormControl required sx={{ width: "100%" }}>
                                 <FormLabel>Repeat password</FormLabel>
-                                <Input type="password" name="password" />
+                                <Input type="password" name="password" sx={{ width: "100%" }} />
                             </FormControl>
-                            <Stack sx={{ gap: 4, mt: 2 }}>
+                            <Stack sx={{ gap: 3, mt: 2 }}>
                                 <Box
                                     sx={{
                                         display: "flex",
                                         justifyContent: "space-between",
                                         alignItems: "center",
+                                        flexDirection: { xs: "column", sm: "row" },
                                     }}
                                 >
                                     <Checkbox

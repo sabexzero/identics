@@ -13,7 +13,6 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import MainPage from "./pages/MainPage/MainPage";
 import RegistrationPage from "./pages/RegistrationPage/RegistrationPage";
-import PersonalAccount from "./pages/PersonalAccount/PersonalAccount";
 import ColorSchemeToggle from "./components/ColorSchemeToggle/ColorSchemeToggle";
 import { CssVarsProvider } from "@mui/joy/styles";
 
@@ -25,11 +24,9 @@ const AnimatedRoutes = () => {
         <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
                 <Route path="/" element={<MainPage />} />
-                <Route path="/profile" element={<PersonalAccount />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegistrationPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/profileold" element={<PersonalAccount />} />
             </Routes>
         </AnimatePresence>
     );
