@@ -20,6 +20,7 @@ export default function MainPage() {
                     [theme.getColorSchemeSelector("dark")]: {
                         backgroundColor: "#0F1214",
                     },
+                    overflow: "hidden", // Ensure no overflow
                 })}
             >
                 <Layout />

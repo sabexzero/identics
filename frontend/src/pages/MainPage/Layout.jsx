@@ -16,6 +16,7 @@ export default function Layout() {
                     fontSize: "clamp(1.875rem, 1.3636rem + 2.1818vw, 3rem)",
                     fontFamily: "Questrial, sans-serif",
                     letterSpacing: "20px",
+                    marginTop: { xs: "2rem", md: "0" }, // Add margin top for mobile
                 }}
             >
                 IDENTICS
@@ -24,7 +25,7 @@ export default function Layout() {
                 level="h1"
                 sx={{
                     fontWeight: "xl",
-                    fontSize: "clamp(1.5rem, 1rem + 2.1818vw, 2.7rem)",
+                    fontSize: { xs: "1.5rem", md: "clamp(1.5rem, 1rem + 2.1818vw, 2.7rem)" },
                     lineHeight: "1.2em",
                 }}
             >
@@ -33,7 +34,7 @@ export default function Layout() {
             </Typography>
             <Typography
                 textColor="text.secondary"
-                sx={{ fontSize: "lg", lineHeight: "lg" }}
+                sx={{ fontSize: { xs: "1rem", md: "lg" }, lineHeight: "lg" }}
             >
                 Точность, скорость и инновации - выбери антиплагиат нового
                 поколения!

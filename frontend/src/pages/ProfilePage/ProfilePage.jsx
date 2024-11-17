@@ -1,16 +1,18 @@
 import * as React from 'react';
-import { CssVarsProvider } from '@mui/joy/styles';
-import CssBaseline from '@mui/joy/CssBaseline';
+import { CssVarsProvider } from "@mui/joy/styles";
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
 import Typography from '@mui/joy/Typography';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import Directory from './components/Directory';
 import OrderTable from './components/OrderTable';
+import CssBaseline from "@mui/joy/CssBaseline";
+import framesxTheme from "../../components/theme/theme";
+
 
 export default function ProfilePage() {
     return (
-        <CssVarsProvider disableTransitionOnChange>
+        <CssVarsProvider disableTransitionOnChange theme={framesxTheme}>
             <CssBaseline />
             <Box sx={{ display: 'flex', minHeight: '100dvh', maxWidth: '94dvw', mx: 'auto' }}>
                 {/*<Header />*/}
@@ -34,7 +36,6 @@ export default function ProfilePage() {
                         gap: 1,
                     }}
                 >
-
                     <Box
                         sx={{
                             display: 'flex',
@@ -52,17 +53,21 @@ export default function ProfilePage() {
                                         fontWeight: 'xs',
                                         fontSize: 'clamp(1rem, 1rem + 2.1818vw, 2rem)',
                                         fontFamily: 'Questrial, sans-serif',
-                                        letterSpacing: '20px'}}>
+                                        letterSpacing: '20px',
+                                        mb: { xs: 2, sm: 0 },
+                                        pt: { xs: 2, sm: 0 } // Отступ сверху для логотипа на мобильной версии
+                                    }}>
                             IDENTICS
                         </Typography>
-
 
                         <Box sx={{
                             display: 'flex',
                             gap: 2,
                             justifyContent: 'flex-end',
-                        }}
-                        >
+                            flexDirection: { xs: 'row', sm: 'row' }, // Изменено на 'row' для мобильной версии
+                            alignItems: { xs: 'center', sm: 'center' },
+                            flexWrap: 'wrap',
+                        }}>
                             <Button
                                 color="none"
                                 size="sm"
@@ -80,6 +85,7 @@ export default function ProfilePage() {
                                     borderRadius: '10px',
                                     py: '4px',
                                     px: '4px',
+                                    mb: { xs: 1, sm: 0 },
                                 }}>
                                 &nbsp;Баланс: 3209₽ &nbsp;
                                 <Button
@@ -97,7 +103,6 @@ export default function ProfilePage() {
                                 Выйти
                             </Button>
                         </Box>
-
                     </Box>
 
                     <Box
@@ -112,10 +117,9 @@ export default function ProfilePage() {
                                 display: 'flex',
                                 flex: 1,
                                 flexDirection: { xs: 'column', md: 'row' },
-                                gap: 0,
+                                gap: 2,
                             }}
                         >
-
                             <Box
                                 sx={{
                                     flex: 0.3,

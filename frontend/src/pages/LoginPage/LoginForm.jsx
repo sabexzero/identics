@@ -74,10 +74,10 @@ export default function LoginForm() {
                             >
                                 <Link component={RouterLink} to="/" sx={{ display: "flex", alignItems: "center" }}>
                                     <ArrowBackIos fontSize="large" />
-                                    <Typography component="h1" level="h3" sx={{ ml: 1 }}>
-                                        Войти
-                                    </Typography>
                                 </Link>
+                                <Typography component="h1" level="h3" sx={{ ml: 1 }}>
+                                    Войти
+                                </Typography>
                             </Box>
                             <Box sx={{display: "flex", justifyContent: "start", flexDirection: "column"}}>
                                 <Box sx={{display: "flex", flexWrap: "wrap", alignItems: "center", gap: {xs:0, sm:1}}}>

@@ -17,6 +17,7 @@ const TwoSidedLayout = ({ children, reversed }) => {
                 justifyContent: "flex-start", // Align content to the top
                 py: 0,
                 gap: 4,
+                overflow: "hidden", // Hide both horizontal and vertical overflow
                 [theme.breakpoints.up(834)]: {
                     flexDirection: reversed ? "row-reverse" : "row",
                     gap: 3,
@@ -74,6 +75,7 @@ const TwoSidedLayout = ({ children, reversed }) => {
                     <img
                         src="https://images.unsplash.com/photo-1483791424735-e9ad0209eea2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80"
                         alt=""
+                        style={{ width: "100%", height: "auto", display: "block" }} // Ensure the image fits within the container
                     />
                 </MotionDiv>
             </AspectRatio>
