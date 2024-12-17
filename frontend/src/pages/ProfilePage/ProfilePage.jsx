@@ -9,14 +9,28 @@ import OrderTable from './components/OrderTable';
 import CssBaseline from "@mui/joy/CssBaseline";
 import framesxTheme from "../../components/theme/theme";
 
-
 export default function ProfilePage() {
     return (
         <CssVarsProvider disableTransitionOnChange theme={framesxTheme}>
             <CssBaseline />
-            <Box sx={{ display: 'flex', minHeight: '100dvh', maxWidth: '94dvw', mx: 'auto' }}>
-                {/*<Header />*/}
-                {/*<Sidebar />*/}
+            <Box
+                sx={(theme) => ({
+                    paddingX: "3%",
+                    display: "flex",
+                    minHeight: "100dvh",
+                    width: "100%",
+                    mx: "auto",
+                    overflow: "hidden",
+                    scrollSnapType: "y mandatory",
+                    "& > div": {
+                        scrollSnapAlign: "start",
+                    },
+                    backgroundColor: theme.vars.palette.background.default, // Установите фон по умолчанию
+                    [theme.getColorSchemeSelector("dark")]: {
+                        backgroundColor: "#0F1214",
+                    },
+                })}
+            >
                 <Box
                     component="main"
                     className="MainContent"
@@ -81,8 +95,8 @@ export default function ProfilePage() {
 
                             <Typography
                                 sx={{
-                                    border: 1,
-                                    borderRadius: '10px',
+                                    // border: 1,
+                                    // borderRadius: '10px',
                                     py: '4px',
                                     px: '4px',
                                     mb: { xs: 1, sm: 0 },
@@ -140,8 +154,6 @@ export default function ProfilePage() {
                             </Box>
                         </Box>
                     </Box>
-
-                    {/*<OrderList />*/}
                 </Box>
             </Box>
         </CssVarsProvider>
