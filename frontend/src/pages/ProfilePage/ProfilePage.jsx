@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { CssVarsProvider } from "@mui/joy/styles";
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
@@ -10,6 +11,41 @@ import CssBaseline from "@mui/joy/CssBaseline";
 import framesxTheme from "../../components/theme/theme";
 
 export default function ProfilePage() {
+    const [profileData, setProfileData] = useState(null);
+    const [error, setError] = useState(null);
+
+    // Получаем профиль пользователя, используя JWT токен
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            const token = localStorage.getItem("jwt"); // Получаем токен из localStorage
+
+            if (!token) {
+                setError("Токен не найден. Пожалуйста, войдите в систему.");
+                return;
+            }
+
+            try {
+                const response = await fetch("https://your-api-url.com/profile", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // Отправляем токен в заголовке
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Ошибка при загрузке данных профиля");
+                }
+
+                const data = await response.json();
+                setProfileData(data); // Сохраняем данные профиля
+            } catch (error) {
+                setError(error.message);
+            }
+        };
+
+        fetchProfileData(); // Загружаем данные профиля
+    }, []);
+
     return (
         <CssVarsProvider disableTransitionOnChange theme={framesxTheme}>
             <CssBaseline />
@@ -25,7 +61,7 @@ export default function ProfilePage() {
                     "& > div": {
                         scrollSnapAlign: "start",
                     },
-                    backgroundColor: theme.vars.palette.background.default, // Установите фон по умолчанию
+                    backgroundColor: theme.vars.palette.background.default,
                     [theme.getColorSchemeSelector("dark")]: {
                         backgroundColor: "#0F1214",
                     },
@@ -36,11 +72,7 @@ export default function ProfilePage() {
                     className="MainContent"
                     sx={{
                         px: { xs: 2, md: 6 },
-                        pt: {
-                            xs: 'calc(12px + var(--Header-height))',
-                            sm: 'calc(12px + var(--Header-height))',
-                            md: 3,
-                        },
+                        pt: { xs: 'calc(12px + var(--Header-height))', sm: 'calc(12px + var(--Header-height))', md: 3 },
                         pb: { xs: 2, sm: 2, md: 3 },
                         flex: 1,
                         display: 'flex',
@@ -69,7 +101,7 @@ export default function ProfilePage() {
                                         fontFamily: 'Questrial, sans-serif',
                                         letterSpacing: '20px',
                                         mb: { xs: 2, sm: 0 },
-                                        pt: { xs: 2, sm: 0 } // Отступ сверху для логотипа на мобильной версии
+                                        pt: { xs: 2, sm: 0 },
                                     }}>
                             IDENTICS
                         </Typography>
@@ -78,7 +110,7 @@ export default function ProfilePage() {
                             display: 'flex',
                             gap: 2,
                             justifyContent: 'flex-end',
-                            flexDirection: { xs: 'row', sm: 'row' }, // Изменено на 'row' для мобильной версии
+                            flexDirection: { xs: 'row', sm: 'row' },
                             alignItems: { xs: 'center', sm: 'center' },
                             flexWrap: 'wrap',
                         }}>
@@ -89,18 +121,14 @@ export default function ProfilePage() {
                                 История
                                 <AccessTimeIcon sx={{
                                     marginLeft: '0.5rem',
-                                }}>
-                                </AccessTimeIcon>
+                                }} />
                             </Button>
 
-                            <Typography
-                                sx={{
-                                    // border: 1,
-                                    // borderRadius: '10px',
-                                    py: '4px',
-                                    px: '4px',
-                                    mb: { xs: 1, sm: 0 },
-                                }}>
+                            <Typography sx={{
+                                py: '4px',
+                                px: '4px',
+                                mb: { xs: 1, sm: 0 },
+                            }}>
                                 &nbsp;Баланс: 3209₽ &nbsp;
                                 <Button
                                     color="primary"
@@ -113,6 +141,10 @@ export default function ProfilePage() {
                             <Button
                                 color="primary"
                                 size="sm"
+                                onClick={() => {
+                                    localStorage.removeItem("jwt"); // Удалить токен при выходе
+                                    window.location.reload(); // Перезагрузить страницу после выхода
+                                }}
                             >
                                 Выйти
                             </Button>
@@ -138,7 +170,7 @@ export default function ProfilePage() {
                                 sx={{
                                     flex: 0.3,
                                     minWidth: 0,
-                                    mt: { xs: 2, sm: 14 }
+                                    mt: { xs: 2, sm: 14 },
                                 }}
                             >
                                 <Directory />
@@ -147,9 +179,18 @@ export default function ProfilePage() {
                             <Box
                                 sx={{
                                     flex: 2,
-                                    minWidth: 0
+                                    minWidth: 0,
                                 }}
                             >
+                                {profileData ? (
+                                    <Box>
+                                        <Typography level="h2">Привет, {profileData.firstName}!</Typography>
+                                        <Typography level="body1">Город: {profileData.city}</Typography>
+                                        <Typography level="body1">Учебное заведение: {profileData.institution}</Typography>
+                                    </Box>
+                                ) : (
+                                    <Typography level="body1">Загрузка данных профиля...</Typography>
+                                )}
                                 <OrderTable />
                             </Box>
                         </Box>

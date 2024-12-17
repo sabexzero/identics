@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState } from "react";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Checkbox from "@mui/joy/Checkbox";
@@ -12,6 +13,40 @@ import { Link as RouterLink } from "react-router-dom";
 import { ArrowBackIos } from "@mui/icons-material";
 
 export default function LoginForm() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [persistent, setPersistent] = useState(false);
+    const [error, setError] = useState("");
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        const loginData = {
+            email,
+            password,
+            persistent,
+        };
+
+        try {
+            const response = await fetch("http://your-backend-url/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(loginData),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem("token", data.token); // Сохраняем токен
+                alert("Login successful");
+                // Перенаправление или другая логика после успешного входа
+            } else {
+                setError("Invalid email or password");
+            }
+        } catch (err) {
+            setError("Error connecting to the server");
+        }
+    };
+
     return (
         <Box
             sx={(theme) => ({
@@ -79,46 +114,46 @@ export default function LoginForm() {
                                     Войти
                                 </Typography>
                             </Box>
-                            <Box sx={{display: "flex", justifyContent: "start", flexDirection: "column"}}>
-                                <Box sx={{display: "flex", flexWrap: "wrap", alignItems: "center", gap: {xs:0, sm:1}}}>
-                                    <Typography level="body-sm" sx={{alignItems: "center", textAlign: "left"}}>
+                            <Box sx={{ display: "flex", justifyContent: "start", flexDirection: "column" }}>
+                                <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: { xs: 0, sm: 1 } }}>
+                                    <Typography level="body-sm" sx={{ alignItems: "center", textAlign: "left" }}>
                                         Еще нет аккаунта?{" "}
                                     </Typography>
-                                    <Link
-                                        component={RouterLink}
-                                        to="/register"
-                                        level="title-sm"
-                                    >
+                                    <Link component={RouterLink} to="/register" level="title-sm">
                                         Зарегистрироваться
                                     </Link>
                                 </Box>
                             </Box>
-
                         </Stack>
                     </Stack>
 
                     <Stack sx={{ gap: 3, mt: 2 }}>
-                        <form
-                            onSubmit={(event) => {
-                                event.preventDefault();
-                                const formElements =
-                                    event.currentTarget.elements;
-                                const data = {
-                                    email: formElements.email.value,
-                                    password: formElements.password.value,
-                                    persistent: formElements.persistent.checked,
-                                };
-                                alert(JSON.stringify(data, null, 2));
-                            }}
-                        >
+                        <form onSubmit={handleSubmit}>
                             <FormControl required sx={{ width: "100%" }}>
                                 <FormLabel>Email</FormLabel>
-                                <Input type="email" name="email" sx={{ width: "100%" }} />
+                                <Input
+                                    type="email"
+                                    name="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    sx={{ width: "100%" }}
+                                />
                             </FormControl>
                             <FormControl required sx={{ width: "100%" }}>
                                 <FormLabel>Password</FormLabel>
-                                <Input type="password" name="password" sx={{ width: "100%" }} />
+                                <Input
+                                    type="password"
+                                    name="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    sx={{ width: "100%" }}
+                                />
                             </FormControl>
+                            {error && (
+                                <Typography level="body2" color="danger" sx={{ mb: 2 }}>
+                                    {error}
+                                </Typography>
+                            )}
                             <Stack sx={{ gap: 3, mt: 2 }}>
                                 <Box
                                     sx={{
@@ -132,11 +167,10 @@ export default function LoginForm() {
                                         size="sm"
                                         label="Сохранить вход"
                                         name="persistent"
+                                        checked={persistent}
+                                        onChange={(e) => setPersistent(e.target.checked)}
                                     />
-                                    <Link
-                                        level="title-sm"
-                                        href="#replace-with-a-link"
-                                    >
+                                    <Link level="title-sm" href="#replace-with-a-link">
                                         Забыли пароль?
                                     </Link>
                                 </Box>

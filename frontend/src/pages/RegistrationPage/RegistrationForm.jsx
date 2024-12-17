@@ -37,6 +37,55 @@ export default function RegistrationForm() {
 
     const handleBack = () => setStep(1);
 
+    const handleRegister = async (event) => {
+        event.preventDefault();
+
+        // Проверяем, что пароли совпадают
+        if (formData.password !== formData.repeatPassword) {
+            alert("Пароли не совпадают!");
+            return;
+        }
+
+        // Отправляем данные на сервер
+        try {
+            const response = await fetch("https://your-api-url.com/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: formData.email,
+                    password: formData.password,
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    middleName: formData.middleName,
+                    city: formData.city,
+                    institution: formData.institution,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Ошибка регистрации");
+            }
+
+            // Получаем ответ от сервера (например, токен)
+            const result = await response.json();
+            const token = result.token; // Предполагаем, что сервер возвращает token
+
+            // Сохраняем токен в localStorage
+            localStorage.setItem("jwt", token);
+
+            // После регистрации можно перенаправить пользователя на другую страницу
+            alert("Регистрация успешна!");
+
+            // Можно перенаправить на страницу входа или домой
+            // navigate("/home"); // если используете React Router
+        } catch (error) {
+            console.error("Ошибка регистрации:", error);
+            alert("Ошибка при регистрации");
+        }
+    };
+
     return (
         <Box
             sx={(theme) => ({
@@ -68,7 +117,9 @@ export default function RegistrationForm() {
                     my: "auto",
                 }}
             >
-                <Typography level="body-sm" sx={{ mb: 2 }}><span style={{ color: "red" }}>*</span> Обязательные поля</Typography>
+                <Typography level="body-sm" sx={{ mb: 2 }}>
+                    <span style={{ color: "red" }}>*</span> Обязательные поля
+                </Typography>
                 <Box
                     component="main"
                     sx={{
@@ -132,12 +183,7 @@ export default function RegistrationForm() {
                     )}
 
                     {step === 2 && (
-                        <form
-                            onSubmit={(event) => {
-                                event.preventDefault();
-                                alert(JSON.stringify(formData, null, 2));
-                            }}
-                        >
+                        <form onSubmit={handleRegister}>
                             <FormControl required sx={{ width: "100%" }}>
                                 <FormLabel>Имя</FormLabel>
                                 <Input
