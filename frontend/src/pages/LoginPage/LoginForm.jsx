@@ -15,16 +15,21 @@ export default function LoginForm() {
     return (
         <Box
             sx={(theme) => ({
-                width: { xs: "100%" },
+                width: "100%",
                 transition: "width var(--Transition-duration)",
-                transitionDelay: "calc(var(--Transition-duration) + 0.1s)",
                 position: "relative",
                 zIndex: 1,
                 display: "flex",
-                justifyContent: "flex-end",
+                justifyContent: "center",
                 backdropFilter: "blur(12px)",
                 [theme.getColorSchemeSelector("dark")]: {
                     backgroundColor: "#0F1214",
+                },
+                padding: { xs: "16px", sm: "24px" },
+                minHeight: "100vh", // Ensure the container takes full height
+                overflow: "auto", // Allow scrolling if content overflows
+                [theme.breakpoints.down("sm")]: {
+                    overflow: "hidden", // Disable scrolling on small screens
                 },
             })}
         >
@@ -33,21 +38,20 @@ export default function LoginForm() {
                     display: "flex",
                     flexDirection: "column",
                     width: "100%",
-                    px: 2,
+                    maxWidth: 480,
+                    px: { xs: 2, sm: 4 },
+                    my: "auto", // Center the content vertically
                 }}
             >
                 <Box
                     component="main"
                     sx={{
-                        my: "auto",
-                        py: 2,
-                        pb: 5,
+                        py: { xs: 2, sm: 3 },
+                        pb: { xs: 4, sm: 5 },
                         display: "flex",
                         flexDirection: "column",
                         gap: 2,
-                        width: 400,
-                        maxWidth: "100%",
-                        mx: "auto",
+                        width: "100%",
                         borderRadius: "sm",
                         "& form": {
                             display: "flex",
@@ -59,36 +63,41 @@ export default function LoginForm() {
                         },
                     }}
                 >
-                    <Stack sx={{ gap: 4, mb: 2 }}>
+                    <Stack sx={{ gap: 3, mb: 2 }}>
                         <Stack sx={{ gap: 1 }}>
                             <Box
                                 sx={{
                                     display: "flex",
-                                    gap: "2",
                                     alignItems: "center",
+                                    gap: 0,
                                 }}
                             >
-                                <Link component={RouterLink} to="/">
-                                    <ArrowBackIos fontSize="xl" />
+                                <Link component={RouterLink} to="/" sx={{ display: "flex", alignItems: "center" }}>
+                                    <ArrowBackIos fontSize="large" />
                                 </Link>
-                                <Typography component="h1" level="h3">
+                                <Typography component="h1" level="h3" sx={{ ml: 1 }}>
                                     Войти
                                 </Typography>
                             </Box>
-                            <Typography level="body-sm">
-                                Еще нет аккаунта?{" "}
-                                <Link
-                                    component={RouterLink}
-                                    to="/register"
-                                    level="title-sm"
-                                >
-                                    Зарегистирируйтесь!
-                                </Link>
-                            </Typography>
+                            <Box sx={{display: "flex", justifyContent: "start", flexDirection: "column"}}>
+                                <Box sx={{display: "flex", flexWrap: "wrap", alignItems: "center", gap: {xs:0, sm:1}}}>
+                                    <Typography level="body-sm" sx={{alignItems: "center", textAlign: "left"}}>
+                                        Еще нет аккаунта?{" "}
+                                    </Typography>
+                                    <Link
+                                        component={RouterLink}
+                                        to="/register"
+                                        level="title-sm"
+                                    >
+                                        Зарегистрироваться
+                                    </Link>
+                                </Box>
+                            </Box>
+
                         </Stack>
                     </Stack>
 
-                    <Stack sx={{ gap: 4, mt: 2 }}>
+                    <Stack sx={{ gap: 3, mt: 2 }}>
                         <form
                             onSubmit={(event) => {
                                 event.preventDefault();
@@ -102,20 +111,21 @@ export default function LoginForm() {
                                 alert(JSON.stringify(data, null, 2));
                             }}
                         >
-                            <FormControl required>
+                            <FormControl required sx={{ width: "100%" }}>
                                 <FormLabel>Email</FormLabel>
-                                <Input type="email" name="email" />
+                                <Input type="email" name="email" sx={{ width: "100%" }} />
                             </FormControl>
-                            <FormControl required>
+                            <FormControl required sx={{ width: "100%" }}>
                                 <FormLabel>Password</FormLabel>
-                                <Input type="password" name="password" />
+                                <Input type="password" name="password" sx={{ width: "100%" }} />
                             </FormControl>
-                            <Stack sx={{ gap: 4, mt: 2 }}>
+                            <Stack sx={{ gap: 3, mt: 2 }}>
                                 <Box
                                     sx={{
                                         display: "flex",
                                         justifyContent: "space-between",
                                         alignItems: "center",
+                                        flexDirection: { xs: "row", sm: "row" },
                                     }}
                                 >
                                     <Checkbox
@@ -137,7 +147,7 @@ export default function LoginForm() {
                         </form>
                     </Stack>
                 </Box>
-                <Box component="footer" sx={{ py: 3 }}>
+                <Box component="footer" sx={{ py: 2 }}>
                     <Typography level="body-xs" sx={{ textAlign: "center" }}>
                         © IDENTICS {new Date().getFullYear()}
                     </Typography>

@@ -7,12 +7,15 @@ import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
 const ColorSchemeToggle = () => {
     const { mode, setMode } = useColorScheme();
     const [mounted, setMounted] = React.useState(false);
+
     React.useEffect(() => {
         setMounted(true);
     }, []);
+
     if (!mounted) {
         return null;
     }
+
     return (
         <IconButton
             data-screenshot="toggle-mode"
@@ -30,7 +33,7 @@ const ColorSchemeToggle = () => {
                 position: "fixed",
                 zIndex: 999,
                 top: "1rem",
-                right: "2rem",
+                right: { xs: "1rem", sm: "2rem" }, // Adjust right position for mobile
                 borderRadius: "50%",
                 boxShadow: "sm",
             }}
