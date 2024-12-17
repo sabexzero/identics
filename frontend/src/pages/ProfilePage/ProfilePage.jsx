@@ -25,7 +25,7 @@ export default function ProfilePage() {
             }
 
             try {
-                const response = await fetch("https://your-api-url.com/profile", {
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_PROFILE_ENDPOINT}`, {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`, // Отправляем токен в заголовке

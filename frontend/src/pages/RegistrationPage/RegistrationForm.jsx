@@ -48,7 +48,7 @@ export default function RegistrationForm() {
 
         // Отправляем данные на сервер
         try {
-            const response = await fetch("https://your-api-url.com/register", {
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_REGISTER_ENDPOINT}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
