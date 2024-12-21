@@ -129,7 +129,7 @@ export default function ProfilePage() {
                                 px: '4px',
                                 mb: { xs: 1, sm: 0 },
                             }}>
-                                &nbsp;Баланс: 3209₽ &nbsp;
+                                &nbsp;Баланс: {profileData ? `${profileData.balance}₽` : "Загрузка..."} &nbsp;
                                 <Button
                                     color="primary"
                                     size="sm"

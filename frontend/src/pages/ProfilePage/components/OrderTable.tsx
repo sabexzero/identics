@@ -33,63 +33,6 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 
-const rows = [
-    {
-        id: 'ПРИб-211 Кукса Виталий',
-        date: 'Apr 30, 2024',
-        status: 'Отсутствует',
-        customer: '97',
-    },
-    {
-        id: 'ПРИб-211 Силка Геннадий ',
-        date: 'Feb 3, 2024',
-        status: 'Отсутствует',
-        customer: '99',
-    },
-    {
-        id: 'ПРИб-211 Яваев Рамиль',
-        date: 'Jan 10, 2024',
-        status: 'Проверить',
-        customer: '?',
-    },
-    {
-        id: 'ПРИб-211 Утешев Амаль',
-        date: 'Feb 13, 2024',
-        status: 'Проверить',
-        customer: '?',
-    },
-    {
-        id: 'ПРИб-221 Ахунзянов Даниил',
-        date: 'Mar 1, 2024',
-        status: 'Присутствует',
-        customer: '70',
-    },
-    {
-        id: 'ПРИб-211 Власенко Егор',
-        date: 'Jun 12, 2024',
-        status: 'Присутствует',
-        customer: '62',
-    },
-    {
-        id: '9"Б" Иванов Иван',
-        date: 'Jul 3, 2024',
-        status: 'Проверить',
-        customer: '?',
-    },
-    {
-        id: 'Аксенов Алексей',
-        date: 'Feb 3, 2024',
-        status: 'Отсутствует',
-        customer: '87',
-    },
-    {
-        id: 'Ничепоренко Олег',
-        date: 'Oct 3, 2024',
-        status: 'Отсутствует',
-        customer: '99',
-    },
-];
-
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
         return -1;
@@ -138,6 +81,21 @@ export default function OrderTable() {
     const [order, setOrder] = React.useState<Order>('desc');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
     const [open, setOpen] = React.useState(false);
+    const [rows, setRows] = React.useState([]);
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(process.env.REACT_APP_API_ENDPOINT_TABLE);
+                const data = await response.json();
+                setRows(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const renderFilters = () => (
         <React.Fragment>
@@ -344,7 +302,6 @@ export default function OrderTable() {
                     </tbody>
                 </Table>
 
-
             </Sheet>
             <Box
                 className="OrderTableContainer-mobile"
@@ -462,22 +419,22 @@ export default function OrderTable() {
                 ))}
 
                 <Box sx={{ flex: 1 }} />
-                    <Button
-                        size="sm"
-                        variant="outlined"
-                        color="neutral"
-                        sx={{
-                            minWidth: 0, // Убирает минимальную ширину
-                            width: '40px', // Ширина кнопки
-                            height: '40px', // Высота кнопки равна ширине
-                            padding: 0, // Убирает внутренние отступы
-                            display: 'flex', // Для центрирования иконки
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <KeyboardArrowRightIcon />
-                    </Button>
+                <Button
+                    size="sm"
+                    variant="outlined"
+                    color="neutral"
+                    sx={{
+                        minWidth: 0, // Убирает минимальную ширину
+                        width: '40px', // Ширина кнопки
+                        height: '40px', // Высота кнопки равна ширине
+                        padding: 0, // Убирает внутренние отступы
+                        display: 'flex', // Для центрирования иконки
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    <KeyboardArrowRightIcon />
+                </Button>
 
             </Box>
             <Box
@@ -497,24 +454,24 @@ export default function OrderTable() {
                     color="neutral"
                 >
                     <KeyboardArrowLeftIcon />
-                        </IconButton>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                            {['1', '2', '3', '…', '8', '9', '10'].map((page) => (
-                                <IconButton
-                                    key={page}
-                                    size="sm"
-                                    variant={Number(page) ? 'outlined' : 'plain'}
-                                    color="neutral"
-                                >
-                                    {page}
-                                </IconButton>
-                            ))}
-                        </Box>
+                </IconButton>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    {['1', '2', '3', '…', '8', '9', '10'].map((page) => (
                         <IconButton
+                            key={page}
                             size="sm"
-                            variant="outlined"
+                            variant={Number(page) ? 'outlined' : 'plain'}
                             color="neutral"
                         >
+                            {page}
+                        </IconButton>
+                    ))}
+                </Box>
+                <IconButton
+                    size="sm"
+                    variant="outlined"
+                    color="neutral"
+                >
                     <KeyboardArrowRightIcon />
                 </IconButton>
             </Box>
