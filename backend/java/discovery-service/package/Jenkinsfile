@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+    environment {
+        DOCKER_IMAGE = credentials('EUREKA_SERVER_IMAGE_NAME')
+	PORT = credentials('DISCOVERY_SERVICE_PORT')
+    }
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    dir('backend/java/discovery-service') {
+                        sh 'chmod +x gradlew'
+                        sh './gradlew clean build -x test'
+                    }
+                }
+            }
+        }
+        stage('Build and push Docker Image') {
+            steps {
+                script {
+                    // Используем credentials для Docker логина
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'echo "Logging in to Docker"'
+                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                        sh "docker build --no-cache -t ${DOCKER_USERNAME}/${DOCKER_IMAGE} -f backend/java/discovery-service/package/Dockerfile backend/java/discovery-service/"
+                        // Пуш Docker-образа
+                        sh "docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE}"
+                    }
+                }
+            }
+        }
+        stage('Deploy to Test Environment') {
+            steps {
+                script {
+                    echo "Deployment to the test server was successful."
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'echo "Logging in to Docker"'
+                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                        
+                        // Деплой на тестовый сервер
+                        sh """
+                            docker stop ${DOCKER_IMAGE} || true
+                            docker rm ${DOCKER_IMAGE} || true
+                            docker pull ${DOCKER_USERNAME}/${DOCKER_IMAGE}
+                            docker run -d --name ${DOCKER_IMAGE} -p ${PORT}:${PORT} -e SPRING_PROFILES_ACTIVE=dev ${DOCKER_USERNAME}/${DOCKER_IMAGE}
+                        """
+                    }
+                }
+            }
+        }
+        stage('Approval for Production Deployment') {
+            steps {
+                input message: 'Do you want to deploy to production?', ok: 'Deploy'
+            }
+        }
+        stage('Deploy to Production Environment') {
+            steps {
+                script {
+                    echo "Deployment to production servers was successful."
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+spring:
+  opentelemetry:
+    traces:
+      exporter:
+        otlp:
+          endpoint: http://{$OPENTELEMETRY_PROD_IP}:{$OPENTELEMETRY_PROD_PORT}
+      sampler:
+        probability: 1.0
+  metrics:
+    export:
+      otlp:
+        enabled: true
+        endpoint: http://{$OPENTELEMETRY_PROD_IP}:{$OPENTELEMETRY_PROD_PORT}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    prometheus:
+      enabled: true

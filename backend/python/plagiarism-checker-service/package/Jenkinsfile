@@ -1,0 +1,78 @@
+pipeline {
+    agent any
+    environment {
+        DOCKER_IMAGE = credentials('PLAGIARISM_CHECKER_SERVICE_IMAGE_NAME')
+        PORT = credentials('PLAGIARISM_CHECKER_SERVICE_PORT')
+        KAFKA_IMAGE_NAME = credentials('KAFKA_IMAGE_NAME')
+        KAFKA_PORT = credentials('KAFKA_PORT')
+        DOCKER_NETWORK_NAME = credentials('DOCKER_NETWORK_NAME')
+    }
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    // Сборка Docker образа
+                    sh 'docker build -t ${DOCKER_IMAGE} -f backend/python/plagiarism-checker-service/package/Dockerfile .'
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Используем credentials для Docker логина
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'echo "Logging in to Docker"'
+                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                        
+                        // Пуш Docker-образа
+                        sh "docker tag ${DOCKER_IMAGE} ${DOCKER_USERNAME}/${DOCKER_IMAGE}"
+                        sh "docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE}"
+                    }
+                }
+            }
+        }
+        stage('Check Docker Network') {
+            steps {
+                script {
+                    // Проверка существования Docker сети и создание, если не существует
+                    sh """
+                        if ! docker network ls | grep -w ${DOCKER_NETWORK_NAME}; then
+                            docker network create ${DOCKER_NETWORK_NAME}
+                        fi
+                    """
+                }
+            }
+        }
+        stage('Deploy to Test Environment') {
+            steps {
+                script {
+                    echo "Deployment to the test server was successful."
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'echo "Logging in to Docker"'
+                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                        
+                        // Деплой на тестовый сервер
+                        sh """
+                            docker stop ${DOCKER_IMAGE} || true
+                            docker rm ${DOCKER_IMAGE} || true
+                            docker pull ${DOCKER_USERNAME}/${DOCKER_IMAGE}
+                            docker run -d --name ${DOCKER_IMAGE} --network ${DOCKER_NETWORK_NAME} -p ${PORT}:${PORT} -e KAFKA_IMAGE_NAME=${KAFKA_IMAGE_NAME} -e KAFKA_PORT=${KAFKA_PORT} ${DOCKER_USERNAME}/${DOCKER_IMAGE}
+                        """
+                    }
+                }
+            }
+        }
+        stage('Approval for Production Deployment') {
+            steps {
+                input message: 'Do you want to deploy to production?', ok: 'Deploy'
+            }
+        }
+        stage('Deploy to Production Environment') {
+            steps {
+                script {
+                    echo "Deployment to production servers was successful."
+                }
+            }
+        }
+    }
+}

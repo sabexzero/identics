@@ -1,0 +1,3 @@
+spring:
+  kafka:
+    bootstrap-servers: http://{$KAFKA_PROD_IP}:{$KAFKA_PROD_PORT}

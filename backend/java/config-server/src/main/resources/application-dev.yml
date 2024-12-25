@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/sabexzero/shuttle-microservices
+          search-paths:
+            - configuration/dev/global
+            - configuration/dev/global/kafka
+            - configuration/dev/global/eureka
+            - configuration/dev/global/open-telemetry
+            - configuration/dev/microservices
+server:
+  port: 8000
