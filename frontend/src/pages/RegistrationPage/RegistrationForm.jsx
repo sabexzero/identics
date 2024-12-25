@@ -4,14 +4,88 @@ import Button from "@mui/joy/Button";
 import Checkbox from "@mui/joy/Checkbox";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
-import Link from "@mui/joy/Link";
 import Input from "@mui/joy/Input";
 import Typography from "@mui/joy/Typography";
 import Stack from "@mui/joy/Stack";
-import { Link as RouterLink } from "react-router-dom";
-import { ArrowBackIos } from "@mui/icons-material";
 
 export default function RegistrationForm() {
+    const [step, setStep] = React.useState(1); // Step state to manage forms
+    const [formData, setFormData] = React.useState({
+        email: "",
+        password: "",
+        repeatPassword: "",
+        persistent: false,
+        firstName: "",
+        lastName: "",
+        middleName: "",
+        city: "",
+        institution: "",
+    });
+
+    const handleChange = (event) => {
+        const { name, value, type, checked } = event.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: type === "checkbox" ? checked : value,
+        }));
+    };
+
+    const handleNext = (event) => {
+        event.preventDefault();
+        setStep(2);
+    };
+
+    const handleBack = () => setStep(1);
+
+    const handleRegister = async (event) => {
+        event.preventDefault();
+
+        // Проверяем, что пароли совпадают
+        if (formData.password !== formData.repeatPassword) {
+            alert("Пароли не совпадают!");
+            return;
+        }
+
+        // Отправляем данные на сервер
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_REGISTER_ENDPOINT}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: formData.email,
+                    password: formData.password,
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    middleName: formData.middleName,
+                    city: formData.city,
+                    institution: formData.institution,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Ошибка регистрации");
+            }
+
+            // Получаем ответ от сервера (например, токен)
+            const result = await response.json();
+            const token = result.token; // Предполагаем, что сервер возвращает token
+
+            // Сохраняем токен в localStorage
+            localStorage.setItem("jwt", token);
+
+            // После регистрации можно перенаправить пользователя на другую страницу
+            alert("Регистрация успешна!");
+
+            // Можно перенаправить на страницу входа или домой
+            // navigate("/home"); // если используете React Router
+        } catch (error) {
+            console.error("Ошибка регистрации:", error);
+            alert("Ошибка при регистрации");
+        }
+    };
+
     return (
         <Box
             sx={(theme) => ({
@@ -26,10 +100,10 @@ export default function RegistrationForm() {
                     backgroundColor: "#0F1214",
                 },
                 padding: { xs: "16px", sm: "24px" },
-                minHeight: "100vh", // Ensure the container takes full height
-                overflow: "auto", // Allow scrolling if content overflows
+                minHeight: "100vh",
+                overflow: "auto",
                 [theme.breakpoints.down("sm")]: {
-                    overflow: "hidden", // Disable scrolling on small screens
+                    overflow: "hidden",
                 },
             })}
         >
@@ -40,9 +114,12 @@ export default function RegistrationForm() {
                     width: "100%",
                     maxWidth: 480,
                     px: { xs: 2, sm: 4 },
-                    my: "auto", // Center the content vertically
+                    my: "auto",
                 }}
             >
+                <Typography level="body-sm" sx={{ mb: 2 }}>
+                    <span style={{ color: "red" }}>*</span> Обязательные поля
+                </Typography>
                 <Box
                     component="main"
                     sx={{
@@ -60,82 +137,109 @@ export default function RegistrationForm() {
                         },
                     }}
                 >
-                    <Stack sx={{ gap: 3, mb: 2 }}>
-                        <Stack sx={{ gap: 1 }}>
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 0,
-                                }}
-                            >
-                                <Link component={RouterLink} to="/">
-                                    <ArrowBackIos fontSize="large" />
-                                </Link>
-                                <Typography component="h1" level="h3" sx={{ width: "100%" }}>
-                                    Зарегистрироваться
-                                </Typography>
-                            </Box>
-                            <Typography level="body-sm">
-                                У вас уже есть аккаунт?{" "}
-                                <Link
-                                    component={RouterLink}
-                                    to="/login"
-                                    level="title-sm"
-                                >
-                                    Войти
-                                </Link>
-                            </Typography>
-                        </Stack>
-                    </Stack>
-
-                    <Stack sx={{ gap: 3, mt: 2 }}>
-                        <form
-                            onSubmit={(event) => {
-                                event.preventDefault();
-                                const formElements =
-                                    event.currentTarget.elements;
-                                const data = {
-                                    email: formElements.email.value,
-                                    password: formElements.password.value,
-                                    persistent: formElements.persistent.checked,
-                                };
-                                alert(JSON.stringify(data, null, 2));
-                            }}
-                        >
+                    {step === 1 && (
+                        <form onSubmit={handleNext}>
                             <FormControl required sx={{ width: "100%" }}>
                                 <FormLabel>Email</FormLabel>
-                                <Input type="email" name="email" sx={{ width: "100%" }} />
+                                <Input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    sx={{ width: "100%" }}
+                                />
                             </FormControl>
                             <FormControl required sx={{ width: "100%" }}>
                                 <FormLabel>Password</FormLabel>
-                                <Input type="password" name="password" sx={{ width: "100%" }} />
+                                <Input
+                                    type="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    sx={{ width: "100%" }}
+                                />
                             </FormControl>
                             <FormControl required sx={{ width: "100%" }}>
                                 <FormLabel>Repeat password</FormLabel>
-                                <Input type="password" name="password" sx={{ width: "100%" }} />
+                                <Input
+                                    type="password"
+                                    name="repeatPassword"
+                                    value={formData.repeatPassword}
+                                    onChange={handleChange}
+                                    sx={{ width: "100%" }}
+                                />
                             </FormControl>
-                            <Stack sx={{ gap: 3, mt: 2 }}>
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        flexDirection: { xs: "column", sm: "row" },
-                                    }}
-                                >
-                                    <Checkbox
-                                        size="sm"
-                                        label="Сохранить вход"
-                                        name="persistent"
-                                    />
-                                </Box>
-                                <Button type="submit" fullWidth>
-                                    Зарегистрироваться
-                                </Button>
+                            <Checkbox
+                                size="sm"
+                                label="Сохранить вход"
+                                name="persistent"
+                                checked={formData.persistent}
+                                onChange={handleChange}
+                            />
+                            <Button type="submit" fullWidth>
+                                Далее
+                            </Button>
+                        </form>
+                    )}
+
+                    {step === 2 && (
+                        <form onSubmit={handleRegister}>
+                            <FormControl required sx={{ width: "100%" }}>
+                                <FormLabel>Имя</FormLabel>
+                                <Input
+                                    type="text"
+                                    name="firstName"
+                                    value={formData.firstName}
+                                    onChange={handleChange}
+                                    sx={{ width: "100%" }}
+                                />
+                            </FormControl>
+                            <FormControl required sx={{ width: "100%" }}>
+                                <FormLabel>Фамилия</FormLabel>
+                                <Input
+                                    type="text"
+                                    name="lastName"
+                                    value={formData.lastName}
+                                    onChange={handleChange}
+                                    sx={{ width: "100%" }}
+                                />
+                            </FormControl>
+                            <FormControl sx={{ width: "100%" }}>
+                                <FormLabel>Отчество (опционально)</FormLabel>
+                                <Input
+                                    type="text"
+                                    name="middleName"
+                                    value={formData.middleName}
+                                    onChange={handleChange}
+                                    sx={{ width: "100%" }}
+                                />
+                            </FormControl>
+                            <FormControl required sx={{ width: "100%" }}>
+                                <FormLabel>Город</FormLabel>
+                                <Input
+                                    type="text"
+                                    name="city"
+                                    value={formData.city}
+                                    onChange={handleChange}
+                                    sx={{ width: "100%" }}
+                                />
+                            </FormControl>
+                            <FormControl required sx={{ width: "100%" }}>
+                                <FormLabel>Образовательное учреждение</FormLabel>
+                                <Input
+                                    type="text"
+                                    name="institution"
+                                    value={formData.institution}
+                                    onChange={handleChange}
+                                    sx={{ width: "100%" }}
+                                />
+                            </FormControl>
+                            <Stack direction="row" justifyContent="space-between" sx={{ mt: 2 }}>
+                                <Button onClick={handleBack}>Назад</Button>
+                                <Button type="submit">Зарегистрироваться</Button>
                             </Stack>
                         </form>
-                    </Stack>
+                    )}
                 </Box>
                 <Box component="footer" sx={{ py: 2 }}>
                     <Typography level="body-xs" sx={{ textAlign: "center" }}>

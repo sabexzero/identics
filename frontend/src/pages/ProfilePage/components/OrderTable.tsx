@@ -33,69 +33,6 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 
-const rows = [
-    {
-        id: 'ПРИб-211 Кукса Виталий',
-        date: 'Apr 30, 2024',
-        status: 'Отсутствует',
-        customer: '97',
-    },
-    {
-        id: 'ПРИб-211 Силка Геннадий ',
-        date: 'Feb 3, 2024',
-        status: 'Отсутствует',
-        customer: '99',
-    },
-    {
-        id: 'ПРИб-211 Яваев Рамиль',
-        date: 'Jan 10, 2024',
-        status: 'Проверить',
-        customer: '?',
-    },
-    {
-        id: 'ПРИб-211 Утешев Амаль',
-        date: 'Feb 13, 2024',
-        status: 'Проверить',
-        customer: '?',
-    },
-    {
-        id: 'ПРИб-221 Ахунзянов Даниил',
-        date: 'Mar 1, 2024',
-        status: 'Присутствует',
-        customer: '70',
-    },
-    {
-        id: 'ПРИб-211 Власенко Егор',
-        date: 'Jun 12, 2024',
-        status: 'Присутствует',
-        customer: '62',
-    },
-    {
-        id: '9"Б" Иванов Иван',
-        date: 'Jul 3, 2024',
-        status: 'Проверить',
-        customer: '?',
-    },
-    {
-        id: 'Аксенов Алексей',
-        date: 'Feb 3, 2024',
-        status: 'Отсутствует',
-        customer: '87',
-    },
-    {
-        id: 'Иванов Иван',
-        date: 'Feb 24, 2024',
-        status: 'Присутствует',
-        customer: '52',
-    },
-    {
-        id: 'Ничепоренко Олег',
-        date: 'Oct 3, 2024',
-        status: 'Отсутствует',
-        customer: '99',
-    },
-];
-
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
         return -1;
@@ -130,9 +67,9 @@ function RowMenu() {
                 <MoreHorizRoundedIcon />
             </MenuButton>
             <Menu size="sm" sx={{ minWidth: 140 }}>
-                <MenuItem>Редактировать</MenuItem>
+                {/*<MenuItem>Редактировать</MenuItem>*/}
                 <MenuItem>Переименовать</MenuItem>
-                <MenuItem>Заменить</MenuItem>
+                {/*<MenuItem>Заменить</MenuItem>*/}
                 <Divider />
                 <MenuItem color="danger">Удалить</MenuItem>
             </Menu>
@@ -144,6 +81,21 @@ export default function OrderTable() {
     const [order, setOrder] = React.useState<Order>('desc');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
     const [open, setOpen] = React.useState(false);
+    const [rows, setRows] = React.useState([]);
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(process.env.REACT_APP_API_ENDPOINT_TABLE);
+                const data = await response.json();
+                setRows(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const renderFilters = () => (
         <React.Fragment>
@@ -237,15 +189,16 @@ export default function OrderTable() {
                 }}
             >
                 <FormControl sx={{ flex: 1 }} size="sm">
-                    <FormLabel>Search for order</FormLabel>
+                    <FormLabel>Поиск по названию</FormLabel>
                     <Input size="sm" placeholder="Поиск" startDecorator={<SearchIcon />} />
                 </FormControl>
                 {renderFilters()}
             </Box>
             <Sheet
                 className="OrderTableContainer"
-                variant="outlined"
+                // variant="outlined"
                 sx={{
+                    margin: '16px', // Добавляем отступы вручную
                     display: { xs: 'none', sm: 'initial' },
                     width: '100%',
                     borderRadius: 'sm',
@@ -259,6 +212,7 @@ export default function OrderTable() {
                     stickyHeader
                     hoverRow
                     sx={{
+                        textAlign: 'center',
                         '--TableCell-headBackground': 'var(--joy-palette-background-level1)',
                         '--Table-headerUnderlineThickness': '1px',
                         '--TableRow-hoverBackground': 'var(--joy-palette-background-level1)',
@@ -271,28 +225,20 @@ export default function OrderTable() {
                         <th style={{ width: 48, textAlign: 'center', padding: '12px 6px' }}>
                             <Checkbox
                                 size="sm"
-                                indeterminate={
-                                    selected.length > 0 && selected.length !== rows.length
-                                }
+                                indeterminate={selected.length > 0 && selected.length !== rows.length}
                                 checked={selected.length === rows.length}
                                 onChange={(event) => {
-                                    setSelected(
-                                        event.target.checked ? rows.map((row) => row.id) : [],
-                                    );
+                                    setSelected(event.target.checked ? rows.map((row) => row.id) : []);
                                 }}
-                                color={
-                                    selected.length > 0 || selected.length === rows.length
-                                        ? 'primary'
-                                        : undefined
-                                }
+                                color={selected.length > 0 || selected.length === rows.length ? 'primary' : undefined}
                                 sx={{ verticalAlign: 'text-bottom' }}
                             />
                         </th>
-                        <th style={{ width: 140, padding: '12px 6px' }}>Название документа</th>
-                        <th style={{ width: 140, padding: '12px 6px' }}>Дата загрузки</th>
-                        <th style={{ width: 140, padding: '12px 6px' }}>Содержание ИИ в тексте</th>
-                        <th style={{ width: 240, padding: '12px 6px' }}>Оригинальность</th>
-                        <th style={{ width: 140, padding: '12px 6px' }}>Отчет</th>
+                        <th style={{ width: 140, textAlign: 'center', padding: '12px 6px' }}>Название документа</th>
+                        <th style={{ width: 140, textAlign: 'center', padding: '12px 6px' }}>Дата загрузки</th>
+                        <th style={{ width: 140, textAlign: 'center', padding: '12px 6px' }}>Содержание ИИ в тексте</th>
+                        <th style={{ width: 240, textAlign: 'center', padding: '12px 6px' }}>Оригинальность</th>
+                        <th style={{ width: 140, textAlign: 'center', padding: '12px 6px' }}>Отчет</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -305,22 +251,20 @@ export default function OrderTable() {
                                     color={selected.includes(row.id) ? 'primary' : undefined}
                                     onChange={(event) => {
                                         setSelected((ids) =>
-                                            event.target.checked
-                                                ? ids.concat(row.id)
-                                                : ids.filter((itemId) => itemId !== row.id),
+                                            event.target.checked ? ids.concat(row.id) : ids.filter((itemId) => itemId !== row.id)
                                         );
                                     }}
                                     slotProps={{ checkbox: { sx: { textAlign: 'left' } } }}
                                     sx={{ verticalAlign: 'text-bottom' }}
                                 />
                             </td>
-                            <td>
+                            <td style={{ textAlign: 'center' }}>
                                 <Typography level="body-xs">{row.id}</Typography>
                             </td>
-                            <td>
+                            <td style={{ textAlign: 'center' }}>
                                 <Typography level="body-xs">{row.date}</Typography>
                             </td>
-                            <td>
+                            <td style={{ textAlign: 'center' }}>
                                 <Chip
                                     variant="soft"
                                     size="sm"
@@ -342,11 +286,11 @@ export default function OrderTable() {
                                     {row.status}
                                 </Chip>
                             </td>
-                            <td>
-                                <Typography level="body-xs">{row.customer}</Typography>
+                            <td style={{ textAlign: 'center' }}>
+                                <Typography level="body-xs">{row.customer}%</Typography>
                             </td>
-                            <td>
-                                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                            <td style={{ textAlign: 'center', position: 'relative' }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <Link level="body-xs" component="button">
                                         Скачать
                                     </Link>
@@ -357,6 +301,7 @@ export default function OrderTable() {
                     ))}
                     </tbody>
                 </Table>
+
             </Sheet>
             <Box
                 className="OrderTableContainer-mobile"
@@ -440,9 +385,17 @@ export default function OrderTable() {
                     size="sm"
                     variant="outlined"
                     color="neutral"
-                    startDecorator={<KeyboardArrowLeftIcon />}
+                    sx={{
+                        minWidth: 0, // Убирает минимальную ширину
+                        width: '40px', // Ширина кнопки
+                        height: '40px', // Высота кнопки равна ширине
+                        padding: 0, // Убирает внутренние отступы
+                        display: 'flex', // Для центрирования иконки
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
                 >
-                    Previous
+                    <KeyboardArrowLeftIcon />
                 </Button>
                 <Box sx={{ flex: 1 }} />
                 {['1', '2', '3', '…', '8', '9', '10'].map((page) => (
@@ -451,19 +404,38 @@ export default function OrderTable() {
                         size="sm"
                         variant={Number(page) ? 'outlined' : 'plain'}
                         color="neutral"
+                        sx={{
+                            width: '40px', // Ширина кнопки
+                            height: '40px', // Высота кнопки равна ширине
+                            display: 'flex', // Для центрирования содержимого
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            padding: 0, // Убирает внутренние отступы
+                            minWidth: 0, // Убирает минимальную ширину
+                        }}
                     >
                         {page}
                     </IconButton>
                 ))}
+
                 <Box sx={{ flex: 1 }} />
                 <Button
                     size="sm"
                     variant="outlined"
                     color="neutral"
-                    endDecorator={<KeyboardArrowRightIcon />}
+                    sx={{
+                        minWidth: 0, // Убирает минимальную ширину
+                        width: '40px', // Ширина кнопки
+                        height: '40px', // Высота кнопки равна ширине
+                        padding: 0, // Убирает внутренние отступы
+                        display: 'flex', // Для центрирования иконки
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
                 >
-                    Next
+                    <KeyboardArrowRightIcon />
                 </Button>
+
             </Box>
             <Box
                 className="Pagination-mobile"
@@ -482,24 +454,24 @@ export default function OrderTable() {
                     color="neutral"
                 >
                     <KeyboardArrowLeftIcon />
-                        </IconButton>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                            {['1', '2', '3', '…', '8', '9', '10'].map((page) => (
-                                <IconButton
-                                    key={page}
-                                    size="sm"
-                                    variant={Number(page) ? 'outlined' : 'plain'}
-                                    color="neutral"
-                                >
-                                    {page}
-                                </IconButton>
-                            ))}
-                        </Box>
+                </IconButton>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    {['1', '2', '3', '…', '8', '9', '10'].map((page) => (
                         <IconButton
+                            key={page}
                             size="sm"
-                            variant="outlined"
+                            variant={Number(page) ? 'outlined' : 'plain'}
                             color="neutral"
                         >
+                            {page}
+                        </IconButton>
+                    ))}
+                </Box>
+                <IconButton
+                    size="sm"
+                    variant="outlined"
+                    color="neutral"
+                >
                     <KeyboardArrowRightIcon />
                 </IconButton>
             </Box>
