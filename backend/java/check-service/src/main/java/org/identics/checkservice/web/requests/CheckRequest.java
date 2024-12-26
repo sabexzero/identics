@@ -10,7 +10,7 @@ import org.identics.checkservice.domain.check.plagiarism.PlagiarismCheckStatus;
 import org.identics.checkservice.domain.kafka.CheckRequestMessage;
 
 public record CheckRequest(
-        Long userId,
+        String userId,
         ContentType contentType,
         CheckContent content,
         Boolean isAiCheck,

@@ -23,10 +23,11 @@ public class Check {
     private String id;
 
     private String title;
-    private Long userId;
     private LocalDateTime dateTime;
     private ContentType contentType;
     private CheckContent content;
+    private String folderId;
+    private String userId;
 
     private PlagiarismCheckResult plagiarismCheckResult;
     private AiCheckResult aiCheckResult;

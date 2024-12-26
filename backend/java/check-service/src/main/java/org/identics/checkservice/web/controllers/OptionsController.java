@@ -1,32 +1,33 @@
 package org.identics.checkservice.web.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.identics.checkservice.service.check.CheckService;
-import org.identics.checkservice.web.requests.CheckRequest;
+import org.identics.checkservice.service.cities.CityService;
+import org.identics.checkservice.service.educ.EducationalEstablishmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Передает необходимую информацию о городах, вузах и тд
+ */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/checks")
-public class CheckController {
-    private final CheckService checkService;
+@RequestMapping("/options")
+public class OptionsController {
+    private final CityService cityService;
+    private final EducationalEstablishmentService educationalEstablishmentService;
 
-    @PostMapping
-    public ResponseEntity<?> check(
-        @RequestBody
-        CheckRequest request
+    @GetMapping("/cities")
+    public ResponseEntity<?> getCities(
+        @RequestParam
+        String prefix
     ) {
         try {
-            checkService.check(request);
             return ResponseEntity
                 .ok()
-                .build();
+                .body(cityService.getCitiesByFirstLetters(prefix));
         } catch (Exception e) {
             return ResponseEntity
                 .badRequest()
@@ -34,19 +35,15 @@ public class CheckController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<?> get(
+    @GetMapping("/educational")
+    public ResponseEntity<?> getEduc(
         @RequestParam
-        String userId,
-        @RequestParam
-        int page,
-        @RequestParam
-        int size
+        String sequence
     ) {
         try {
             return ResponseEntity
                 .ok()
-                .body(checkService.getAll(userId, page, size));
+                .body(cityService.getCitiesByFirstLetters(sequence));
         } catch (Exception e) {
             return ResponseEntity
                 .badRequest()
