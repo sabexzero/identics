@@ -1,0 +1,21 @@
+.folder {
+    margin-left: 10px;
+}
+
+.folder-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.folder-header span {
+    margin-right: 5px;
+}
+
+.folder-content {
+    margin-left: 20px;
+}
+
+.document {
+    margin-left: 15px;
+}

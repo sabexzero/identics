@@ -5,12 +5,14 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/sabexzero/shuttle-microservices
+          uri: https://github.com/sabexzero/identics
           search-paths:
-            - configuration/dev/global
-            - configuration/dev/global/kafka
-            - configuration/dev/global/eureka
-            - configuration/dev/global/open-telemetry
-            - configuration/dev/microservices
+            - backend/java/configuration/global/dev/kafka
+            - backend/java/configuration/global/dev/eureka
+            - backend/java/configuration/global/dev/open-telemetry
+            - backend/java/configuration/microservices/dev
+          default-label: dev
+          username: sabexzero
+          password: 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
 server:
   port: 8000
