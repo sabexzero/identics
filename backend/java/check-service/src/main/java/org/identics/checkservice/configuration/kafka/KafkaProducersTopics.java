@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 
 public class KafkaProducersTopics {
     @Bean
-    public NewTopic pilotRatingChangerTopic(){
-        return new NewTopic("pilot-rating-changer-topic", 10, (short) 1);
+    public NewTopic checkRequestTopic(){
+        return new NewTopic("check-request-topic", 10, (short) 1);
     }
 }

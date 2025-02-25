@@ -1,6 +1,8 @@
 package org.identics.checkservice.service.check.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.identics.checkservice.domain.check.Check;
 import org.identics.checkservice.domain.check.ContentType;
 import org.identics.checkservice.domain.check.plagiarism.PlagiarismCheckStatus;
@@ -9,6 +11,9 @@ import org.identics.checkservice.repository.CheckRepository;
 import org.identics.checkservice.service.check.CheckService;
 import org.identics.checkservice.service.kafka.KafkaPublisher;
 import org.identics.checkservice.web.requests.CheckRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +23,10 @@ import java.util.List;
 public class CheckServiceImpl implements CheckService {
     private final CheckRepository checkRepository;
     private final KafkaPublisher kafkaPublisher;
+    private final NewTopic checkRequestTopic;
 
     @Override
-    public void check(CheckRequest request) {
+    public void check(CheckRequest request) throws JsonProcessingException {
         Check createdCheck = checkRepository.save(request.toDomain());
         kafkaPublisher.publish(
                 request.toMessage(
@@ -32,7 +38,7 @@ public class CheckServiceImpl implements CheckService {
                                 ? request.content().getContent()
                                 : "file_content"//TODO: GET_FILE_CONTENT
                 ),
-                "topic"
+                checkRequestTopic.toString()
         );
     }
 
@@ -48,7 +54,9 @@ public class CheckServiceImpl implements CheckService {
     }
 
     @Override
-    public List<Check> getAll() {
-        return checkRepository.findAll();
+    // Метод для получения Check по userId с пагинацией
+    public Page<Check> getAll(String userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return checkRepository.findByUserId(userId, pageable);
     }
 }
