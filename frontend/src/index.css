@@ -1,9 +1,5 @@
-body {
-  margin: 0;
-}
-
-/* :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -15,6 +11,12 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
 }
 
 a {
@@ -30,7 +32,6 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
   min-height: 100vh;
 }
 
@@ -69,4 +70,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-} */
+}
