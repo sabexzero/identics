@@ -4,28 +4,33 @@ import {
     Route,
     useLocation,
 } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
+import AuthPage from "@/pages/auth/page.tsx";
+import DashboardPage from "@/pages/dashboard/page.tsx";
+import HistoryPage from "@/pages/history/page.tsx";
+import Layout from "@/components/layout";
 import { AnimatePresence } from "framer-motion";
-import MainPage from "./pages/MainPage";
-import LoginPage from "./pages/LoginPage";
-import RegistrationPage from "./pages/RegistrationPage";
-import Home from "./pages/Home";
 import { Provider } from "react-redux";
 import { store } from "./api/store.ts";
-import Header from "./components/Header";
+import "./index.css";
+import ReviewPage from "@/pages/review/page.tsx";
 
 const AnimatedRoutes = () => {
-    const location = useLocation(); // useLocation теперь внутри <Router>
+    const location = useLocation();
 
     return (
         <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
-                <Route path="/" element={<MainPage />} />
-                <Route path="/auth/login" element={<LoginPage />} />
-                <Route path="/auth/reg" element={<RegistrationPage />} />
-                <Route path="/home" element={<Header />}>
-                    <Route index element={<Home />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/dashboard" element={<Layout />}>
+                    <Route index element={<DashboardPage />} />
+                    <Route
+                        path="/dashboard/history"
+                        element={<HistoryPage />}
+                    />
+                    <Route
+                        path="/dashboard/review/:id"
+                        element={<ReviewPage />}
+                    />
                 </Route>
             </Routes>
         </AnimatePresence>
@@ -33,48 +38,14 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
-    const theme = createTheme({
-        breakpoints: {
-            values: {
-                xs: 0,
-                sm: 600,
-                md: 900,
-                lg: 1200,
-                xl: 1440,
-            },
-        },
-        components: {
-            MuiContainer: {
-                styleOverrides: {
-                    root: {
-                        padding: "0 40px!important",
-                    },
-                },
-                defaultProps: {
-                    maxWidth: "xl",
-                },
-            },
-            MuiTypography: {
-                styleOverrides: {
-                    root: {
-                        fontFamily: "'Inter', serif",
-                    },
-                },
-            },
-        },
-    });
-
     return (
-        <ThemeProvider theme={theme}>
-            <Provider store={store}>
-                <CssBaseline />
-                <Router>
-                    <AnimatePresence mode="wait">
-                        <AnimatedRoutes />
-                    </AnimatePresence>
-                </Router>
-            </Provider>
-        </ThemeProvider>
+        <Provider store={store}>
+            <Router>
+                <AnimatePresence mode="wait">
+                    <AnimatedRoutes />
+                </AnimatePresence>
+            </Router>
+        </Provider>
     );
 }
 
