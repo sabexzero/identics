@@ -14,8 +14,8 @@ export const contentApi = createApi({
             IGetPaginationContentResponse,
             IGetPaginationContent
         >({
-            query: ({ page, perPage }) => {
-                return `content/1?page=${page}&perPage=${perPage}`;
+            query: ({ userId, folderId, page, perPage }) => {
+                return `content/${userId}?page=${page}&perPage=${perPage}&folderId=${folderId}`;
             },
         }),
     }),

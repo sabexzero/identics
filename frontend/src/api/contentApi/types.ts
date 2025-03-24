@@ -1,6 +1,8 @@
 export interface IGetPaginationContent {
     page: number;
     perPage: number;
+    userId: number;
+    folderId: number | null;
 }
 
 export interface IGetPaginationContentResponse {

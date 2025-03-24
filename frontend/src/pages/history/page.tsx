@@ -30,7 +30,7 @@ export default function HistoryPage() {
                 </div>
             </div>
 
-            <HistoryTable searchQuery={searchQuery} />
+            <HistoryTable />
         </div>
     );
 }

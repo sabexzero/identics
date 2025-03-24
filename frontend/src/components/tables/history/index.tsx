@@ -17,121 +17,34 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, CheckCircle, Download, Eye } from "lucide-react";
+import { AlertCircle, CheckCircle, Download, Eye, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { useGetPaginationContentQuery } from "@/api/contentApi";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-interface HistoryTableProps {
-    searchQuery: string;
-}
-
-// Моковые данные для истории проверок
-const historyData = [
-    {
-        id: "doc-1",
-        date: "16.03.2025",
-        title: "Введение к научной работе",
-        aiContent: 5,
-        originality: 88,
-    },
-    {
-        id: "doc-2",
-        date: "15.03.2025",
-        title: "Обзор литературы",
-        aiContent: 15,
-        originality: 72,
-    },
-    {
-        id: "doc-3",
-        date: "14.03.2025",
-        title: "Методология исследования",
-        aiContent: 0,
-        originality: 95,
-    },
-    {
-        id: "doc-4",
-        date: "13.03.2025",
-        title: "Результаты эксперимента",
-        aiContent: 8,
-        originality: 90,
-    },
-    {
-        id: "doc-5",
-        date: "12.03.2025",
-        title: "Анализ данных",
-        aiContent: 12,
-        originality: 85,
-    },
-    {
-        id: "doc-6",
-        date: "11.03.2025",
-        title: "Заключение",
-        aiContent: 20,
-        originality: 75,
-    },
-    {
-        id: "doc-7",
-        date: "10.03.2025",
-        title: "Приложение А",
-        aiContent: 0,
-        originality: 100,
-    },
-    {
-        id: "doc-8",
-        date: "09.03.2025",
-        title: "Приложение Б",
-        aiContent: 3,
-        originality: 97,
-    },
-    {
-        id: "doc-9",
-        date: "08.03.2025",
-        title: "Библиография",
-        aiContent: 0,
-        originality: 100,
-    },
-    {
-        id: "doc-10",
-        date: "07.03.2025",
-        title: "Аннотация",
-        aiContent: 25,
-        originality: 70,
-    },
-    {
-        id: "doc-11",
-        date: "06.03.2025",
-        title: "Глава 1",
-        aiContent: 10,
-        originality: 82,
-    },
-    {
-        id: "doc-12",
-        date: "05.03.2025",
-        title: "Глава 2",
-        aiContent: 7,
-        originality: 88,
-    },
-];
-
-export function HistoryTable({ searchQuery }: HistoryTableProps) {
+export function HistoryTable() {
     const navigate = useNavigate();
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 8;
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [itemsPerPage] = useState<number>(5);
 
-    // Фильтрация данных по поисковому запросу
-    const filteredData = historyData.filter((item) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const { data } = useGetPaginationContentQuery({
+        userId: 1,
+        page: currentPage - 1,
+        perPage: itemsPerPage,
+        folderId: 1,
+    });
 
-    // Пагинация
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedData = filteredData.slice(
-        startIndex,
-        startIndex + itemsPerPage
-    );
+    const totalPages = data?.totalPages || 0;
 
-    // Обработчики пагинации
     const handlePreviousPage = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
@@ -148,11 +61,9 @@ export function HistoryTable({ searchQuery }: HistoryTableProps) {
         setCurrentPage(page);
     };
 
-    // Генерация элементов пагинации
     const renderPaginationItems = () => {
         const items = [];
 
-        // Всегда показываем первую страницу
         items.push(
             <PaginationItem key="page-1">
                 <PaginationLink
@@ -164,7 +75,6 @@ export function HistoryTable({ searchQuery }: HistoryTableProps) {
             </PaginationItem>
         );
 
-        // Если текущая страница > 3, показываем многоточие после первой страницы
         if (currentPage > 3) {
             items.push(
                 <PaginationItem key="ellipsis-1">
@@ -173,7 +83,6 @@ export function HistoryTable({ searchQuery }: HistoryTableProps) {
             );
         }
 
-        // Показываем страницы вокруг текущей
         for (
             let i = Math.max(2, currentPage - 1);
             i <= Math.min(totalPages - 1, currentPage + 1);
@@ -193,7 +102,6 @@ export function HistoryTable({ searchQuery }: HistoryTableProps) {
             );
         }
 
-        // Если текущая страница < totalPages - 2, показываем многоточие перед последней страницей
         if (currentPage < totalPages - 2) {
             items.push(
                 <PaginationItem key="ellipsis-2">
@@ -202,7 +110,6 @@ export function HistoryTable({ searchQuery }: HistoryTableProps) {
             );
         }
 
-        // Всегда показываем последнюю страницу, если страниц больше 1
         if (totalPages > 1) {
             items.push(
                 <PaginationItem key={`page-${totalPages}`}>
@@ -241,8 +148,8 @@ export function HistoryTable({ searchQuery }: HistoryTableProps) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {paginatedData.length > 0 ? (
-                            paginatedData.map((item) => (
+                        {data && data.content?.length > 0 ? (
+                            data.content.map((item) => (
                                 <TableRow
                                     key={item.id}
                                     className="cursor-pointer hover:bg-muted/50"
@@ -251,38 +158,60 @@ export function HistoryTable({ searchQuery }: HistoryTableProps) {
                                     }
                                 >
                                     <TableCell className="font-medium">
-                                        {item.date}
+                                        {item.dateTime}
                                     </TableCell>
-                                    <TableCell>{item.title}</TableCell>
+                                    <TableCell className="flex flex-col">
+                                        <div className="flex gap-2">
+                                            {/*<Badge*/}
+                                            {/*    variant="default"*/}
+                                            {/*    className="bg-green-800"*/}
+                                            {/*>*/}
+                                            {/*    ПРИб-221*/}
+                                            {/*</Badge>*/}
+                                            <Badge
+                                                variant="secondary"
+                                                className="border-dashed px-1"
+                                            >
+                                                <Plus />
+                                                Добавить тег
+                                            </Badge>
+                                        </div>
+                                        {item.title}
+                                    </TableCell>
                                     <TableCell className="text-center">
                                         <div className="flex items-center justify-center">
-                                            {item.aiContent > 10 ? (
+                                            {item.aiCheckLevel &&
+                                            item.aiCheckLevel > 10 ? (
                                                 <AlertCircle className="mr-1 h-4 w-4 text-amber-500" />
                                             ) : (
                                                 <CheckCircle className="mr-1 h-4 w-4 text-primary" />
                                             )}
-                                            <span>{item.aiContent}%</span>
+                                            <span>{item.aiCheckLevel}%</span>
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-center">
-                                        <Badge
-                                            variant={
-                                                item.originality >= 90
-                                                    ? "default"
-                                                    : item.originality >= 80
-                                                      ? "secondary"
-                                                      : "outline"
-                                            }
-                                            className={
-                                                item.originality >= 90
-                                                    ? "bg-green-100 text-green-800 hover:bg-green-100 hover:text-green-800"
-                                                    : item.originality >= 80
-                                                      ? "bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-800"
-                                                      : "bg-amber-100 text-amber-800 hover:bg-amber-100 hover:text-amber-800"
-                                            }
-                                        >
-                                            {item.originality}%
-                                        </Badge>
+                                        {item.plagiarismLevel && (
+                                            <Badge
+                                                variant={
+                                                    item.plagiarismLevel >= 90
+                                                        ? "default"
+                                                        : item.plagiarismLevel >=
+                                                            80
+                                                          ? "secondary"
+                                                          : "outline"
+                                                }
+                                                className={
+                                                    item.plagiarismLevel >= 90
+                                                        ? "bg-green-100 text-green-800 hover:bg-green-100 hover:text-green-800"
+                                                        : item.plagiarismLevel >=
+                                                            80
+                                                          ? "bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-800"
+                                                          : "bg-amber-100 text-amber-800 hover:bg-amber-100 hover:text-amber-800"
+                                                }
+                                            >
+                                                {item.plagiarismLevel}%
+                                            </Badge>
+                                        )}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
@@ -306,7 +235,6 @@ export function HistoryTable({ searchQuery }: HistoryTableProps) {
                                                 size="icon"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    // Здесь будет логика скачивания отчета
                                                     console.log(
                                                         `Скачивание отчета ${item.id}`
                                                     );
@@ -318,6 +246,29 @@ export function HistoryTable({ searchQuery }: HistoryTableProps) {
                                                 </span>
                                             </Button>
                                         </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost">
+                                                    ...
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className="w-40">
+                                                <DropdownMenuLabel>
+                                                    Действия
+                                                </DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuGroup>
+                                                    <DropdownMenuItem>
+                                                        Переименовать
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem>
+                                                        Удалить
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuGroup>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </TableCell>
                                 </TableRow>
                             ))
@@ -335,35 +286,33 @@ export function HistoryTable({ searchQuery }: HistoryTableProps) {
                 </Table>
             </div>
 
-            {filteredData.length > itemsPerPage && (
-                <Pagination>
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={handlePreviousPage}
-                                className={
-                                    currentPage === 1
-                                        ? "pointer-events-none opacity-50"
-                                        : ""
-                                }
-                            />
-                        </PaginationItem>
+            <Pagination>
+                <PaginationContent>
+                    <PaginationItem>
+                        <PaginationPrevious
+                            onClick={handlePreviousPage}
+                            className={
+                                currentPage === 1
+                                    ? "pointer-events-none opacity-50"
+                                    : ""
+                            }
+                        />
+                    </PaginationItem>
 
-                        {renderPaginationItems()}
+                    {renderPaginationItems()}
 
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={handleNextPage}
-                                className={
-                                    currentPage === totalPages
-                                        ? "pointer-events-none opacity-50"
-                                        : ""
-                                }
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            )}
+                    <PaginationItem>
+                        <PaginationNext
+                            onClick={handleNextPage}
+                            className={
+                                currentPage === totalPages
+                                    ? "pointer-events-none opacity-50"
+                                    : ""
+                            }
+                        />
+                    </PaginationItem>
+                </PaginationContent>
+            </Pagination>
         </div>
     );
 }
