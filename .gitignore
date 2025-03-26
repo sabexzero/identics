@@ -10,6 +10,7 @@ out/
 # Игнорировать файлы окружения
 .env
 *.env
+/frontend/package-lock.json
 
 # Игнорировать IDE файлы
 *.iml
