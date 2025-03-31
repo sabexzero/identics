@@ -13,6 +13,7 @@ import { Provider } from "react-redux";
 import { store } from "./api/store.ts";
 import "./index.css";
 import ReviewPage from "@/pages/review/page.tsx";
+import Settings from "@/pages/settings/page.tsx";
 
 const AnimatedRoutes = () => {
     const location = useLocation();
@@ -31,6 +32,7 @@ const AnimatedRoutes = () => {
                         path="/dashboard/review/:id"
                         element={<ReviewPage />}
                     />
+                    <Route path="/dashboard/settings" element={<Settings />} />
                 </Route>
             </Routes>
         </AnimatePresence>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
     Table,
     TableBody,
@@ -30,11 +30,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import EditTagsDialog from "@/components/dialogs/history";
 
 export function HistoryTable() {
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage] = useState<number>(5);
+
+    const [editTagsDialogOpen, setEditTagsDialogOpen] = useState(false);
 
     const { data } = useGetPaginationContentQuery({
         userId: 1,
@@ -88,7 +91,7 @@ export function HistoryTable() {
             i <= Math.min(totalPages - 1, currentPage + 1);
             i++
         ) {
-            if (i === 1 || i === totalPages) continue; // Пропускаем первую и последнюю страницы, они добавляются отдельно
+            if (i === 1 || i === totalPages) continue;
 
             items.push(
                 <PaginationItem key={`page-${i}`}>
@@ -126,9 +129,20 @@ export function HistoryTable() {
         return items;
     };
 
+    const handleEditTags = (
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
+        e.stopPropagation();
+        setEditTagsDialogOpen(true);
+    };
+
     return (
         <div className="space-y-4">
             <div className="rounded-md border">
+                <EditTagsDialog
+                    open={editTagsDialogOpen}
+                    onOpenChange={() => setEditTagsDialogOpen(false)}
+                />
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -152,10 +166,7 @@ export function HistoryTable() {
                             data.content.map((item) => (
                                 <TableRow
                                     key={item.id}
-                                    className="cursor-pointer hover:bg-muted/50"
-                                    onClick={() =>
-                                        navigate(`/dashboard/review/${item.id}`)
-                                    }
+                                    className="hover:bg-muted/50"
                                 >
                                     <TableCell className="font-medium">
                                         {item.dateTime}
@@ -170,7 +181,8 @@ export function HistoryTable() {
                                             {/*</Badge>*/}
                                             <Badge
                                                 variant="secondary"
-                                                className="border-dashed px-1"
+                                                className="cursor-pointer border-dashed px-1"
+                                                onClick={handleEditTags}
                                             >
                                                 <Plus />
                                                 Добавить тег
