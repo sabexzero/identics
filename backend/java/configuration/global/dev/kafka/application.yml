@@ -1,3 +1,0 @@
-spring:
-  kafka:
-    bootstrap-servers: ${KAFKA_TEST_IP}:${KAFKA_TEST_PORT}

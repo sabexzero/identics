@@ -8,41 +8,49 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/checks")
 @RequiredArgsConstructor
+@RequestMapping("/checks")
 public class CheckController {
     private final CheckService checkService;
 
     @PostMapping
     public ResponseEntity<?> check(
-            @RequestBody
-            CheckRequest request
+        @RequestBody
+        CheckRequest request
     ) {
         try {
             checkService.check(request);
             return ResponseEntity
-                    .ok()
-                    .build();
+                .ok()
+                .build();
         } catch (Exception e) {
             return ResponseEntity
-                    .badRequest()
-                    .body(e.getLocalizedMessage());
+                .badRequest()
+                .body(e.getLocalizedMessage());
         }
     }
 
     @GetMapping
-    public ResponseEntity<?> get() {
+    public ResponseEntity<?> get(
+        @RequestParam
+        String userId,
+        @RequestParam
+        int page,
+        @RequestParam
+        int size
+    ) {
         try {
             return ResponseEntity
-                    .ok()
-                    .body(checkService.getAll());
+                .ok()
+                .body(checkService.getAll(userId, page, size));
         } catch (Exception e) {
             return ResponseEntity
-                    .badRequest()
-                    .body(e.getLocalizedMessage());
+                .badRequest()
+                .body(e.getLocalizedMessage());
         }
     }
 }

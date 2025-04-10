@@ -1,8 +1,46 @@
 spring:
-  config:
-    import: 'optional:configserver:'
+  #  config:
+  #    import: 'optional:configserver:' # При переходе на микросервисы
   application:
     name: check-service
-  cloud:
-    config:
-      uri: http://localhost:8000
+  #  cloud:
+  #    config:
+  #      uri: http://localhost:8000 # При переходе на микросервисы
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/check-service-db
+      database: check-service-db
+  jpa:
+    database-platform: org.hibernate.ogm.datastore.mongodb.MongoDBDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: check-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+server:
+  port: 8081
+
+keycloak-initializer:
+  initializeOnStartup: false
+  masterRealm: master
+  applicationRealm: identics-realm
+  admin-client-id: admin-client-id
+  client-id: identics-client
+  username: identics_keycloak
+  password: ee98jXEbEFNDU6o0a3j49f
+  client-secret: Crc6QL2gnI1KBDSgt9s8d7c3ZuWtXMxj
+  realm: identics-realm
+  client-url: localhost:8080/realms/identics-realm/protocol/openid-connect/
+  admin-url: localhost:8080/auth

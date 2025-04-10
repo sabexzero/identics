@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KafkaConsumersTopics {
     @Bean
-    public NewTopic userRatingChangerTopic(){
-        return new NewTopic("user-rating-changer-topic", 10, (short) 1);
+    public NewTopic checkCompleteTopic() {
+        return new NewTopic("check-complete-topic", 10, (short) 1);
     }
 }

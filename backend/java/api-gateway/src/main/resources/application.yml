@@ -4,14 +4,22 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: user-feedback-service-route
+        - id: user-service-route
           uri: http://localhost:8085
           predicates:
-            - Host=shuttle.user-feedback.api
-        - id: pilot-feedback-service-route
+            - Path=/user-service/*
+        - id: check-service-route
           uri: http://localhost:8086
           predicates:
-            - Host=shuttle.pilot-feedback.api
+            - Path=/check-service/*
+        - id: payment-service-route
+          uri: http://localhost:8086
+          predicates:
+            - Path=/payment-service/*
+        - id: payment-service-route
+          uri: http://localhost:8086
+          predicates:
+            - Path=/helper-service/*
 server:
   port: 9000
   forward-headers-strategy: framework

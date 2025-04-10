@@ -2,7 +2,7 @@ package org.example.feedbackservice.validation.annotations;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import org.example.feedbackservice.validation.UserExistsValidator;
+import org.example.feedbackservice.validation.annotationsValidators.UserExistsValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
