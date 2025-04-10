@@ -1,7 +1,8 @@
 name: Frontend Lighthouse CI
 on:
   push:
-    branches: "**",
+    branches:
+      - '**'
     paths:
       - 'frontend/**'
       - '.github/workflows/frontend-lighthouse.yml'
@@ -9,7 +10,7 @@ on:
   pull_request:
     paths:
       - 'frontend/**'
-
+  
 jobs:
   lighthouse-audit:
     runs-on: ubuntu-latest
@@ -46,8 +47,6 @@ jobs:
         run: |
           npm install -g @lhci/cli
           lhci autorun --config=./lighthouserc.json
-        env:
-          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}  # Если используете сервер для хранения отчетов
 
       - name: Upload Lighthouse report
         if: always()
