@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /tmp/
+Disallow: /admin/
+Disallow: /api/
+
+Disallow: /*.json
+Disallow: /*.js.map
+

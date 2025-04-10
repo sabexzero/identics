@@ -7,7 +7,15 @@
       "url": [
         "http://localhost:4173/dashboard"
       ],
-      "numberOfRuns": 3
+      "numberOfRuns": 3,
+      "settings": {
+        "throttlingMethod": "devtools",
+        "throttling": {
+          "rttMs": 40,
+          "throughputKbps": 10240,
+          "cpuSlowdownMultiplier": 1
+        }
+      }
     },
     "assert": {
       "assertions": {
