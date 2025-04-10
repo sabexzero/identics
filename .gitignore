@@ -6,6 +6,7 @@ out/
 /.gradle/
 /.gradle/
 /mvn/
+/frontend/.lighthouseci
 
 # Игнорировать файлы окружения
 .env

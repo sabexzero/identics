@@ -1,0 +1,57 @@
+name: Frontend Lighthouse CI
+on:
+  push:
+    branches: "**",
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-lighthouse.yml'
+
+  pull_request:
+    paths:
+      - 'frontend/**'
+
+jobs:
+  lighthouse-audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: frontend/node_modules
+          key: frontend-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Run Lighthouse audit
+        run: |
+          npm install -g @lhci/cli
+          lhci autorun --config=./lighthouserc.json
+        env:
+          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}  # Если используете сервер для хранения отчетов
+
+      - name: Upload Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: lighthouse-report
+          path: frontend/.lighthouseci/
