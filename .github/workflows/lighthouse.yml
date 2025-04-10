@@ -53,7 +53,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-report
-          path: |
-            frontend/.lighthouseci/*.json
-            frontend/.lighthouseci/*.html
+          path: frontend/reports
           retention-days: 7

@@ -1,7 +1,7 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "npm run build && npm run preview",
+      "startServerCommand": "npm run preview",
       "startServerReadyPattern": "Local:|Network: ",
       "startServerReadyTimeout": 60000,
       "url": [
@@ -20,7 +20,7 @@
     },
     "upload": {
       "target": "filesystem",
-      "outputDir": "./.lighthouseci"
+      "outputDir": "./reports"
     }
   }
 }
