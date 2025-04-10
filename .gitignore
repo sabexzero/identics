@@ -6,11 +6,11 @@ out/
 /.gradle/
 /.gradle/
 /mvn/
-/frontend/.lighthouseci
+/frontend/reports
 
 # Игнорировать файлы окружения
 .env
-*.env
+*.env   
 /frontend/package-lock.json
 
 # Игнорировать IDE файлы
