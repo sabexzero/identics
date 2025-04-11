@@ -19,4 +19,7 @@ public class CreateTagRequest {
     
     @NotNull(message = "ID пользователя обязателен")
     private Long userId;
+
+    @NotBlank(message = "HEX-строка цвета тега не может быть пустой")
+    private String hexString;
 } 

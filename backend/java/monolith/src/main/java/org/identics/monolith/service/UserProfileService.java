@@ -5,6 +5,7 @@ import org.identics.monolith.domain.user.User;
 import org.identics.monolith.dto.UserProfileDTO;
 import org.identics.monolith.repository.UserRepository;
 import org.identics.monolith.web.requests.UpdateUserProfileRequest;
+import org.identics.monolith.web.advice.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,14 +15,15 @@ public class UserProfileService {
     private final UserRepository userRepository;
     
     public UserProfileDTO getUserProfile(Long userId) {
-        return userRepository.findById(userId)
-                .map(this::mapToDto)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+        
+        return mapToDto(user);
     }
     
     public UserProfileDTO updateUserProfile(Long userId, UpdateUserProfileRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
         
         user.setName(request.getName());
         user.setSurname(request.getSurname());
@@ -35,7 +37,7 @@ public class UserProfileService {
     @Transactional
     public void addChecksToUser(Long userId, Integer checksCount) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
         
         Integer currentChecks = user.getChecksAvailable() != null ? user.getChecksAvailable() : 0;
         user.setChecksAvailable(currentChecks + checksCount);
@@ -46,7 +48,7 @@ public class UserProfileService {
     @Transactional
     public void useCheck(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
         
         if (user.getChecksAvailable() == null || user.getChecksAvailable() <= 0) {
             throw new IllegalStateException("User has no available checks");

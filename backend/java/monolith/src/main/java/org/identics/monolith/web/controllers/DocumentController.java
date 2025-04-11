@@ -12,26 +12,28 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.identics.monolith.domain.check.Check;
 import org.identics.monolith.domain.check.ContentType;
 import org.identics.monolith.dto.CheckCompleteMessage;
-import org.identics.monolith.service.DocumentService;
-import org.identics.monolith.service.TransactionService;
-import org.identics.monolith.service.UserProfileService;
-import org.identics.monolith.service.check.CheckService;
-import org.identics.monolith.service.content.CheckContentService;
+import org.identics.monolith.service.document.DocumentService;
 import org.identics.monolith.service.facade.CheckFacade;
 import org.identics.monolith.web.dto.ErrorResponse;
-import org.identics.monolith.web.requests.CheckRequest;
 import org.identics.monolith.web.requests.UpdateDocumentRequest;
 import org.identics.monolith.web.requests.UploadContentRequest;
 import org.identics.monolith.web.responses.DocumentWithTagsResponse;
+import org.identics.monolith.web.responses.GetDocumentByIdResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -45,16 +47,13 @@ import java.util.List;
 @Validated
 public class DocumentController {
     private final DocumentService documentService;
-    private final CheckService checkService;
-    private final UserProfileService userProfileService;
-    private final TransactionService transactionService;
     private final CheckFacade checkFacade;
     
     // ---------- Методы для работы с документами ----------
     
     @Operation(
         summary = "Получить список документов",
-        description = "Возвращает постраничный список документов пользователя с возможностью фильтрации по папке и тегам"
+        description = "Возвращает постраничный список документов пользователя с возможностью фильтрации по тегам и поиску"
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Успешное получение списка документов"),
@@ -69,11 +68,39 @@ public class DocumentController {
     public ResponseEntity<Page<DocumentWithTagsResponse>> getDocuments(
         @PathVariable @Parameter(name = "userId", description = "ID пользователя") Long userId,
         @RequestParam(required = false) @Parameter(name = "tagIds", description = "Список ID тегов для фильтрации") List<Long> tagIds,
+        @RequestParam(required = false) @Parameter(name = "search", description = "Поисковый запрос") String searchTerm,
+        @RequestParam(required = false) @Parameter(name = "sortBy", description = "Поле для сортировки (title, date)") String sortBy,
+        @RequestParam(required = false, defaultValue = "desc") @Parameter(name = "sortDirection", description = "Направление сортировки (asc, desc)") String sortDirection,
         @RequestParam(defaultValue = "0") @Parameter(name = "page", description = "Номер страницы (начинается с 0)") int page,
         @RequestParam(defaultValue = "10") @Parameter(name = "size", description = "Количество элементов на странице") int size
     ) {
-        Page<DocumentWithTagsResponse> documents = documentService.getUserDocuments(userId, tagIds, page, size);
+        Page<DocumentWithTagsResponse> documents = documentService.getUserDocuments(
+            userId, tagIds, searchTerm, sortBy, sortDirection, page, size);
         return ResponseEntity.ok(documents);
+    }
+    
+    @Operation(
+        summary = "Получить детальную информацию документа",
+        description = "Возвращает подробные данные документа по ID со списком источников и выделений"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Успешное получение документа"),
+        @ApiResponse(responseCode = "400", description = "Неверный запрос", 
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Не авторизован", 
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Доступ запрещен", 
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Документ не найден", 
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<GetDocumentByIdResponse> getDocumentDetails(
+        @PathVariable @Parameter(name = "userId", description = "ID пользователя") Long userId,
+        @PathVariable("id") @Parameter(name = "id", description = "ID документа") Long documentId
+    ) {
+        GetDocumentByIdResponse document = documentService.getDocumentById(documentId);
+        return ResponseEntity.ok(document);
     }
     
     @Operation(
@@ -169,13 +196,10 @@ public class DocumentController {
     @PostMapping("/text")
     public ResponseEntity<DocumentWithTagsResponse> uploadTextDocument(
         @PathVariable @Parameter(name = "userId", description = "ID пользователя") Long userId,
-        @RequestParam @Parameter(name = "folderId", description = "ID папки для документа") Long folderId,
-        @RequestParam(defaultValue = "true") @Parameter(name = "plagiarismCheck", description = "Выполнить проверку на плагиат") Boolean plagiarism,
-        @RequestParam(defaultValue = "true") @Parameter(name = "aiDetection", description = "Выполнить определение AI-генерации") Boolean ai,
         @Valid @RequestBody @Parameter(name = "content", description = "Данные документа") UploadContentRequest request
     ) {
         try {
-            checkFacade.loadAndCheck(userId, folderId, plagiarism, ai, request);
+            checkFacade.loadAndCheck(userId, request);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -197,13 +221,16 @@ public class DocumentController {
         @ApiResponse(responseCode = "404", description = "Пользователь не найден", 
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    @PostMapping("/file")
+    @PostMapping(value = "/file", consumes = { "multipart/form-data" })
     public ResponseEntity<DocumentWithTagsResponse> uploadFileDocument(
         @PathVariable @Parameter(name = "userId", description = "ID пользователя") Long userId,
-        @RequestParam @Parameter(name = "folderId", description = "ID папки для документа") Long folderId,
-        @RequestParam("file") @Parameter(name = "file", description = "PDF-файл для загрузки") MultipartFile file,
-        @RequestParam(defaultValue = "true") @Parameter(name = "plagiarismCheck", description = "Выполнить проверку на плагиат") Boolean plagiarism,
-        @RequestParam(defaultValue = "true") @Parameter(name = "aiDetection", description = "Выполнить определение AI-генерации") Boolean ai
+        @RequestParam("file") @Parameter(
+            name = "file", 
+            description = "PDF-файл для загрузки",
+            schema = @Schema(type = "string", format = "binary")
+        ) MultipartFile file,
+        @RequestParam("fileName") @Parameter(name = "title", description = "Название файла") String fileName,
+        @RequestParam(required = false) @Parameter(name = "tagIds", description = "ID тегов для присвоения документу") List<Long> tagIds
     ) throws IOException {
         if (!file.isEmpty()) {
             try (InputStream inputStream = file.getInputStream()) {
@@ -211,11 +238,12 @@ public class DocumentController {
 
                 UploadContentRequest request = UploadContentRequest.builder()
                     .content(pdfContent)
-                    .title(file.getOriginalFilename())
+                    .title(fileName)
                     .contentType(ContentType.FILE)
+                    .tagIds(tagIds)
                     .build();
 
-                checkFacade.loadAndCheck(userId, folderId, plagiarism, ai, request);
+                checkFacade.loadAndCheck(userId, request);
                 return ResponseEntity.status(HttpStatus.CREATED).build();
             } catch (Exception e) {
                 return ResponseEntity.badRequest().build();
@@ -223,81 +251,11 @@ public class DocumentController {
         }
         return ResponseEntity.badRequest().build();
     }
-    
-    // ---------- Методы для проверок ----------
-    
-    @Operation(
-        summary = "Запустить дополнительную проверку документа",
-        description = "Запускает проверку документа на плагиат или AI-генерацию, если такая проверка еще не проводилась"
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Проверка успешно запущена"),
-        @ApiResponse(responseCode = "400", description = "Неверный запрос или проверка уже выполнена", 
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "401", description = "Не авторизован", 
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "403", description = "Доступ запрещен", 
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "404", description = "Документ не найден", 
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    @PostMapping("/{id}/check")
-    public ResponseEntity<Void> checkDocument(
-        @PathVariable @Parameter(name = "userId", description = "ID пользователя") Long userId,
-        @PathVariable("id") @Parameter(name = "id", description = "ID документа") Long documentId,
-        @RequestParam(defaultValue = "false") @Parameter(name = "plagiarism", description = "Выполнить проверку на плагиат") Boolean plagiarism,
-        @RequestParam(defaultValue = "false") @Parameter(name = "ai", description = "Выполнить определение AI-генерации") Boolean ai
-    ) {
-        try {
-            // Проверяем, была ли уже выполнена такая проверка
-            Check existingCheck = checkService.getCheckByContentId(documentId);
-            
-            // Определяем, нужно ли выполнять проверки
-            boolean needPlagiarismCheck = plagiarism && !existingCheck.isPlagiarismCheckPerformed();
-            boolean needAiCheck = ai && !existingCheck.isAiCheckPerformed();
-            
-            // Если обе проверки уже выполнены, возвращаем ошибку
-            if (!needPlagiarismCheck && !needAiCheck) {
-                return ResponseEntity.badRequest().body(null);
-            }
-            
-            // Списываем проверку и записываем транзакцию
-            userProfileService.useCheck(userId);
-            transactionService.useCheck(userId);
-            
-            // Запускаем проверку
-            checkService.check(CheckRequest.builder()
-                .contentId(documentId)
-                .isAiCheck(needAiCheck)
-                .isPlagiarismCheck(needPlagiarismCheck)
-                .build());
-                
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-    
-    @Hidden
-    @Operation(
-        summary = "Вебхук результата проверки",
-        description = "Эндпоинт для получения результатов завершенной проверки"
-    )
-    @PostMapping("/documents/check/webhook/{checkId}")
-    public ResponseEntity<Void> checkWebhook(
-        @PathVariable @Parameter(name = "checkId", description = "ID проверки") Long checkId,
-        @RequestBody @Parameter(name = "result", description = "Результат проверки") CheckCompleteMessage checkCompleteMessage
-    ) {
-        checkService.handleCheckResult(checkId, checkCompleteMessage);
-        return ResponseEntity.ok().build();
-    }
-    
-    // ---------- Вспомогательные методы ----------
-    
+
     private String extractTextFromPdf(InputStream inputStream) throws IOException {
         try (PDDocument document = PDDocument.load(inputStream)) {
-            PDFTextStripper pdfStripper = new PDFTextStripper();
-            return pdfStripper.getText(document);
+            PDFTextStripper stripper = new PDFTextStripper();
+            return stripper.getText(document);
         }
     }
 } 

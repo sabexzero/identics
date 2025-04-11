@@ -14,13 +14,17 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         Server devServer = new Server();
         devServer.setDescription("Development Server");
-        devServer.setUrl("http://193.108.115.65:9091");
+        devServer.setUrl("http://localhost:9091");
+
+        Server prodServer = new Server();
+        devServer.setDescription("Production Server");
+        devServer.setUrl("https://backend.identics.tech");
 
         Info info = new Info();
         info.setTitle("Plagiarism Checker API");
 
         OpenAPI openAPI = new OpenAPI();
-        openAPI.setServers(Arrays.asList(devServer));
+        openAPI.setServers(Arrays.asList(devServer, prodServer));
         openAPI.setInfo(info);
         return openAPI;
     }

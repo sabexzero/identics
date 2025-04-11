@@ -27,14 +27,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class CheckContent {
+public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
     private String title;
     private ContentType contentType;
-    private Long folderId;
     @Column(columnDefinition = "TEXT")
     private String text;
 }

@@ -19,5 +19,5 @@ public class CheckCompleteMessage {
     private List<PlagiarismDetail> plagiarismDetails; // Детали проверки плагиата
 
     @JsonProperty("ai_check_result")
-    private Integer aiCheckResult;
+    private Double aiCheckResult;
 }

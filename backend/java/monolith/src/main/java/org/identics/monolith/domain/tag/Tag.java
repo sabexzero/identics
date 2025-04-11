@@ -13,11 +13,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 @Table(name = "document_tag")
 public class Tag {
     @Id
@@ -26,6 +25,9 @@ public class Tag {
     
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private String hexString;
     
     @Column(name = "user_id", nullable = false)
     private Long userId;

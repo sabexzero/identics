@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/{userId}/documents/tags")
+@RequestMapping("/api/v1/{userId}/tags")
 @Tag(name = "Теги", description = "API для работы с тегами документов")
 public class TagController {
     private final TagService tagService;

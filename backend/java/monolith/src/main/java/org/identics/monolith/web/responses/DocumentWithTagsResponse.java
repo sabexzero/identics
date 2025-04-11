@@ -17,9 +17,8 @@ public class DocumentWithTagsResponse {
     private Long id;
     private String title;
     private Long userId;
-    private Long folderId;
     private LocalDateTime checkDate;
-    private Double plagiarismLevel;
-    private Integer aiCheckLevel;
+    private Double uniqueness;
+    private Double aiLevel;
     private List<TagDTO> tags;
 } 
