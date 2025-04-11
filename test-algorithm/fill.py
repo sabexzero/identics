@@ -15,9 +15,9 @@ app = FastAPI()
 DATABASE_URL = {
     "dbname": "identics_db",
     "user": "identics",
-    "password": "identics",
-    "host": "localhost",
-    "port": 5438,
+    "password": "ckjyt[fk",
+    "host": "193.108.115.65",
+    "port": 5432,
 }
 
 # Загрузка модели spaCy
@@ -61,7 +61,7 @@ async def store_paragraphs(data: InputData):
                 execute_values(
                     cursor,
                     """
-                    INSERT INTO "Paragraphs" (text, vector, reference)
+                    INSERT INTO "paragraphs" (text, vector, reference)
                     VALUES %s
                     """,
                     to_insert,
