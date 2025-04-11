@@ -104,30 +104,6 @@ public class DocumentController {
     }
     
     @Operation(
-        summary = "Получить документ",
-        description = "Возвращает данные документа по ID"
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Успешное получение документа"),
-        @ApiResponse(responseCode = "400", description = "Неверный запрос", 
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "401", description = "Не авторизован", 
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "403", description = "Доступ запрещен", 
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "404", description = "Документ не найден", 
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<DocumentWithTagsResponse> getDocument(
-        @PathVariable @Parameter(name = "userId", description = "ID пользователя") Long userId,
-        @PathVariable("id") @Parameter(name = "id", description = "ID документа") Long documentId
-    ) {
-        DocumentWithTagsResponse document = documentService.getDocument(documentId);
-        return ResponseEntity.ok(document);
-    }
-    
-    @Operation(
         summary = "Обновить документ",
         description = "Обновляет данные документа (заголовок и теги)"
     )

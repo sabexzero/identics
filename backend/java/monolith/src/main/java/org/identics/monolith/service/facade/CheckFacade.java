@@ -25,16 +25,10 @@ public class CheckFacade {
     ) throws JsonProcessingException {
        // Проверяем, есть ли у пользователя доступные проверки
        userProfileService.getUserProfile(userId); // Проверяем существование пользователя
-       userProfileService.useCheck(userId); // Списываем проверку
-
-       // Записываем транзакцию использования проверки
-       transactionService.useCheck(userId);
-       
        Document uploadedDocument = documentService.uploadDocument(
            request,
            userId
        );
-
        checkService.check(
            CheckRequest.builder()
                .contentId(uploadedDocument.getId())
@@ -42,5 +36,8 @@ public class CheckFacade {
                .isPlagiarismCheck(true)
                .build()
        );
+
+        // Записываем транзакцию использования проверки
+        transactionService.useCheck(userId);
     }
 }

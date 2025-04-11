@@ -123,7 +123,7 @@ public class DocumentService {
         
         return GetDocumentByIdResponse.builder()
             .title(document.getTitle())
-            .date(check == null ? null : check.getStartTime())
+            .checkDate(check == null ? null : check.getStartTime())
             .wordCount(check == null ? null : check.getWordCount())
             .uniqueness(check == null ? null : check.getUniqueness())
             .aiContent(check == null ? null : check.getAiCheckLevel())
@@ -131,13 +131,6 @@ public class DocumentService {
             .highlights(mapHighlights(highlights))
             .sources(mapSources(sources))
             .build();
-    }
-    
-    public DocumentWithTagsResponse getDocument(Long documentId) {
-        Document document = documentRepository.findById(documentId)
-            .orElseThrow(() -> new IllegalArgumentException("Document not found"));
-
-        return mapToDocumentResponse(document);
     }
 
     @Transactional

@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GetDocumentByIdResponse {
     private String title;
-    private LocalDateTime date;
+    private LocalDateTime checkDate;
     private Integer wordCount;
     private Double uniqueness;
     private Double aiContent;
