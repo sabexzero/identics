@@ -1,11 +1,5 @@
-import React, { useState } from "react";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormMessage,
-} from "@/components/ui/form.tsx";
+import React from "react";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { useForm } from "react-hook-form";
@@ -16,13 +10,15 @@ import { schema } from "@/components/forms/history/create-tags/schema.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
 import { toast } from "sonner";
+import { useCreateTagMutation } from "@/api/tagsApi";
+import { ErrorHandler } from "@/api/store.ts";
 
 interface CreateTagsFormProps {
     onOpenChange: () => void;
 }
 
 const CreateTagsForm: React.FC<CreateTagsFormProps> = ({ onOpenChange }) => {
-    const [isLoading, setIsLoading] = useState(false);
+    const [createTagMutation, { isLoading }] = useCreateTagMutation();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -35,24 +31,26 @@ const CreateTagsForm: React.FC<CreateTagsFormProps> = ({ onOpenChange }) => {
     const nameValue = form.watch("name");
     const colorValue = form.watch("color");
 
-    function onSubmit(values: z.infer<typeof schema>) {
+    const onSubmit = async (values: z.infer<typeof schema>) => {
         console.log(values);
-        setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
-            onOpenChange();
-            toast("Изменения успешно применены!");
-        }, 1000);
-    }
+        try {
+            await createTagMutation({
+                userId: 1,
+                name: values.name,
+                hexString: values.color,
+            });
 
-    console.log(colorValue);
+            toast.success("Новый тег успешно создан!");
+        } catch (error) {
+            toast.error(`При создании возникла ошибка: ${(error as ErrorHandler).data.error}`);
+        } finally {
+            onOpenChange();
+        }
+    };
 
     return (
         <Form {...form}>
-            <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col gap-2"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2">
                 <div className="flex items-end gap-2">
                     <FormField
                         control={form.control}
@@ -62,11 +60,7 @@ const CreateTagsForm: React.FC<CreateTagsFormProps> = ({ onOpenChange }) => {
                                 <Label htmlFor="name">Название</Label>
                                 <FormMessage />
                                 <FormControl>
-                                    <Input
-                                        id="name"
-                                        disabled={isLoading}
-                                        {...field}
-                                    />
+                                    <Input id="name" disabled={isLoading} {...field} />
                                 </FormControl>
                             </FormItem>
                         )}
@@ -78,11 +72,7 @@ const CreateTagsForm: React.FC<CreateTagsFormProps> = ({ onOpenChange }) => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <ColorPicker
-                                        id="color"
-                                        disabled={isLoading}
-                                        {...field}
-                                    />
+                                    <ColorPicker id="color" disabled={isLoading} {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -90,19 +80,28 @@ const CreateTagsForm: React.FC<CreateTagsFormProps> = ({ onOpenChange }) => {
                     />
                 </div>
 
-                {nameValue.length > 0 && (
-                    <div className="flex items-center justify-center py-4">
-                        <Badge
-                            style={{
-                                backgroundColor: colorValue,
-                                minHeight: 32,
-                                fontSize: "2rem",
-                            }}
-                        >
-                            {nameValue}
-                        </Badge>
-                    </div>
-                )}
+                <div
+                    style={{
+                        maxHeight: nameValue.length > 0 ? "100px" : "0px",
+                        opacity: nameValue.length > 0 ? 1 : 0,
+                        paddingTop: nameValue.length > 0 ? "1rem" : "0",
+                        paddingBottom: nameValue.length > 0 ? "1rem" : "0",
+                        transition: "all 0.3s ease",
+                    }}
+                    className="flex items-center justify-center overflow-hidden"
+                >
+                    <Badge
+                        style={{
+                            backgroundColor: nameValue.length > 0 ? colorValue : "white",
+                            minHeight: 32,
+                            fontSize: "2rem",
+                            transform: nameValue.length > 0 ? "scale(1)" : "scale(0)",
+                            transition: "transform 0.2s ease 0.1s",
+                        }}
+                    >
+                        {nameValue}
+                    </Badge>
+                </div>
 
                 <Button type="submit">Save changes</Button>
             </form>

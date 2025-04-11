@@ -11,6 +11,5 @@ export const schema = z.object({
         message: "Текст водяного знака не должен превышать 50 символов",
     }),
     reportColorScheme: z.enum(["standard", "highContrast", "monochrome"]),
-    autoGenerateReports: z.boolean(),
     reportRetentionDays: z.number().min(1).max(365),
 });

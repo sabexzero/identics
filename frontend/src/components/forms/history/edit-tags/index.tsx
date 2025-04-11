@@ -11,37 +11,21 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
 import { cn } from "@/lib/utils";
+import { useGetTagsQuery } from "@/api/tagsApi";
+import { ITagsResponse } from "@/api/tagsApi/types.ts";
 
 interface EditTagsFormProps {
     onOpenChange: () => void;
 }
 
-interface Option {
-    id: number;
-    name: string;
-    color: string;
-}
-
-const options: Option[] = [
-    { id: 1, name: "test1", color: "#432" },
-    { id: 2, name: "test2", color: "#432" },
-    { id: 3, name: "test3", color: "#432" },
-    { id: 4, name: "test4", color: "#432" },
-    { id: 5, name: "test5", color: "#432" },
-    { id: 6, name: "test6", color: "#432" },
-    { id: 7, name: "test7", color: "#432" },
-    { id: 8, name: "test8", color: "#432" },
-    { id: 9, name: "test9", color: "#432" },
-];
-
 const EditTagsForm: React.FC<EditTagsFormProps> = ({ onOpenChange }) => {
     const [isLoading, setIsLoading] = useState(false);
-    const [selected, setSelected] = useState<Option[]>([]);
+    const [selected, setSelected] = useState<ITagsResponse[]>([]);
     const [search, setSearch] = useState<string>("");
+    const { data } = useGetTagsQuery({ userId: 1 });
 
-    const filteredOptions = options.filter(
-        (option) =>
-            option.name.includes(search) || option.color.includes(search)
+    const filteredOptions = data?.items.filter(
+        (option) => option.name.includes(search) || option.hexString.includes(search)
     );
 
     const form = useForm<z.infer<typeof schema>>({
@@ -63,17 +47,13 @@ const EditTagsForm: React.FC<EditTagsFormProps> = ({ onOpenChange }) => {
 
     const handleSelect = (index: number) => {
         setSelected((prevSelected) => {
-            const isAlreadySelected = prevSelected.some(
-                (option) => option.id === index
-            );
+            const isAlreadySelected = prevSelected.some((option) => option.id === index);
 
             let newSelected;
             if (isAlreadySelected) {
-                newSelected = prevSelected.filter(
-                    (option) => option.id !== index
-                );
+                newSelected = prevSelected.filter((option) => option.id !== index);
             } else {
-                const item = options.find((option) => option.id === index);
+                const item = data?.items.find((option) => option.id === index);
                 newSelected = item ? [...prevSelected, item] : prevSelected;
             }
 
@@ -88,10 +68,7 @@ const EditTagsForm: React.FC<EditTagsFormProps> = ({ onOpenChange }) => {
 
     return (
         <Form {...form}>
-            <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col gap-4"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
                     <div className="relative">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -99,13 +76,11 @@ const EditTagsForm: React.FC<EditTagsFormProps> = ({ onOpenChange }) => {
                             type="search"
                             placeholder="Поиск..."
                             className="w-full bg-background pl-8"
-                            onChange={(e) =>
-                                setSearch(e.target.value.trim().toLowerCase())
-                            }
+                            onChange={(e) => setSearch(e.target.value.trim().toLowerCase())}
                         />
                     </div>
                     <ScrollArea className="h-40 my-2">
-                        {filteredOptions.map((option) => (
+                        {filteredOptions?.map((option) => (
                             <Card
                                 className={cn(
                                     "my-2 p-0 cursor-pointer rounded-md",
@@ -122,7 +97,7 @@ const EditTagsForm: React.FC<EditTagsFormProps> = ({ onOpenChange }) => {
                                     <div
                                         className="h-6 w-6 rounded-md"
                                         style={{
-                                            backgroundColor: option.color,
+                                            backgroundColor: option.hexString,
                                         }}
                                     />
                                 </CardContent>
@@ -131,11 +106,9 @@ const EditTagsForm: React.FC<EditTagsFormProps> = ({ onOpenChange }) => {
                     </ScrollArea>
                 </div>
                 <div className="flex gap-2">
-                    <Button onClick={() => setSelected([])}>
-                        Очистить теги
-                    </Button>
+                    <Button onClick={() => setSelected([])}>Очистить теги</Button>
                     <Button disabled={isLoading} type="submit">
-                        Save changes
+                        Сохранить изменения
                     </Button>
                 </div>
             </form>

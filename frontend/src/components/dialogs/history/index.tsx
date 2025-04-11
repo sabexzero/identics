@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState, useLayoutEffect } from "react";
 import {
     Dialog,
     DialogContent,
@@ -6,46 +6,81 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog.tsx";
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from "@/components/ui/tabs.tsx";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
 import CreateTagsForm from "@/components/forms/history/create-tags";
 import EditTagsForm from "@/components/forms/history/edit-tags";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface EditTagsDialogProps {
     open: boolean;
     onOpenChange: () => void;
 }
 
-const EditTagsDialog: React.FC<EditTagsDialogProps> = ({
-    open,
-    onOpenChange,
-}) => {
+const EditTagsDialog: React.FC<EditTagsDialogProps> = ({ open, onOpenChange }) => {
+    const [tab, setTab] = useState<"create" | "edit">("edit");
+    const [prevHeight, setPrevHeight] = useState<number>(0);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    useLayoutEffect(() => {
+        if (contentRef.current) {
+            setPrevHeight(contentRef.current.offsetHeight);
+        }
+    }, [tab]);
+
+    const handleOnOpenChange = () => {
+        onOpenChange();
+        setTab("edit");
+    };
+
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOnOpenChange}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Редактирование тегов</DialogTitle>
                     <DialogDescription>
-                        Добвьте новый или выберите тег из уже созданных!
+                        Добавьте новый или выберите тег из уже созданных!
                     </DialogDescription>
                 </DialogHeader>
-                <Tabs>
+
+                <Tabs value={tab} onValueChange={(value) => setTab(value as "create" | "edit")}>
                     <TabsList className="w-full">
-                        <TabsTrigger value="edit">
-                            Добавить существующий
-                        </TabsTrigger>
+                        <TabsTrigger value="edit">Добавить существующий</TabsTrigger>
                         <TabsTrigger value="create">Создать новый</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="create">
-                        <CreateTagsForm onOpenChange={onOpenChange} />
-                    </TabsContent>
-                    <TabsContent value="edit">
-                        <EditTagsForm onOpenChange={onOpenChange} />
-                    </TabsContent>
+
+                    <div className="relative overflow-hidden">
+                        <AnimatePresence mode="wait">
+                            {tab === "create" && (
+                                <motion.div
+                                    key="create"
+                                    initial={{ height: prevHeight, filter: "blur(2px)" }}
+                                    animate={{ height: "auto", filter: "blur(0px)" }}
+                                    transition={{ duration: 0.4 }}
+                                >
+                                    <div ref={contentRef}>
+                                        <TabsContent value="create">
+                                            <CreateTagsForm onOpenChange={onOpenChange} />
+                                        </TabsContent>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {tab === "edit" && (
+                                <motion.div
+                                    key="edit"
+                                    initial={{ height: prevHeight, filter: "blur(2px)" }}
+                                    animate={{ height: "auto", filter: "blur(0px)" }}
+                                    transition={{ duration: 0.4 }}
+                                >
+                                    <div ref={contentRef}>
+                                        <TabsContent value="edit">
+                                            <EditTagsForm onOpenChange={onOpenChange} />
+                                        </TabsContent>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </Tabs>
             </DialogContent>
         </Dialog>

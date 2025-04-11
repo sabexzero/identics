@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, CheckCircle, Download, Eye, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { useGetPaginationContentQuery } from "@/api/contentApi";
+import { useDeleteDocumentByIdMutation, useGetDocumentsQuery } from "@/api/documentApi";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -31,6 +31,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import EditTagsDialog from "@/components/dialogs/history";
+import { formatDateISO } from "@/lib/utils.ts";
+import { toast } from "sonner";
+import { ErrorHandler } from "@/api/store.ts";
 
 export function HistoryTable() {
     const navigate = useNavigate();
@@ -38,12 +41,12 @@ export function HistoryTable() {
     const [itemsPerPage] = useState<number>(5);
 
     const [editTagsDialogOpen, setEditTagsDialogOpen] = useState(false);
+    const [deleteDocument, { isLoading }] = useDeleteDocumentByIdMutation();
 
-    const { data } = useGetPaginationContentQuery({
+    const { data } = useGetDocumentsQuery({
         userId: 1,
         page: currentPage - 1,
-        perPage: itemsPerPage,
-        folderId: 1,
+        size: itemsPerPage,
     });
 
     const totalPages = data?.totalPages || 0;
@@ -69,10 +72,7 @@ export function HistoryTable() {
 
         items.push(
             <PaginationItem key="page-1">
-                <PaginationLink
-                    isActive={currentPage === 1}
-                    onClick={() => handlePageClick(1)}
-                >
+                <PaginationLink isActive={currentPage === 1} onClick={() => handlePageClick(1)}>
                     1
                 </PaginationLink>
             </PaginationItem>
@@ -95,10 +95,7 @@ export function HistoryTable() {
 
             items.push(
                 <PaginationItem key={`page-${i}`}>
-                    <PaginationLink
-                        isActive={currentPage === i}
-                        onClick={() => handlePageClick(i)}
-                    >
+                    <PaginationLink isActive={currentPage === i} onClick={() => handlePageClick(i)}>
                         {i}
                     </PaginationLink>
                 </PaginationItem>
@@ -129,11 +126,24 @@ export function HistoryTable() {
         return items;
     };
 
-    const handleEditTags = (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ) => {
+    const handleEditTags = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.stopPropagation();
         setEditTagsDialogOpen(true);
+    };
+
+    const handleDeleteDocument = async (id: number) => {
+        try {
+            await deleteDocument({
+                userId: 1,
+                id: id,
+            });
+
+            toast.success("Документ успешно удален!");
+        } catch (error) {
+            toast.error(
+                `Возникла ошибка при удалении документа: ${(error as ErrorHandler).data.error}`
+            );
+        }
     };
 
     return (
@@ -145,151 +155,140 @@ export function HistoryTable() {
                 />
                 <Table>
                     <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[120px]">
-                                Дата проверки
-                            </TableHead>
+                        <TableRow className="w-full">
+                            <TableHead className="w-[10%] text-center">Дата проверки</TableHead>
                             <TableHead>Название документа</TableHead>
-                            <TableHead className="w-[150px] text-center">
-                                Содержание ИИ текста
-                            </TableHead>
-                            <TableHead className="w-[150px] text-center">
-                                Оригинальность
-                            </TableHead>
-                            <TableHead className="w-[120px] text-right">
-                                Отчет
-                            </TableHead>
+                            <TableHead className="w-[10%] text-center">Содержание ИИ</TableHead>
+                            <TableHead className="w-[10%] text-center">Оригинальность</TableHead>
+                            <TableHead className="text-center w-[10%]">Отчет</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {data && data.content?.length > 0 ? (
                             data.content.map((item) => (
-                                <TableRow
-                                    key={item.id}
-                                    className="hover:bg-muted/50"
-                                >
-                                    <TableCell className="font-medium">
-                                        {item.dateTime}
+                                <TableRow key={item.id} className="hover:bg-muted/50">
+                                    <TableCell className="font-medium text-center">
+                                        {item.checkDate ? formatDateISO(item.checkDate) : null}
                                     </TableCell>
                                     <TableCell className="flex flex-col">
                                         <div className="flex gap-2">
-                                            {/*<Badge*/}
-                                            {/*    variant="default"*/}
-                                            {/*    className="bg-green-800"*/}
-                                            {/*>*/}
-                                            {/*    ПРИб-221*/}
-                                            {/*</Badge>*/}
-                                            <Badge
-                                                variant="secondary"
-                                                className="cursor-pointer border-dashed px-1"
-                                                onClick={handleEditTags}
-                                            >
-                                                <Plus />
-                                                Добавить тег
-                                            </Badge>
+                                            {item.tags.length > 0 ? (
+                                                <>
+                                                    {item.tags.map((tag) => (
+                                                        <Badge
+                                                            variant="secondary"
+                                                            className="cursor-pointer border-dashed px-1"
+                                                            onClick={handleEditTags}
+                                                        >
+                                                            {tag.name}
+                                                        </Badge>
+                                                    ))}
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="cursor-pointer px-1 aspect-square border-dashed hover:border-black hover:text-xl transition-all duration-200"
+                                                        onClick={handleEditTags}
+                                                    >
+                                                        +
+                                                    </Badge>
+                                                </>
+                                            ) : (
+                                                <Badge
+                                                    variant="secondary"
+                                                    className="cursor-pointer border-dashed px-1"
+                                                    onClick={handleEditTags}
+                                                >
+                                                    <Plus />
+                                                    Добавить тег
+                                                </Badge>
+                                            )}
                                         </div>
                                         {item.title}
                                     </TableCell>
                                     <TableCell className="text-center">
                                         <div className="flex items-center justify-center">
-                                            {item.aiCheckLevel &&
-                                            item.aiCheckLevel > 10 ? (
+                                            {item.aiLevel && item.aiLevel > 10 ? (
                                                 <AlertCircle className="mr-1 h-4 w-4 text-amber-500" />
                                             ) : (
                                                 <CheckCircle className="mr-1 h-4 w-4 text-primary" />
                                             )}
-                                            <span>{item.aiCheckLevel}%</span>
+                                            <span>{item.aiLevel}%</span>
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-center">
-                                        {item.plagiarismLevel && (
+                                        {item.uniqueness && (
                                             <Badge
                                                 variant={
-                                                    item.plagiarismLevel >= 90
+                                                    item.uniqueness >= 90
                                                         ? "default"
-                                                        : item.plagiarismLevel >=
-                                                            80
+                                                        : item.uniqueness >= 80
                                                           ? "secondary"
                                                           : "outline"
                                                 }
                                                 className={
-                                                    item.plagiarismLevel >= 90
+                                                    item.uniqueness >= 90
                                                         ? "bg-green-100 text-green-800 hover:bg-green-100 hover:text-green-800"
-                                                        : item.plagiarismLevel >=
-                                                            80
+                                                        : item.uniqueness >= 80
                                                           ? "bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-800"
                                                           : "bg-amber-100 text-amber-800 hover:bg-amber-100 hover:text-amber-800"
                                                 }
                                             >
-                                                {item.plagiarismLevel}%
+                                                {item.uniqueness}%
                                             </Badge>
                                         )}
                                     </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
+                                    <TableCell>
+                                        <div className="flex justify-center gap-2">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    navigate(
-                                                        `/dashboard/review/${item.id}`
-                                                    );
+                                                    navigate(`/dashboard/review/${item.id}`);
                                                 }}
                                             >
                                                 <Eye className="h-4 w-4" />
-                                                <span className="sr-only">
-                                                    Просмотр
-                                                </span>
+                                                <span className="sr-only">Просмотр</span>
                                             </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    console.log(
-                                                        `Скачивание отчета ${item.id}`
-                                                    );
+                                                    console.log(`Скачивание отчета ${item.id}`);
                                                 }}
                                             >
                                                 <Download className="h-4 w-4" />
-                                                <span className="sr-only">
-                                                    Скачать
-                                                </span>
+                                                <span className="sr-only">Скачать</span>
                                             </Button>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost">...</Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="w-40">
+                                                    <DropdownMenuLabel>Действия</DropdownMenuLabel>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuGroup>
+                                                        <DropdownMenuItem>
+                                                            Переименовать
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            onClick={() =>
+                                                                handleDeleteDocument(item.id)
+                                                            }
+                                                            disabled={isLoading}
+                                                        >
+                                                            Удалить
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuGroup>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost">
-                                                    ...
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent className="w-40">
-                                                <DropdownMenuLabel>
-                                                    Действия
-                                                </DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuGroup>
-                                                    <DropdownMenuItem>
-                                                        Переименовать
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem>
-                                                        Удалить
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuGroup>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
                                     </TableCell>
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell
-                                    colSpan={5}
-                                    className="h-24 text-center"
-                                >
+                                <TableCell colSpan={5} className="h-24 text-center">
                                     Документы не найдены.
                                 </TableCell>
                             </TableRow>
@@ -303,11 +302,7 @@ export function HistoryTable() {
                     <PaginationItem>
                         <PaginationPrevious
                             onClick={handlePreviousPage}
-                            className={
-                                currentPage === 1
-                                    ? "pointer-events-none opacity-50"
-                                    : ""
-                            }
+                            className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                         />
                     </PaginationItem>
 
@@ -317,9 +312,7 @@ export function HistoryTable() {
                         <PaginationNext
                             onClick={handleNextPage}
                             className={
-                                currentPage === totalPages
-                                    ? "pointer-events-none opacity-50"
-                                    : ""
+                                currentPage === totalPages ? "pointer-events-none opacity-50" : ""
                             }
                         />
                     </PaginationItem>

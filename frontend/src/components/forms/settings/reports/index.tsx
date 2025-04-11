@@ -64,7 +64,6 @@ const ReportSettings: React.FC = () => {
             includeStatistics: true,
             watermarkText: "Конфиденциально",
             reportColorScheme: "standard",
-            autoGenerateReports: true,
             reportRetentionDays: 90,
         },
     });
@@ -89,22 +88,16 @@ const ReportSettings: React.FC = () => {
                             <FileText className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                            <CardTitle className="text-2xl font-bold">
-                                Настройки отчетов
-                            </CardTitle>
+                            <CardTitle className="text-2xl font-bold">Настройки отчетов</CardTitle>
                             <CardDescription className="text-base">
-                                Настройте формат и содержание отчетов о проверке
-                                на плагиат
+                                Настройте формат и содержание отчетов о проверке на плагиат
                             </CardDescription>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent className="pb-6">
                     <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="space-y-8"
-                        >
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                             <div className="space-y-6">
                                 <div>
                                     <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
@@ -123,17 +116,12 @@ const ReportSettings: React.FC = () => {
                                                             <Underline className="h-5 w-5 text-primary" />
                                                         </div>
                                                         <FormLabel className="text-base font-medium">
-                                                            Стиль выделения
-                                                            совпадений
+                                                            Стиль выделения совпадений
                                                         </FormLabel>
                                                     </div>
                                                     <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
+                                                        onValueChange={field.onChange}
+                                                        defaultValue={field.value}
                                                     >
                                                         <FormControl>
                                                             <SelectTrigger className="h-11 w-full transition-all border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary">
@@ -147,8 +135,7 @@ const ReportSettings: React.FC = () => {
                                                             >
                                                                 <div className="flex items-center gap-2">
                                                                     <div className="h-4 w-4 bg-yellow-200 rounded"></div>
-                                                                    Выделение
-                                                                    цветом
+                                                                    Выделение цветом
                                                                 </div>
                                                             </SelectItem>
                                                             <SelectItem
@@ -174,8 +161,7 @@ const ReportSettings: React.FC = () => {
                                                         </SelectContent>
                                                     </Select>
                                                     <FormDescription className="text-xs">
-                                                        Как будут выделены
-                                                        совпадения в тексте
+                                                        Как будут выделены совпадения в тексте
                                                     </FormDescription>
                                                     <FormMessage />
                                                 </FormItem>
@@ -192,17 +178,12 @@ const ReportSettings: React.FC = () => {
                                                             <Palette className="h-5 w-5 text-primary" />
                                                         </div>
                                                         <FormLabel className="text-base font-medium">
-                                                            Цветовая схема
-                                                            отчета
+                                                            Цветовая схема отчета
                                                         </FormLabel>
                                                     </div>
                                                     <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
+                                                        onValueChange={field.onChange}
+                                                        defaultValue={field.value}
                                                     >
                                                         <FormControl>
                                                             <SelectTrigger className="h-11 w-full transition-all border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary">
@@ -229,8 +210,7 @@ const ReportSettings: React.FC = () => {
                                                                     <div className="h-3 w-3 rounded-full bg-black"></div>
                                                                     <div className="h-3 w-3 rounded-full bg-white border"></div>
                                                                     <div className="h-3 w-3 rounded-full bg-red-600"></div>
-                                                                    Высокий
-                                                                    контраст
+                                                                    Высокий контраст
                                                                 </div>
                                                             </SelectItem>
                                                             <SelectItem
@@ -247,8 +227,7 @@ const ReportSettings: React.FC = () => {
                                                         </SelectContent>
                                                     </Select>
                                                     <FormDescription className="text-xs">
-                                                        Цветовая схема для
-                                                        отчетов
+                                                        Цветовая схема для отчетов
                                                     </FormDescription>
                                                     <FormMessage />
                                                 </FormItem>
@@ -270,12 +249,8 @@ const ReportSettings: React.FC = () => {
                                                     </div>
                                                     <FormControl>
                                                         <RadioGroup
-                                                            onValueChange={
-                                                                field.onChange
-                                                            }
-                                                            defaultValue={
-                                                                field.value
-                                                            }
+                                                            onValueChange={field.onChange}
+                                                            defaultValue={field.value}
                                                             className="flex flex-col space-y-0"
                                                         >
                                                             <FormItem className="flex items-center space-x-0 space-y-0 rounded-lg border p-3 hover:bg-muted/50 transition-colors">
@@ -317,8 +292,7 @@ const ReportSettings: React.FC = () => {
                                                         </RadioGroup>
                                                     </FormControl>
                                                     <FormDescription className="text-xs">
-                                                        Выберите формат для
-                                                        скачивания отчетов
+                                                        Выберите формат для скачивания отчетов
                                                     </FormDescription>
                                                     <FormMessage />
                                                 </FormItem>
@@ -344,23 +318,16 @@ const ReportSettings: React.FC = () => {
                                                     <div className="space-y-1">
                                                         <FormLabel className="text-base font-medium flex items-center gap-2">
                                                             <FileText className="h-5 w-5 text-primary" />
-                                                            Включать
-                                                            оригинальный текст
+                                                            Включать оригинальный текст
                                                         </FormLabel>
                                                         <FormDescription className="text-sm">
-                                                            Добавлять полный
-                                                            текст документа в
-                                                            отчет
+                                                            Добавлять полный текст документа в отчет
                                                         </FormDescription>
                                                     </div>
                                                     <FormControl>
                                                         <Switch
-                                                            checked={
-                                                                field.value
-                                                            }
-                                                            onCheckedChange={
-                                                                field.onChange
-                                                            }
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
                                                             className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                         />
                                                     </FormControl>
@@ -376,23 +343,17 @@ const ReportSettings: React.FC = () => {
                                                     <div className="space-y-1">
                                                         <FormLabel className="text-base font-medium flex items-center gap-2">
                                                             <Percent className="h-5 w-5 text-primary" />
-                                                            Включать процент
-                                                            совпадений
+                                                            Включать процент совпадений
                                                         </FormLabel>
                                                         <FormDescription className="text-sm">
-                                                            Показывать общий
-                                                            процент совпадений в
+                                                            Показывать общий процент совпадений в
                                                             отчете
                                                         </FormDescription>
                                                     </div>
                                                     <FormControl>
                                                         <Switch
-                                                            checked={
-                                                                field.value
-                                                            }
-                                                            onCheckedChange={
-                                                                field.onChange
-                                                            }
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
                                                             className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                         />
                                                     </FormControl>
@@ -408,23 +369,17 @@ const ReportSettings: React.FC = () => {
                                                     <div className="space-y-1">
                                                         <FormLabel className="text-base font-medium flex items-center gap-2">
                                                             <Link className="h-5 w-5 text-primary" />
-                                                            Включать ссылки на
-                                                            источники
+                                                            Включать ссылки на источники
                                                         </FormLabel>
                                                         <FormDescription className="text-sm">
-                                                            Добавлять ссылки на
-                                                            оригинальные
+                                                            Добавлять ссылки на оригинальные
                                                             источники
                                                         </FormDescription>
                                                     </div>
                                                     <FormControl>
                                                         <Switch
-                                                            checked={
-                                                                field.value
-                                                            }
-                                                            onCheckedChange={
-                                                                field.onChange
-                                                            }
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
                                                             className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                         />
                                                     </FormControl>
@@ -443,19 +398,14 @@ const ReportSettings: React.FC = () => {
                                                             Включать статистику
                                                         </FormLabel>
                                                         <FormDescription className="text-sm">
-                                                            Добавлять подробную
-                                                            статистику по
+                                                            Добавлять подробную статистику по
                                                             совпадениям
                                                         </FormDescription>
                                                     </div>
                                                     <FormControl>
                                                         <Switch
-                                                            checked={
-                                                                field.value
-                                                            }
-                                                            onCheckedChange={
-                                                                field.onChange
-                                                            }
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
                                                             className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                         />
                                                     </FormControl>
@@ -483,9 +433,8 @@ const ReportSettings: React.FC = () => {
                                                         />
                                                     </FormControl>
                                                     <FormDescription className="text-xs">
-                                                        Текст, который будет
-                                                        отображаться как водяной
-                                                        знак на страницах отчета
+                                                        Текст, который будет отображаться как
+                                                        водяной знак на страницах отчета
                                                     </FormDescription>
                                                     <FormMessage />
                                                 </FormItem>
@@ -505,39 +454,6 @@ const ReportSettings: React.FC = () => {
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <FormField
                                             control={form.control}
-                                            name="autoGenerateReports"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-center justify-between rounded-xl border border-primary/10 p-4 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
-                                                    <div className="space-y-1">
-                                                        <FormLabel className="text-base font-medium flex items-center gap-2">
-                                                            <FileCheck className="h-5 w-5 text-primary" />
-                                                            Автоматическая
-                                                            генерация отчетов
-                                                        </FormLabel>
-                                                        <FormDescription className="text-sm">
-                                                            Автоматически
-                                                            создавать отчет
-                                                            после завершения
-                                                            проверки
-                                                        </FormDescription>
-                                                    </div>
-                                                    <FormControl>
-                                                        <Switch
-                                                            checked={
-                                                                field.value
-                                                            }
-                                                            onCheckedChange={
-                                                                field.onChange
-                                                            }
-                                                            className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-                                                        />
-                                                    </FormControl>
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={form.control}
                                             name="reportRetentionDays"
                                             render={({ field }) => (
                                                 <FormItem className="space-y-4 p-4 rounded-xl border border-primary/10 shadow-sm">
@@ -546,8 +462,7 @@ const ReportSettings: React.FC = () => {
                                                             <Clock className="h-5 w-5 text-primary" />
                                                         </div>
                                                         <FormLabel className="text-base font-medium">
-                                                            Срок хранения
-                                                            отчетов (дней)
+                                                            Срок хранения отчетов (дней)
                                                         </FormLabel>
                                                     </div>
                                                     <FormControl>
@@ -557,8 +472,7 @@ const ReportSettings: React.FC = () => {
                                                             onChange={(e) =>
                                                                 field.onChange(
                                                                     Number.parseInt(
-                                                                        e.target
-                                                                            .value,
+                                                                        e.target.value,
                                                                         10
                                                                     )
                                                                 )
@@ -567,10 +481,8 @@ const ReportSettings: React.FC = () => {
                                                         />
                                                     </FormControl>
                                                     <FormDescription className="text-xs">
-                                                        Количество дней, в
-                                                        течение которых отчеты
-                                                        будут храниться в
-                                                        системе
+                                                        Количество дней, в течение которых отчеты
+                                                        будут храниться в системе
                                                     </FormDescription>
                                                     <FormMessage />
                                                 </FormItem>

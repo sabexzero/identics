@@ -27,11 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 import {
     Sidebar,
@@ -82,9 +78,7 @@ export function AppSidebar() {
                         <FileCheck className="h-6 w-6" />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-lg font-semibold">
-                            АнтиПлагиат
-                        </span>
+                        <span className="text-lg font-semibold">АнтиПлагиат</span>
                         <span className="text-xs text-muted-foreground">
                             Профессиональная версия
                         </span>
@@ -95,19 +89,15 @@ export function AppSidebar() {
                 </div>
             </SidebarHeader>
 
-            <SidebarSeparator />
+            <SidebarSeparator className="w-[30%]" />
 
             <SidebarContent className="overflow-hidden">
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            <SidebarMenuItem
-                                onClick={() => navigate("/dashboard")}
-                            >
+                            <SidebarMenuItem onClick={() => navigate("/dashboard")}>
                                 <SidebarMenuButton
-                                    isActive={
-                                        location.pathname === "/dashboard"
-                                    }
+                                    isActive={location.pathname === "/dashboard"}
                                     tooltip="Панель управления"
                                 >
                                     <LayoutDashboard className="text-primary" />
@@ -115,14 +105,9 @@ export function AppSidebar() {
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
 
-                            <SidebarMenuItem
-                                onClick={() => navigate("/dashboard/history")}
-                            >
+                            <SidebarMenuItem onClick={() => navigate("/dashboard/history")}>
                                 <SidebarMenuButton
-                                    isActive={
-                                        location.pathname ===
-                                        "/dashboard/history"
-                                    }
+                                    isActive={location.pathname === "/dashboard/history"}
                                     tooltip="История проверок"
                                 >
                                     <History />
@@ -198,9 +183,7 @@ export function AppSidebar() {
                                 <SidebarMenuSub>
                                     <SidebarMenuSubItem>
                                         <SidebarMenuSubButton>
-                                            <span>
-                                                Руководство по цитированию
-                                            </span>
+                                            <span>Руководство по цитированию</span>
                                         </SidebarMenuSubButton>
                                     </SidebarMenuSubItem>
                                     <SidebarMenuSubItem>
@@ -229,15 +212,10 @@ export function AppSidebar() {
                     <SidebarGroupLabel>Система</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            <SidebarMenuItem
-                                onClick={() => navigate("/dashboard/settings")}
-                            >
+                            <SidebarMenuItem onClick={() => navigate("/dashboard/settings")}>
                                 <SidebarMenuButton
                                     tooltip="Настройки"
-                                    isActive={
-                                        location.pathname ===
-                                        "/dashboard/settings"
-                                    }
+                                    isActive={location.pathname === "/dashboard/settings"}
                                 >
                                     <Settings />
                                     <span>Настройки</span>
@@ -258,24 +236,16 @@ export function AppSidebar() {
             <SidebarSeparator />
 
             <SidebarFooter>
-                <div className="px-3 py-2">
+                <div className="py-2">
                     <div className="mb-2 space-y-1 rounded-lg bg-muted/50 p-2">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium">
-                                Использовано проверок
-                            </span>
+                            <span className="text-xs font-medium">Использовано проверок</span>
                             <span className="text-xs font-medium">70%</span>
                         </div>
                         <Progress value={70} className="h-1.5" />
                         <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">
-                                70/100
-                            </span>
-                            <Button
-                                variant="link"
-                                size="sm"
-                                className="h-auto p-0 text-xs"
-                            >
+                            <span className="text-xs text-muted-foreground">70/100</span>
+                            <Button variant="link" size="sm" className="h-auto p-0 text-xs">
                                 <Sparkles className="mr-1 h-3 w-3" />
                                 Обновить
                             </Button>
@@ -294,14 +264,10 @@ export function AppSidebar() {
                                                 src="/placeholder.svg?height=32&width=32"
                                                 alt="User"
                                             />
-                                            <AvatarFallback className="text-xs">
-                                                ИП
-                                            </AvatarFallback>
+                                            <AvatarFallback className="text-xs">ИП</AvatarFallback>
                                         </Avatar>
                                         <div className="flex flex-col items-start">
-                                            <span className="text-sm font-medium">
-                                                Иван Петров
-                                            </span>
+                                            <span className="text-sm font-medium">Иван Петров</span>
                                             <span className="text-xs text-muted-foreground">
                                                 ivan@example.com
                                             </span>
@@ -320,9 +286,7 @@ export function AppSidebar() {
                                         <AvatarFallback>ИП</AvatarFallback>
                                     </Avatar>
                                     <div className="flex flex-col">
-                                        <span className="font-medium">
-                                            Иван Петров
-                                        </span>
+                                        <span className="font-medium">Иван Петров</span>
                                         <span className="text-xs text-muted-foreground">
                                             ivan@example.com
                                         </span>
@@ -336,10 +300,7 @@ export function AppSidebar() {
                                 <DropdownMenuItem>
                                     <Bell className="mr-2 h-4 w-4" />
                                     <span>Уведомления</span>
-                                    <Badge
-                                        variant="secondary"
-                                        className="ml-auto"
-                                    >
+                                    <Badge variant="secondary" className="ml-auto">
                                         3
                                     </Badge>
                                 </DropdownMenuItem>

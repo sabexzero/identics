@@ -11,72 +11,70 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUploader } from "@/components/plagiarism/file-uploader";
 import { Loader2, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useUploadTextDocumentMutation } from "@/api/documentApi";
+import { Input } from "@/components/ui/input.tsx";
+import { toast } from "sonner";
+import { ErrorHandler } from "@/api/store.ts";
 
 const textFormSchema = z.object({
-    content: z
-        .string()
-        .min(50, { message: "Текст должен содержать минимум 50 символов" }),
+    content: z.string().min(100, { message: "Текст должен содержать минимум 100 символов" }),
+    title: z.string().min(3, { message: "Название должно содержать минимум 3 символова" }),
 });
 
 export function PlagiarismChecker() {
-    const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("text");
     const navigate = useNavigate();
+
+    const [uploadTextDocument, { isLoading }] = useUploadTextDocumentMutation();
 
     const form = useForm<z.infer<typeof textFormSchema>>({
         resolver: zodResolver(textFormSchema),
         defaultValues: {
             content: "",
+            title: "",
         },
     });
 
-    function onSubmit(values: z.infer<typeof textFormSchema>) {
-        console.log(values);
-        setIsLoading(true);
-        // Имитация отправки - в реальном приложении здесь будет вызов вашего бэкенда
-        setTimeout(() => {
-            setIsLoading(false);
-            navigate("/dashboard/results/123");
-        }, 1500);
-    }
+    const onTextUpload = async (values: z.infer<typeof textFormSchema>) => {
+        try {
+            await uploadTextDocument({
+                userId: 1,
+                content: values.content,
+                title: values.title,
+            });
 
-    function onFileUpload(files: File[]) {
+            toast.success("Текст успешно отправился на обработку");
+        } catch (error) {
+            toast.error(
+                `Возникла ошибка при отправке данных: ${(error as ErrorHandler).data.error}`
+            );
+        }
+    };
+
+    const onFileUpload = (files: File[]) => {
         console.log(files);
-        setIsLoading(true);
         // Имитация загрузки файла - в реальном приложении здесь будет вызов вашего бэкенда
         setTimeout(() => {
-            setIsLoading(false);
             navigate("/dashboard/results/123");
         }, 2000);
-    }
+    };
 
     return (
         <Card>
             <CardHeader>
                 <CardTitle>Проверка на плагиат</CardTitle>
                 <CardDescription>
-                    Проверьте ваш текст или документ на плагиат и получите
-                    детальные результаты.
+                    Проверьте ваш текст или документ на плагиат и получите детальные результаты.
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <Tabs
-                    defaultValue="text"
-                    value={activeTab}
-                    onValueChange={setActiveTab}
-                >
+                <Tabs defaultValue="text" value={activeTab} onValueChange={setActiveTab}>
                     <TabsList className="grid w-full grid-cols-2 mb-6">
                         <TabsTrigger value="text">Текст</TabsTrigger>
                         <TabsTrigger value="file">Загрузка файла</TabsTrigger>
@@ -84,7 +82,27 @@ export function PlagiarismChecker() {
 
                     <TabsContent value="text">
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)}>
+                            <form
+                                className="flex flex-col gap-y-4"
+                                onSubmit={form.handleSubmit(onTextUpload)}
+                            >
+                                <FormField
+                                    control={form.control}
+                                    name="title"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Название файла"
+                                                    disabled={isLoading}
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
                                 <FormField
                                     control={form.control}
                                     name="content"
@@ -92,7 +110,7 @@ export function PlagiarismChecker() {
                                         <FormItem>
                                             <FormControl>
                                                 <Textarea
-                                                    placeholder="Вставьте ваш текст сюда (минимум 50 символов)..."
+                                                    placeholder="Вставьте ваш текст сюда (минимум 100 символов)..."
                                                     className="min-h-[200px] resize-none"
                                                     disabled={isLoading}
                                                     {...field}
@@ -123,18 +141,13 @@ export function PlagiarismChecker() {
                     </TabsContent>
 
                     <TabsContent value="file">
-                        <FileUploader
-                            onUpload={onFileUpload}
-                            isLoading={isLoading}
-                        />
+                        <FileUploader onUpload={onFileUpload} isLoading={isLoading} />
                     </TabsContent>
                 </Tabs>
             </CardContent>
             <CardFooter className="flex-col items-start border-t p-4">
                 <div className="text-sm text-muted-foreground">
-                    <p className="mb-1">
-                        Поддерживаемые форматы файлов: .doc, .docx, .pdf, .txt
-                    </p>
+                    <p className="mb-1">Поддерживаемые форматы файлов: .doc, .docx, .pdf, .txt</p>
                     <p>Максимальный размер файла: 10МБ</p>
                 </div>
             </CardFooter>
