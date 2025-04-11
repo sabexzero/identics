@@ -6,10 +6,12 @@ out/
 /.gradle/
 /.gradle/
 /mvn/
+/frontend/reports
 
 # Игнорировать файлы окружения
 .env
 *.env
+/frontend/package-lock.json
 
 # Игнорировать IDE файлы
 *.iml
