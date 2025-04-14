@@ -13,11 +13,7 @@ import { toast } from "sonner";
 import { useCreateTagMutation } from "@/api/tagsApi";
 import { ErrorHandler } from "@/api/store.ts";
 
-interface CreateTagsFormProps {
-    onOpenChange: () => void;
-}
-
-const CreateTagsForm: React.FC<CreateTagsFormProps> = ({ onOpenChange }) => {
+const CreateTagsForm: React.FC = () => {
     const [createTagMutation, { isLoading }] = useCreateTagMutation();
 
     const form = useForm<z.infer<typeof schema>>({
@@ -43,8 +39,6 @@ const CreateTagsForm: React.FC<CreateTagsFormProps> = ({ onOpenChange }) => {
             toast.success("Новый тег успешно создан!");
         } catch (error) {
             toast.error(`При создании возникла ошибка: ${(error as ErrorHandler).data.error}`);
-        } finally {
-            onOpenChange();
         }
     };
 
@@ -103,7 +97,7 @@ const CreateTagsForm: React.FC<CreateTagsFormProps> = ({ onOpenChange }) => {
                     </Badge>
                 </div>
 
-                <Button type="submit">Save changes</Button>
+                <Button type="submit">Сохранить изменения</Button>
             </form>
         </Form>
     );

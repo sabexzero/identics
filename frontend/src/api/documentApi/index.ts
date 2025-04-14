@@ -97,14 +97,13 @@ export const documentApi = createApi({
                 };
             },
         }),
-        editDocument: build.mutation<IUploadDocumentResponse, IEditDocument>({
+        editDocumentTags: build.mutation<IUploadDocumentResponse, IEditDocument>({
             invalidatesTags: ["UpdateTable"],
-            query: ({ userId, id, title, tagsIds }) => ({
+            query: ({ userId, id, tagsIds }) => ({
                 url: `/api/v1/${userId}/documents/${id}`,
-                method: "PUT",
+                method: "PATCH",
                 body: {
-                    title: title,
-                    tagsIds: tagsIds,
+                    tagIds: tagsIds,
                 },
             }),
         }),
@@ -118,5 +117,5 @@ export const {
     useUploadTextDocumentMutation,
     useUploadFileDocumentMutation,
     useAdditionalDocumentCheckMutation,
-    useEditDocumentMutation,
+    useEditDocumentTagsMutation,
 } = documentApi;

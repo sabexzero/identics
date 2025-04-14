@@ -41,11 +41,6 @@ export interface IAdditionalDocumentCheck extends IUserIdBase {
     ai: boolean;
 }
 
-export interface IEditDocument extends IUserIdBase {
-    title: string;
-    tagsIds: number[];
-}
-
 // ==================== Ответы ====================
 export interface IGetDocumentsResponse {
     content: {
@@ -91,6 +86,15 @@ export interface IGetDocumentByIdResponse {
         similarity: number;
         matchedWords: number;
     }[];
+    tags: {
+        id: number;
+        name: string;
+        hexString: string;
+    }[];
+}
+
+export interface IEditDocument extends IUserIdBase {
+    tagsIds: number[];
 }
 
 export interface IUploadDocumentResponse {

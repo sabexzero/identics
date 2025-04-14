@@ -2,6 +2,10 @@ export interface IGetTags {
     userId: number;
 }
 
+export interface IGetDocumentsTag extends IGetTags {
+    id: number;
+}
+
 export interface IGetTagsResponse {
     items: ITagsResponse[];
 }

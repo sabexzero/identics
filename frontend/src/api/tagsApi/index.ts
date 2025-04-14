@@ -3,6 +3,7 @@ import {
     ICreateTagResponse,
     IDeleteTag,
     IEditTag,
+    IGetDocumentsTag,
     IGetTags,
     IGetTagsResponse,
     ITagsResponse,
@@ -13,13 +14,22 @@ const baseUrl = import.meta.env.VITE_BASE_URL;
 export const tagsApi = createApi({
     reducerPath: "tagsApi",
     baseQuery: fetchBaseQuery({ baseUrl: baseUrl }),
+    tagTypes: ["UpdateTags", "UpdateExactTags"],
     endpoints: (build) => ({
         getTags: build.query<IGetTagsResponse, IGetTags>({
+            providesTags: ["UpdateTags"],
             query: ({ userId }) => {
                 return `/api/v1/${userId}/tags`;
             },
         }),
+        getDocumentTags: build.query<IGetTagsResponse, IGetDocumentsTag>({
+            providesTags: ["UpdateTags", "UpdateExactTags"],
+            query: ({ userId, id }) => {
+                return `/api/v1/${userId}/documents/${id}/tags`;
+            },
+        }),
         createTag: build.mutation<ITagsResponse, ICreateTagResponse>({
+            invalidatesTags: ["UpdateTags"],
             query: ({ userId, name, hexString }) => ({
                 url: `/api/v1/${userId}/tags`,
                 method: "POST",
@@ -30,12 +40,14 @@ export const tagsApi = createApi({
             }),
         }),
         deleteTag: build.mutation<void, IDeleteTag>({
+            invalidatesTags: ["UpdateTags"],
             query: ({ userId, id }) => ({
                 url: `/api/v1/${userId}/tags/${id}`,
                 method: "DELETE",
             }),
         }),
         editTag: build.mutation<ITagsResponse, IEditTag>({
+            invalidatesTags: ["UpdateTags"],
             query: ({ userId, id, name, hexString }) => ({
                 url: `/api/v1/${userId}/tags/${id}`,
                 method: "PUT",
@@ -48,5 +60,10 @@ export const tagsApi = createApi({
     }),
 });
 
-export const { useGetTagsQuery, useCreateTagMutation, useDeleteTagMutation, useEditTagMutation } =
-    tagsApi;
+export const {
+    useGetTagsQuery,
+    useGetDocumentTagsQuery,
+    useCreateTagMutation,
+    useDeleteTagMutation,
+    useEditTagMutation,
+} = tagsApi;

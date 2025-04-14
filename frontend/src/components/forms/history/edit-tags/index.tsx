@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form } from "@/components/ui/form.tsx";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -11,22 +11,26 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
 import { cn } from "@/lib/utils";
-import { useGetTagsQuery } from "@/api/tagsApi";
-import { ITagsResponse } from "@/api/tagsApi/types.ts";
+import { tagsApi, useGetDocumentTagsQuery, useGetTagsQuery } from "@/api/tagsApi";
+import { ErrorHandler } from "@/api/store.ts";
+import { useDispatch } from "react-redux";
+import { useEditDocumentTagsMutation } from "@/api/documentApi";
 
 interface EditTagsFormProps {
+    id: number;
     onOpenChange: () => void;
 }
 
-const EditTagsForm: React.FC<EditTagsFormProps> = ({ onOpenChange }) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [selected, setSelected] = useState<ITagsResponse[]>([]);
+const EditTagsForm: React.FC<EditTagsFormProps> = ({ id, onOpenChange }) => {
     const [search, setSearch] = useState<string>("");
-    const { data } = useGetTagsQuery({ userId: 1 });
+    const dispatch = useDispatch();
 
-    const filteredOptions = data?.items.filter(
-        (option) => option.name.includes(search) || option.hexString.includes(search)
-    );
+    const { data: allTags } = useGetTagsQuery({ userId: 1 });
+    const { data: documentTags, isLoading: isDocumentLoading } = useGetDocumentTagsQuery({
+        userId: 1,
+        id: id,
+    });
+    const [editDocuments, { isLoading }] = useEditDocumentTagsMutation();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -35,80 +39,98 @@ const EditTagsForm: React.FC<EditTagsFormProps> = ({ onOpenChange }) => {
         },
     });
 
-    function onSubmit(values: z.infer<typeof schema>) {
-        console.log(values);
-        setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
+    useEffect(() => {
+        if (documentTags?.items) {
+            form.reset({
+                tags: documentTags.items.map((item) => item.id),
+            });
+        }
+    }, [documentTags, form]);
+
+    const filteredTags = allTags?.items.filter(
+        (tag) =>
+            tag.name.toLowerCase().includes(search.trim().toLowerCase()) ||
+            tag.hexString.toLowerCase().includes(search.trim().toLowerCase())
+    );
+
+    // Обработка отправки формы
+    const handleSubmit = async (values: z.infer<typeof schema>) => {
+        try {
+            await editDocuments({
+                userId: 1,
+                id: id,
+                tagsIds: values.tags,
+            }).unwrap();
+            toast.success("Изменения успешно применены!");
+            dispatch(tagsApi.util.invalidateTags(["UpdateExactTags"]));
+        } catch (error) {
+            toast.error(`Ошибка: ${(error as ErrorHandler).data?.error || "Unknown error"}`);
+        } finally {
             onOpenChange();
-            toast("Изменения успешно применены!");
-        }, 1000);
-    }
+        }
+    };
 
-    const handleSelect = (index: number) => {
-        setSelected((prevSelected) => {
-            const isAlreadySelected = prevSelected.some((option) => option.id === index);
+    // Переключение тегов
+    const toggleTag = (tagId: number) => {
+        const currentTags = form.getValues("tags");
+        const newTags = currentTags.includes(tagId)
+            ? currentTags.filter((id) => id !== tagId)
+            : [...currentTags, tagId];
 
-            let newSelected;
-            if (isAlreadySelected) {
-                newSelected = prevSelected.filter((option) => option.id !== index);
-            } else {
-                const item = data?.items.find((option) => option.id === index);
-                newSelected = item ? [...prevSelected, item] : prevSelected;
-            }
-
-            form.setValue(
-                "tags",
-                newSelected.map((item) => item.id)
-            );
-
-            return newSelected;
-        });
+        form.setValue("tags", newTags, { shouldDirty: true });
     };
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
-                    <div className="relative">
+                    <div className={`relative ${isDocumentLoading ? "blur-sm" : ""}`}>
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="search"
                             placeholder="Поиск..."
                             className="w-full bg-background pl-8"
-                            onChange={(e) => setSearch(e.target.value.trim().toLowerCase())}
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
+
                     <ScrollArea className="h-40 my-2">
-                        {filteredOptions?.map((option) => (
+                        {filteredTags?.map((tag) => (
                             <Card
+                                key={tag.id}
+                                onClick={() => toggleTag(tag.id)}
                                 className={cn(
-                                    "my-2 p-0 cursor-pointer rounded-md",
-                                    "transition-all duration-200 last:mb-0",
-                                    `${selected.find((item) => item.id === option.id) ? "bg-[#EFF6FF]" : "hover:bg-[#f3f4f6]"}`
+                                    "my-2 p-0 cursor-pointer rounded-md transition-all",
+                                    form.watch("tags").includes(tag.id)
+                                        ? "bg-blue-50 border-blue-200"
+                                        : "hover:bg-gray-50"
                                 )}
-                                key={option.id}
-                                onClick={() => handleSelect(option.id)}
                             >
                                 <CardContent className="flex px-4 py-1 justify-between items-center">
                                     <CardDescription className="text-black">
-                                        {option.name}
+                                        {tag.name}
                                     </CardDescription>
                                     <div
-                                        className="h-6 w-6 rounded-md"
-                                        style={{
-                                            backgroundColor: option.hexString,
-                                        }}
+                                        className="h-6 w-6 rounded-md border"
+                                        style={{ backgroundColor: tag.hexString }}
                                     />
                                 </CardContent>
                             </Card>
                         ))}
                     </ScrollArea>
                 </div>
+
                 <div className="flex gap-2">
-                    <Button onClick={() => setSelected([])}>Очистить теги</Button>
-                    <Button disabled={isLoading} type="submit">
-                        Сохранить изменения
+                    <Button
+                        type="submit"
+                        variant="outline"
+                        onClick={() => form.reset({ tags: [] })}
+                    >
+                        Очистить
+                    </Button>
+                    <Button type="submit" disabled={isLoading || isDocumentLoading}>
+                        {isLoading ? "Сохранение..." : "Сохранить"}
                     </Button>
                 </div>
             </form>

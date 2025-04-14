@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
     Table,
     TableBody,
@@ -34,19 +34,23 @@ import EditTagsDialog from "@/components/dialogs/history";
 import { formatDateISO } from "@/lib/utils.ts";
 import { toast } from "sonner";
 import { ErrorHandler } from "@/api/store.ts";
+import { useGetTagsQuery } from "@/api/tagsApi";
 
 export function HistoryTable() {
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage] = useState<number>(5);
-
-    const [editTagsDialogOpen, setEditTagsDialogOpen] = useState(false);
+    const [editTagsDialogOpen, setEditTagsDialogOpen] = useState<boolean>(false);
+    const idRef = useRef<number>(null!);
     const [deleteDocument, { isLoading }] = useDeleteDocumentByIdMutation();
 
     const { data } = useGetDocumentsQuery({
         userId: 1,
         page: currentPage - 1,
         size: itemsPerPage,
+    });
+    const { data: userTags } = useGetTagsQuery({
+        userId: 1,
     });
 
     const totalPages = data?.totalPages || 0;
@@ -126,9 +130,10 @@ export function HistoryTable() {
         return items;
     };
 
-    const handleEditTags = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleEditTags = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, id: number) => {
         e.stopPropagation();
         setEditTagsDialogOpen(true);
+        idRef.current = id;
     };
 
     const handleDeleteDocument = async (id: number) => {
@@ -152,6 +157,7 @@ export function HistoryTable() {
                 <EditTagsDialog
                     open={editTagsDialogOpen}
                     onOpenChange={() => setEditTagsDialogOpen(false)}
+                    id={idRef.current}
                 />
                 <Table>
                     <TableHeader>
@@ -174,19 +180,32 @@ export function HistoryTable() {
                                         <div className="flex gap-2">
                                             {item.tags.length > 0 ? (
                                                 <>
-                                                    {item.tags.map((tag) => (
-                                                        <Badge
-                                                            variant="secondary"
-                                                            className="cursor-pointer border-dashed px-1"
-                                                            onClick={handleEditTags}
-                                                        >
-                                                            {tag.name}
-                                                        </Badge>
-                                                    ))}
+                                                    {item.tags.map((tag) => {
+                                                        const color = userTags?.items.find(
+                                                            (item) => item.id == tag.id
+                                                        )?.hexString;
+
+                                                        return (
+                                                            <Badge
+                                                                variant="secondary"
+                                                                className="cursor-pointer text-white border-dashed px-1"
+                                                                style={{
+                                                                    backgroundColor: color
+                                                                        ? color
+                                                                        : "black",
+                                                                }}
+                                                                onClick={(e) =>
+                                                                    handleEditTags(e, item.id)
+                                                                }
+                                                            >
+                                                                {tag.name}
+                                                            </Badge>
+                                                        );
+                                                    })}
                                                     <Badge
                                                         variant="outline"
                                                         className="cursor-pointer px-1 aspect-square border-dashed hover:border-black hover:text-xl transition-all duration-200"
-                                                        onClick={handleEditTags}
+                                                        onClick={(e) => handleEditTags(e, item.id)}
                                                     >
                                                         +
                                                     </Badge>
@@ -195,7 +214,7 @@ export function HistoryTable() {
                                                 <Badge
                                                     variant="secondary"
                                                     className="cursor-pointer border-dashed px-1"
-                                                    onClick={handleEditTags}
+                                                    onClick={(e) => handleEditTags(e, item.id)}
                                                 >
                                                     <Plus />
                                                     Добавить тег

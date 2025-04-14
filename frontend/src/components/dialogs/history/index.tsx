@@ -12,11 +12,12 @@ import EditTagsForm from "@/components/forms/history/edit-tags";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface EditTagsDialogProps {
+    id: number;
     open: boolean;
     onOpenChange: () => void;
 }
 
-const EditTagsDialog: React.FC<EditTagsDialogProps> = ({ open, onOpenChange }) => {
+const EditTagsDialog: React.FC<EditTagsDialogProps> = ({ id, open, onOpenChange }) => {
     const [tab, setTab] = useState<"create" | "edit">("edit");
     const [prevHeight, setPrevHeight] = useState<number>(0);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -59,7 +60,7 @@ const EditTagsDialog: React.FC<EditTagsDialogProps> = ({ open, onOpenChange }) =
                                 >
                                     <div ref={contentRef}>
                                         <TabsContent value="create">
-                                            <CreateTagsForm onOpenChange={onOpenChange} />
+                                            <CreateTagsForm />
                                         </TabsContent>
                                     </div>
                                 </motion.div>
@@ -74,7 +75,7 @@ const EditTagsDialog: React.FC<EditTagsDialogProps> = ({ open, onOpenChange }) =
                                 >
                                     <div ref={contentRef}>
                                         <TabsContent value="edit">
-                                            <EditTagsForm onOpenChange={onOpenChange} />
+                                            <EditTagsForm id={id} onOpenChange={onOpenChange} />
                                         </TabsContent>
                                     </div>
                                 </motion.div>
