@@ -93,7 +93,7 @@ export interface IGetDocumentByIdResponse {
     }[];
 }
 
-export interface IEditDocument extends IUserIdBase {
+export interface IEditDocumentTags extends IUserIdBase {
     tagsIds: number[];
 }
 
@@ -105,4 +105,9 @@ export interface IUploadDocumentResponse {
     plagiarismLevel: number;
     aiCheckLevel: number;
     tags: ITagsBase[];
+}
+
+export interface IEditDocument extends IUserIdBase {
+    tagsIds: number[];
+    title: string;
 }

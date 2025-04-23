@@ -5,18 +5,12 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormMessage,
-} from "@/components/ui/form.tsx";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form.tsx";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { schema } from "@/components/forms/auth/login/schema.ts";
 
-export function LoginForm() {
+export default function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -31,7 +25,6 @@ export function LoginForm() {
     function onSubmit(values: z.infer<typeof schema>) {
         console.log(values);
         setIsLoading(true);
-        // Имитация входа - в реальном приложении здесь будет вызов вашего бэкенда
         setTimeout(() => {
             setIsLoading(false);
             navigate("/dashboard");

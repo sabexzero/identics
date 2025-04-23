@@ -1,4 +1,4 @@
-import React, { useRef, useState, useLayoutEffect } from "react";
+import { useRef, useState, useLayoutEffect } from "react";
 import {
     Dialog,
     DialogContent,
@@ -7,8 +7,8 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
-import CreateTagsForm from "@/components/forms/history/create-tags";
-import EditTagsForm from "@/components/forms/history/edit-tags";
+import CreateTagsForm from "@/components/forms/history/tags/create";
+import EditTagsForm from "@/components/forms/history/tags/edit";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface EditTagsDialogProps {
@@ -17,7 +17,7 @@ interface EditTagsDialogProps {
     onOpenChange: () => void;
 }
 
-const EditTagsDialog: React.FC<EditTagsDialogProps> = ({ id, open, onOpenChange }) => {
+export default function EditTagsDialog({ id, open, onOpenChange }: EditTagsDialogProps) {
     const [tab, setTab] = useState<"create" | "edit">("edit");
     const [prevHeight, setPrevHeight] = useState<number>(0);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -86,6 +86,4 @@ const EditTagsDialog: React.FC<EditTagsDialogProps> = ({ id, open, onOpenChange 
             </DialogContent>
         </Dialog>
     );
-};
-
-export default EditTagsDialog;
+}

@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, CheckCircle, Download, Eye, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { useDeleteDocumentByIdMutation, useGetDocumentsQuery } from "@/api/documentApi";
+import { useGetDocumentsQuery } from "@/api/documentApi";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -30,19 +30,22 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import EditTagsDialog from "@/components/dialogs/history";
+import EditTagsDialog from "@/components/dialogs/history/tags/edit.tsx";
 import { formatDateISO } from "@/lib/utils.ts";
-import { toast } from "sonner";
-import { ErrorHandler } from "@/api/store.ts";
 import { useGetTagsQuery } from "@/api/tagsApi";
+import DeleteDocumentDialog from "@/components/dialogs/history/documents/delete.tsx";
+import EditDocumentDialog from "@/components/dialogs/history/documents/create.tsx";
 
-export function HistoryTable() {
+export default function HistoryTable() {
     const navigate = useNavigate();
+    const idRef = useRef<number>(null!);
+
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage] = useState<number>(5);
+
     const [editTagsDialogOpen, setEditTagsDialogOpen] = useState<boolean>(false);
-    const idRef = useRef<number>(null!);
-    const [deleteDocument, { isLoading }] = useDeleteDocumentByIdMutation();
+    const [deleteDocumentDialogOpen, setDeleteDocumentDialogOpen] = useState<boolean>(false);
+    const [editDocumentDialogOpen, setEditDocumentDialogOpen] = useState<boolean>(false);
 
     const { data } = useGetDocumentsQuery({
         userId: 1,
@@ -131,24 +134,21 @@ export function HistoryTable() {
     };
 
     const handleEditTags = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, id: number) => {
+        idRef.current = id;
         e.stopPropagation();
         setEditTagsDialogOpen(true);
-        idRef.current = id;
     };
 
-    const handleDeleteDocument = async (id: number) => {
-        try {
-            await deleteDocument({
-                userId: 1,
-                id: id,
-            });
+    const handleDeleteDocument = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, id: number) => {
+        idRef.current = id;
+        e.stopPropagation();
+        setDeleteDocumentDialogOpen(true);
+    };
 
-            toast.success("Документ успешно удален!");
-        } catch (error) {
-            toast.error(
-                `Возникла ошибка при удалении документа: ${(error as ErrorHandler).data.error}`
-            );
-        }
+    const handleEditDocument = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, id: number) => {
+        idRef.current = id;
+        e.stopPropagation();
+        setEditDocumentDialogOpen(true);
     };
 
     return (
@@ -159,6 +159,17 @@ export function HistoryTable() {
                     onOpenChange={() => setEditTagsDialogOpen(false)}
                     id={idRef.current}
                 />
+                <DeleteDocumentDialog
+                    open={deleteDocumentDialogOpen}
+                    onOpenChange={() => setDeleteDocumentDialogOpen(false)}
+                    id={idRef.current}
+                />
+                <EditDocumentDialog
+                    open={editDocumentDialogOpen}
+                    onOpenChange={() => setEditDocumentDialogOpen(false)}
+                    id={idRef.current}
+                />
+
                 <Table>
                     <TableHeader>
                         <TableRow className="w-full">
@@ -287,14 +298,17 @@ export function HistoryTable() {
                                                     <DropdownMenuLabel>Действия</DropdownMenuLabel>
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuGroup>
-                                                        <DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            onClick={(e) =>
+                                                                handleEditDocument(e, item.id)
+                                                            }
+                                                        >
                                                             Переименовать
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
-                                                            onClick={() =>
-                                                                handleDeleteDocument(item.id)
+                                                            onClick={(e) =>
+                                                                handleDeleteDocument(e, item.id)
                                                             }
-                                                            disabled={isLoading}
                                                         >
                                                             Удалить
                                                         </DropdownMenuItem>

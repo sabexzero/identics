@@ -1,4 +1,3 @@
-import React from "react";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
@@ -6,14 +5,14 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ColorPicker } from "@/components/ui/color-picker.tsx";
-import { schema } from "@/components/forms/history/create-tags/schema.ts";
+import { schema } from "@/components/forms/history/tags/create/schema.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
 import { toast } from "sonner";
 import { useCreateTagMutation } from "@/api/tagsApi";
 import { ErrorHandler } from "@/api/store.ts";
 
-const CreateTagsForm: React.FC = () => {
+export default function CreateTagsForm() {
     const [createTagMutation, { isLoading }] = useCreateTagMutation();
 
     const form = useForm<z.infer<typeof schema>>({
@@ -101,6 +100,4 @@ const CreateTagsForm: React.FC = () => {
             </form>
         </Form>
     );
-};
-
-export default CreateTagsForm;
+}

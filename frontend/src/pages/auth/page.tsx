@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LoginForm } from "@/components/forms/auth/login";
-import { RegisterForm } from "@/components/forms/auth/register";
 import { Logo } from "@/components/ui/logo";
+import LoginForm from "@/components/forms/auth/login";
+import RegisterForm from "@/components/forms/auth/register";
 
 export default function AuthPage() {
     const [activeTab, setActiveTab] = useState("login");
@@ -12,9 +12,7 @@ export default function AuthPage() {
             <div className="w-full max-w-md">
                 <div className="flex flex-col items-center space-y-4 mb-8">
                     <Logo className="h-12 w-12" />
-                    <h1 className="text-2xl font-bold text-center">
-                        ПлагиатСкан
-                    </h1>
+                    <h1 className="text-2xl font-bold text-center">ПлагиатСкан</h1>
                     <p className="text-muted-foreground text-center">
                         Надежный инструмент для проверки уникальности текста
                     </p>
@@ -29,9 +27,7 @@ export default function AuthPage() {
                     >
                         <TabsList className="grid grid-cols-2 mb-6 w-full">
                             <TabsTrigger value="login">Вход</TabsTrigger>
-                            <TabsTrigger value="register">
-                                Регистрация
-                            </TabsTrigger>
+                            <TabsTrigger value="register">Регистрация</TabsTrigger>
                         </TabsList>
                         <TabsContent value="login">
                             <LoginForm />
@@ -44,17 +40,11 @@ export default function AuthPage() {
 
                 <p className="text-center text-sm text-muted-foreground mt-6">
                     Используя наш сервис, вы соглашаетесь с{" "}
-                    <a
-                        href="#"
-                        className="underline underline-offset-4 hover:text-primary"
-                    >
+                    <a href="#" className="underline underline-offset-4 hover:text-primary">
                         Условиями использования
                     </a>{" "}
                     и{" "}
-                    <a
-                        href="#"
-                        className="underline underline-offset-4 hover:text-primary"
-                    >
+                    <a href="#" className="underline underline-offset-4 hover:text-primary">
                         Политикой конфиденциальности
                     </a>
                     .

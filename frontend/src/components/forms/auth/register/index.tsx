@@ -5,18 +5,12 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { schema } from "@/components/forms/auth/register/schema.ts";
 
-export function RegisterForm() {
+export default function RegisterForm() {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -109,9 +103,7 @@ export function RegisterForm() {
                     name="confirmPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <Label htmlFor="confirmPassword">
-                                Подтверждение пароля
-                            </Label>
+                            <Label htmlFor="confirmPassword">Подтверждение пароля</Label>
                             <FormControl>
                                 <Input
                                     id="confirmPassword"
@@ -126,11 +118,7 @@ export function RegisterForm() {
                     )}
                 />
 
-                <Button
-                    type="submit"
-                    className="w-full mt-6"
-                    disabled={isLoading}
-                >
+                <Button type="submit" className="w-full mt-6" disabled={isLoading}>
                     {isLoading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -2,6 +2,7 @@ import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery } from "@reduxjs/tool
 import {
     IAdditionalDocumentCheck,
     IEditDocument,
+    IEditDocumentTags,
     IGetDocumentById,
     IGetDocumentByIdResponse,
     IGetDocuments,
@@ -52,6 +53,7 @@ export const documentApi = createApi({
             }),
         }),
         uploadTextDocument: build.mutation<IUploadDocumentResponse, IUploadTextDocument>({
+            invalidatesTags: ["UpdateTable"],
             query: ({ userId, title, userIds, content }) => {
                 return {
                     url: `/api/v1/${userId}/documents/text`,
@@ -97,13 +99,24 @@ export const documentApi = createApi({
                 };
             },
         }),
-        editDocumentTags: build.mutation<IUploadDocumentResponse, IEditDocument>({
+        editDocumentTags: build.mutation<IUploadDocumentResponse, IEditDocumentTags>({
             invalidatesTags: ["UpdateTable"],
             query: ({ userId, id, tagsIds }) => ({
                 url: `/api/v1/${userId}/documents/${id}`,
                 method: "PATCH",
                 body: {
                     tagIds: tagsIds,
+                },
+            }),
+        }),
+        editDocument: build.mutation<IUploadDocumentResponse, IEditDocument>({
+            invalidatesTags: ["UpdateTable"],
+            query: ({ userId, id, tagsIds, title }) => ({
+                url: `/api/v1/${userId}/documents/${id}`,
+                method: "PUT",
+                body: {
+                    tagIds: tagsIds,
+                    title: title,
                 },
             }),
         }),
@@ -118,4 +131,5 @@ export const {
     useUploadFileDocumentMutation,
     useAdditionalDocumentCheckMutation,
     useEditDocumentTagsMutation,
+    useEditDocumentMutation,
 } = documentApi;
