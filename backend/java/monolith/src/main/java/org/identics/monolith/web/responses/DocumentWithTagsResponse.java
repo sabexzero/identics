@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.identics.monolith.dto.TagDTO;
+import org.identics.monolith.web.responses.TagResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,5 +20,6 @@ public class DocumentWithTagsResponse {
     private LocalDateTime checkDate;
     private Double uniqueness;
     private Double aiLevel;
-    private List<TagDTO> tags;
+    private List<TagResponse> tags;
+    private String reportUrl;
 } 

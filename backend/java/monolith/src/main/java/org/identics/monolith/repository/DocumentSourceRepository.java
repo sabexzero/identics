@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface DocumentSourceRepository extends JpaRepository<DocumentSource, Long> {
-    List<DocumentSource> findByDocumentId(Long documentId);
-    void deleteByDocumentId(Long documentId);
+    List<DocumentSource> findByCheck_Id(Long checkId);
+    void deleteByCheck_ContentId(Long checkId);
 } 

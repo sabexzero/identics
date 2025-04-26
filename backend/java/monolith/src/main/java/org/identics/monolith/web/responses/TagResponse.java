@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 public class TagResponse {
     private Long id;
     private String name;
-    private Long userId;
-    private Integer documentsCount;
-} 
+    private String hexString;
+}

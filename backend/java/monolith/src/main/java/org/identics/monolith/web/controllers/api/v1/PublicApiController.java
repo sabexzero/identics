@@ -107,10 +107,9 @@ public class PublicApiController {
             userId,
             UploadContentRequest.builder()
                 .title(title)
-                .contentType(ContentType.FILE)
                 .tagIds(tagIds)
-                .content(extractTextFromPdf(file.getInputStream()))
-                .build()
+                .build(),
+            file
         );
 
         return ResponseEntity.ok().build();

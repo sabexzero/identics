@@ -4,13 +4,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.identics.monolith.domain.tag.DocumentTag;
 import org.identics.monolith.domain.tag.Tag;
-import org.identics.monolith.dto.TagDTO;
+import org.identics.monolith.web.responses.TagResponse;
 import org.identics.monolith.repository.DocumentTagRepository;
 import org.identics.monolith.repository.TagRepository;
-import org.identics.monolith.web.advice.ResourceNotFoundException;
 import org.identics.monolith.web.requests.CreateTagRequest;
 import org.identics.monolith.web.requests.UpdateTagRequest;
-import org.identics.monolith.web.responses.TagResponse;
+import org.identics.monolith.web.responses.ApiListResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,39 +21,48 @@ public class TagService {
     private final TagRepository tagRepository;
     private final DocumentTagRepository documentTagRepository;
 
-    public List<TagDTO> getUserTags(Long userId) {
-        return tagRepository.findByUserId(userId).stream()
-            .map(this::mapToDto)
-            .collect(Collectors.toList());
+    public ApiListResponse<TagResponse> getUserTags(Long userId) {
+        return ApiListResponse.<TagResponse> builder()
+            .items(
+                tagRepository.findByUserId(userId).stream()
+                    .map(this::mapToDto)
+                    .collect(Collectors.toList())
+            )
+            .build();
     }
 
     @Transactional
-    public TagDTO createTag(CreateTagRequest request) {
-        if (tagRepository.existsByNameAndUserId(request.getName(), request.getUserId())) {
+    public TagResponse createTag(Long userId, CreateTagRequest request) {
+        if (tagRepository.existsByNameAndUserId(request.getName(), userId)) {
             throw new IllegalArgumentException("Tag with this name already exists for user");
         }
 
         Tag tag = Tag.builder()
             .name(request.getName())
             .hexString(request.getHexString())
-            .userId(request.getUserId())
+            .userId(userId)
             .build();
 
         return mapToDto(tagRepository.save(tag));
     }
 
     @Transactional
-    public TagDTO updateTag(Long tagId, UpdateTagRequest request) {
+    public TagResponse updateTag(Long tagId, UpdateTagRequest request) {
         Tag tag = tagRepository.findById(tagId)
-            .orElseThrow(() -> new ResourceNotFoundException("Tag", tagId));
+            .orElseThrow(() -> new IllegalArgumentException("Tag does not exist with id=" + tagId));
 
-        return mapToDto(tagRepository.save(tag));
+        return mapToDto(tagRepository.save(
+            tag.toBuilder()
+                .hexString(request.getHexString())
+                .name(request.getName())
+                .build()
+        ));
     }
 
     @Transactional
     public void deleteTag(Long tagId) {
         if (!tagRepository.existsById(tagId)) {
-            throw new ResourceNotFoundException("Tag", tagId);
+            throw new IllegalArgumentException("Tag does not exist with id=" + tagId);
         }
 
         // Удаляем связи с документами
@@ -81,7 +89,7 @@ public class TagService {
         documentTagRepository.saveAll(newTags);
     }
 
-    public List<TagDTO> getDocumentTags(Long documentId) {
+    public List<TagResponse> getDocumentTags(Long documentId) {
         List<Long> tagIds = documentTagRepository.findByDocumentId(documentId).stream()
             .map(DocumentTag::getTagId)
             .collect(Collectors.toList());
@@ -99,30 +107,26 @@ public class TagService {
         return documentTagRepository.findDocumentIdsByAllTagIds(tagIds, tagIds.size());
     }
 
-    public TagResponse getTag(Long tagId) {
+    public org.identics.monolith.web.responses.TagResponse getTag(Long tagId) {
         Tag tag = tagRepository.findById(tagId)
-            .orElseThrow(() -> new ResourceNotFoundException("Tag", tagId));
+            .orElseThrow(() -> new IllegalArgumentException("Tag does not exist with id=" + tagId));
 
         return mapToTagResponse(tag);
     }
 
-    private TagDTO mapToDto(Tag tag) {
-        return TagDTO.builder()
+    private TagResponse mapToDto(Tag tag) {
+        return TagResponse.builder()
             .id(tag.getId())
             .name(tag.getName())
-            .userId(tag.getUserId())
+            .hexString(tag.getHexString())
             .build();
     }
 
     private TagResponse mapToTagResponse(Tag tag) {
-        // Count documents that have this tag
-        long documentsCount = documentTagRepository.countByTagId(tag.getId());
-
-        return TagResponse.builder()
+        return org.identics.monolith.web.responses.TagResponse.builder()
             .id(tag.getId())
             .name(tag.getName())
-            .userId(tag.getUserId())
-            .documentsCount((int) documentsCount)
+            .hexString(tag.getHexString())
             .build();
     }
 } 

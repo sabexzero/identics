@@ -20,12 +20,11 @@ public class UploadContentRequest {
     @Size(max = 255, message = "Название документа не может превышать 255 символов")
     private String title;
     
-    @NotBlank(message = "Содержимое документа не может быть пустым")
-    @Size(min = 10, message = "Содержимое документа должно содержать минимум 10 символов")
-    private String content;
-    
     @NotNull(message = "Тип содержимого обязателен")
     private ContentType contentType;
+
+    @Size(min = 100, max = 20000, message = "Размер контента от 100 до 20000")
+    private String content;
 
     @NotNull(message = "Список тегов обязателен, даже пустой список!")
     private List<Long> tagIds;

@@ -1,5 +1,6 @@
 package org.identics.monolith.service;
 
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.identics.monolith.domain.transaction.Transaction;
 import org.identics.monolith.domain.transaction.TransactionType;
@@ -49,7 +50,7 @@ public class TransactionService {
         Transaction transaction = Transaction.builder()
                 .userId(userId)
                 .dateTime(LocalDateTime.now())
-                .amount(null)
+                .amount(BigDecimal.valueOf(100L))
                 .checksCount(1)
                 .type(TransactionType.USAGE)
                 .description("Использование проверки")

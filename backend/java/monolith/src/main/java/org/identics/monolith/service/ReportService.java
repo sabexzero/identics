@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.identics.monolith.domain.check.Check;
 import org.identics.monolith.domain.check.ContentType;
 import org.identics.monolith.domain.check.Document;
-import org.identics.monolith.dto.TagDTO;
+import org.identics.monolith.web.responses.TagResponse;
 import org.identics.monolith.repository.CheckRepository;
 import org.identics.monolith.repository.DocumentRepository;
-import org.identics.monolith.web.advice.ResourceNotFoundException;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -26,13 +25,13 @@ public class ReportService {
     
     public Resource generateReport(Long documentId, String format) {
         Document content = documentRepository.findById(documentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Document", documentId));
+                .orElseThrow(() -> new IllegalArgumentException("Document not found with id=" + documentId));
         
         Optional<Check> checkOpt = checkRepository.findFirstByContentIdOrderByIdDesc(content.getId());
-        Check check = checkOpt.orElseThrow(() -> new ResourceNotFoundException("Check result", documentId));
+        Check check = checkOpt.orElseThrow(() -> new IllegalArgumentException("Check result not found with id="+ documentId));
         
         // Получаем теги документа
-        List<TagDTO> tags = tagService.getDocumentTags(documentId);
+        List<TagResponse> tags = tagService.getDocumentTags(documentId);
         
         // Генерация отчета
         String report;
@@ -45,13 +44,13 @@ public class ReportService {
         return new ByteArrayResource(report.getBytes(StandardCharsets.UTF_8));
     }
     
-    private String generatePdfReport(Document content, Check check, List<TagDTO> tags) {
+    private String generatePdfReport(Document content, Check check, List<TagResponse> tags) {
         // В реальном приложении здесь генерировался бы PDF документ
         // Для прототипа просто возвращаем HTML с заголовком PDF
         return "PDF REPORT\n" + generateHtmlReport(content, check, tags);
     }
     
-    private String generateHtmlReport(Document content, Check check, List<TagDTO> tags) {
+    private String generateHtmlReport(Document content, Check check, List<TagResponse> tags) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         
         StringBuilder html = new StringBuilder();
@@ -75,7 +74,7 @@ public class ReportService {
         html.append("<h2>Информация о документе</h2>");
         html.append("<table>");
         html.append("<tr><th>Название</th><td>").append(content.getTitle()).append("</td></tr>");
-        html.append("<tr><th>Тип контента</th><td>").append(content.getContentType() == ContentType.FILE ? "Файл" : "Текст").append("</td></tr>");
+        html.append("<tr><th>Тип контента</th><td>").append("Текст").append("</td></tr>");
         html.append("<tr><th>Дата начала проверки</th><td>").append(check.getStartTime().format(formatter)).append("</td></tr>");
         html.append("<tr><th>Дата конца проверки</th><td>").append(check.getEndTime().format(formatter)).append("</td></tr>");
 

@@ -2,11 +2,9 @@ package org.identics.monolith.service;
 
 import lombok.RequiredArgsConstructor;
 import org.identics.monolith.domain.apikey.ApiKey;
-import org.identics.monolith.domain.user.User;
 import org.identics.monolith.dto.ApiKeyDTO;
 import org.identics.monolith.repository.ApiKeyRepository;
 import org.identics.monolith.repository.UserRepository;
-import org.identics.monolith.web.advice.ResourceNotFoundException;
 import org.identics.monolith.web.requests.CreateApiKeyRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +53,7 @@ public class ApiKeyService {
     @Transactional
     public void revokeApiKey(Long userId, Long keyId) {
         ApiKey apiKey = apiKeyRepository.findById(keyId)
-                .orElseThrow(() -> new ResourceNotFoundException("API Key", keyId));
+                .orElseThrow(() -> new IllegalArgumentException("Illegal API-key - " + keyId));
         
         if (!apiKey.getUserId().equals(userId)) {
             throw new IllegalArgumentException("API Key does not belong to user");
@@ -73,7 +71,7 @@ public class ApiKeyService {
     
     private void validateUserExists(Long userId) {
         if (!userRepository.existsById(userId)) {
-            throw new ResourceNotFoundException("User", userId);
+            throw new IllegalArgumentException("User not found with id="+ userId);
         }
     }
     
@@ -85,7 +83,6 @@ public class ApiKeyService {
                 .name(apiKey.getName())
                 .createdAt(apiKey.getCreatedAt())
                 .lastUsedAt(apiKey.getLastUsedAt())
-                .expiresAt(apiKey.getExpiresAt())
                 .enabled(apiKey.isEnabled())
                 .build();
     }

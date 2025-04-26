@@ -3,7 +3,6 @@ package org.identics.monolith.service;
 import lombok.RequiredArgsConstructor;
 import org.identics.monolith.domain.apikey.ApiKey;
 import org.identics.monolith.repository.ApiKeyRepository;
-import org.identics.monolith.web.advice.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;

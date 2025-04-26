@@ -4,14 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.identics.monolith.dto.TagDTO;
+import org.identics.monolith.web.responses.TagResponse;
 import org.identics.monolith.service.TagService;
 import org.identics.monolith.web.requests.CreateTagRequest;
 import org.identics.monolith.web.requests.UpdateTagRequest;
+import org.identics.monolith.web.responses.ApiListResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class TagController {
         description = "Возвращает список всех тегов, созданных пользователем"
     )
     @GetMapping
-    public ResponseEntity<List<TagDTO>> getUserTags(
+    public ResponseEntity<ApiListResponse<TagResponse>> getUserTags(
         @PathVariable @Parameter(name = "userId", description = "Уникальный идентификатор пользователя") Long userId
     ) {
         return ResponseEntity.ok(tagService.getUserTags(userId));
@@ -36,11 +35,11 @@ public class TagController {
         description = "Создает новый тег для пользователя"
     )
     @PostMapping
-    public ResponseEntity<TagDTO> createTag(
+    public ResponseEntity<TagResponse> createTag(
         @PathVariable @Parameter(name = "userId", description = "Уникальный идентификатор пользователя") Long userId,
         @RequestBody @Parameter(name = "request", description = "Данные для создания тега") CreateTagRequest request
     ) {
-        return ResponseEntity.ok(tagService.createTag(request));
+        return ResponseEntity.ok(tagService.createTag(userId, request));
     }
     
     @Operation(
@@ -48,7 +47,7 @@ public class TagController {
         description = "Обновляет данные существующего тега"
     )
     @PutMapping("/{id}")
-    public ResponseEntity<TagDTO> updateTag(
+    public ResponseEntity<TagResponse> updateTag(
         @PathVariable @Parameter(name = "userId", description = "Уникальный идентификатор пользователя") Long userId,
         @PathVariable("id") @Parameter(name = "id", description = "ID тега") Long tagId,
         @RequestBody @Parameter(name = "request", description = "Данные для обновления тега") UpdateTagRequest request

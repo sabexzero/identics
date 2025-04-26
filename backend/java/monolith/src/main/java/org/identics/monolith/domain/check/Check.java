@@ -27,6 +27,10 @@ public class Check {
     private Long contentId;
     private Double uniqueness;
     private Double aiCheckLevel;
+    private CheckStatus status;
+    private ContentType contentType;
+    private String contentUrl;
+    private String reportUrl;
 
     // New fields for additional document information
     private Integer wordCount;
