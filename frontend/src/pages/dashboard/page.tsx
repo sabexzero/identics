@@ -7,7 +7,6 @@ import {
     CardTitle,
 } from "@/components/ui/card.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
-import TextUploaderForm from "@/components/forms/dashboard/text";
 import { FileUploaderForm } from "@/components/forms/dashboard/file";
 import { useState } from "react";
 import { Button } from "@/components/ui/button.tsx";
@@ -16,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useGetDocumentsQuery } from "@/api/documentApi";
 import { Progress } from "@/components/ui/progress.tsx";
 import { formatDate } from "@/lib/utils.ts";
+import TextUploaderForm from "@/components/forms/dashboard/text";
 
 function DashboardPageUniqueness({ uniqueness }: { uniqueness: number | null }) {
     if (!uniqueness) {

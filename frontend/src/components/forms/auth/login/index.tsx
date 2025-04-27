@@ -8,8 +8,8 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { schema } from "@/components/forms/auth/login/schema.ts";
-import { useLoginMutation } from "@/api/authApi";
 import { toast } from "sonner";
+import { useLoginMutation } from "@/api/authApi";
 
 export default function LoginForm() {
     const navigate = useNavigate();
@@ -24,27 +24,19 @@ export default function LoginForm() {
     });
 
     const handleSubmit = async (values: z.infer<typeof schema>) => {
-        console.log("[1] Начало handleSubmit");
         try {
-            console.log("[2] Пытаемся отправить запрос");
             const result = await login({
                 login: values.email,
                 password: values.password,
             }).unwrap();
 
-            console.log("[3] Токен получен:", result.accessToken);
             localStorage.setItem("accessToken", result.accessToken);
-
-            console.log("[4] Переходим на /dashboard");
             navigate("/dashboard");
-
-            console.log("[5] Показываем toast");
             toast.success("Вы авторизировались!");
         } catch (error) {
             console.error("[ERROR]", error);
             toast.error("Ошибка авторизации");
         }
-        console.log("[6] Конец handleSubmit");
     };
 
     return (
