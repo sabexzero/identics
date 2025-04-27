@@ -124,7 +124,7 @@ public class AuthController {
         UserRegistrationRequest request
     ) {
         try {
-            log.info("Received registration request for user: {}", request.getUsername());
+            log.info("Received registration request for user: {}", request.getEmail());
             
             // Register the user and get authentication response
             SignInKeycloakResponse authResponse = authService.register(request);
@@ -144,7 +144,7 @@ public class AuthController {
                 .expiresIn(authResponse.expiresIn())
                 .build();
                 
-            log.info("User '{}' successfully registered", request.getUsername());
+            log.info("User '{}' successfully registered", request.getEmail());
             
             // Return response with cookie and body
             return ResponseEntity.ok()
@@ -152,12 +152,12 @@ public class AuthController {
                 .body(responseBody);
                 
         } catch (AuthenticationException e) {
-            log.error("Registration failed for '{}': {}", request.getUsername(), e.getMessage());
+            log.error("Registration failed for '{}': {}", request.getEmail(), e.getMessage());
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body("Invalid registration request: " + e.getMessage());
         } catch (Exception e) {
-            log.error("Unexpected error during registration for '{}': {}", request.getUsername(), e.getMessage());
+            log.error("Unexpected error during registration for '{}': {}", request.getEmail(), e.getMessage());
             return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("An unexpected error occurred during registration: " + e.getMessage());

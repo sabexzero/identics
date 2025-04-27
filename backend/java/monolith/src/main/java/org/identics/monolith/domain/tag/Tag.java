@@ -31,4 +31,7 @@ public class Tag {
     
     @Column(name = "user_id", nullable = false)
     private Long userId;
+
+    @Column(name = "is_default", nullable = false)
+    private Boolean isDefaultTag = false;
 } 

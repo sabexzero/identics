@@ -1,0 +1,1006 @@
+{
+	"info": {
+		"_postman_id": "d5e3c1f1-c8ba-4a9e-90e3-78d93c22e5c3",
+		"name": "Identics API",
+		"description": "API для сервиса Identics",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"description": "Операции аутентификации и регистрации пользователей",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"login\": \"your_username\",\n  \"password\": \"your_password\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Аутентификация пользователя через KeyCloak"
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"new_user\",\n  \"email\": \"user@example.com\",\n  \"password\": \"secure_password\",\n  \"name\": \"Имя\",\n  \"surname\": \"Фамилия\",\n  \"patronymic\": \"Отчество\",\n  \"city\": \"Москва\",\n  \"institution\": \"Университет\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Регистрация нового пользователя с созданием профиля"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/refresh-token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"refresh-token"
+							]
+						},
+						"description": "Обновление токена доступа с использованием refresh-токена"
+					},
+					"response": []
+				},
+				{
+					"name": "Signout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/signout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"signout"
+							]
+						},
+						"description": "Выход из системы и деактивация refresh-токена"
+					},
+					"response": []
+				},
+				{
+					"name": "OAuth Authentication",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/oauth?code=authorization_code&provider=google&redirect_uri=http://localhost:3000/oauth/callback",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"oauth"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "authorization_code",
+									"description": "Код авторизации от OAuth провайдера"
+								},
+								{
+									"key": "provider",
+									"value": "google",
+									"description": "Имя провайдера (google, facebook, github и т.д.)"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:3000/oauth/callback",
+									"description": "URI перенаправления, используемый при авторизации"
+								}
+							]
+						},
+						"description": "Аутентификация через OAuth провайдера"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Profile",
+			"description": "Операции с профилем пользователя",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"profile"
+							]
+						},
+						"description": "Получение профиля пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Имя\",\n  \"surname\": \"Фамилия\",\n  \"patronymic\": \"Отчество\",\n  \"city\": \"Москва\",\n  \"institution\": \"Университет\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"profile"
+							]
+						},
+						"description": "Обновление профиля пользователя"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Settings",
+			"description": "Операции с настройками пользователя",
+			"item": [
+				{
+					"name": "Get User Settings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/settings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"settings"
+							]
+						},
+						"description": "Получение настроек пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Settings",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"isTelegramNotificationsEnabled\": false,\n  \"isBrowserNotificationsEnabled\": true,\n  \"reportPlagiarismSelectorStyle\": \"UNDERSCORING\",\n  \"reportColorMap\": \"BLUE_GREEN_ORANGE\",\n  \"reportFileFormat\": \"PDF\",\n  \"isWebHookNotificationsEnabled\": false,\n  \"isApiCallsLoggingEnabled\": false,\n  \"apiWebhookUrl\": null\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/settings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"settings"
+							]
+						},
+						"description": "Обновление настроек пользователя"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Documents",
+			"description": "Операции с документами",
+			"item": [
+				{
+					"name": "Create Document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "multipart/form-data"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/path/to/document.pdf"
+								},
+								{
+									"key": "name",
+									"value": "Document Name",
+									"type": "text"
+								},
+								{
+									"key": "sourceId",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/documents",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"documents"
+							]
+						},
+						"description": "Загрузка нового документа"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Documents",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/documents",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"documents"
+							]
+						},
+						"description": "Получение списка документов пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Document",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/documents/{{documentId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"documents",
+								"{{documentId}}"
+							]
+						},
+						"description": "Получение информации о документе"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Document",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Document Name\",\n  \"sourceId\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/documents/{{documentId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"documents",
+								"{{documentId}}"
+							]
+						},
+						"description": "Обновление информации о документе"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Document",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/documents/{{documentId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"documents",
+								"{{documentId}}"
+							]
+						},
+						"description": "Удаление документа"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Checks",
+			"description": "Операции проверки на плагиат",
+			"item": [
+				{
+					"name": "Create Check",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"documentId\": 1,\n  \"options\": {\n    \"minScore\": 50,\n    \"excludeSources\": false\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/checks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"checks"
+							]
+						},
+						"description": "Создание новой проверки на плагиат"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Check Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/checks/{{checkId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"checks",
+								"{{checkId}}"
+							]
+						},
+						"description": "Получение статуса проверки"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Checks",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/checks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"checks"
+							]
+						},
+						"description": "Получение всех проверок пользователя"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reports",
+			"description": "Операции с отчетами о плагиате",
+			"item": [
+				{
+					"name": "Get Report",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/reports/{{checkId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"reports",
+								"{{checkId}}"
+							]
+						},
+						"description": "Получение отчета о плагиате для проверки"
+					},
+					"response": []
+				},
+				{
+					"name": "Download Report PDF",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/reports/{{checkId}}/download",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"reports",
+								"{{checkId}}",
+								"download"
+							]
+						},
+						"description": "Скачивание отчета в формате PDF"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tags",
+			"description": "Операции с тегами документов",
+			"item": [
+				{
+					"name": "Create Tag",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Новый тег\",\n  \"color\": \"#FF5733\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/tags",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"tags"
+							]
+						},
+						"description": "Создание нового тега"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Tags",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/tags",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"tags"
+							]
+						},
+						"description": "Получение всех тегов пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Tag",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Обновленный тег\",\n  \"color\": \"#33FF57\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/tags/{{tagId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"tags",
+								"{{tagId}}"
+							]
+						},
+						"description": "Обновление тега"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Tag",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/tags/{{tagId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"tags",
+								"{{tagId}}"
+							]
+						},
+						"description": "Удаление тега"
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Tag To Document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/documents/{{documentId}}/tags/{{tagId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"documents",
+								"{{documentId}}",
+								"tags",
+								"{{tagId}}"
+							]
+						},
+						"description": "Присвоение тега документу"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Tag From Document",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/documents/{{documentId}}/tags/{{tagId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"documents",
+								"{{documentId}}",
+								"tags",
+								"{{tagId}}"
+							]
+						},
+						"description": "Удаление тега у документа"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "API Keys",
+			"description": "Операции с API ключами",
+			"item": [
+				{
+					"name": "Create API Key",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"My API Key\",\n  \"expirationDays\": 30\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/apikeys",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"apikeys"
+							]
+						},
+						"description": "Создание нового API ключа"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All API Keys",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/apikeys",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"apikeys"
+							]
+						},
+						"description": "Получение всех API ключей пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "Revoke API Key",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/apikeys/{{apiKeyId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"apikeys",
+								"{{apiKeyId}}"
+							]
+						},
+						"description": "Отзыв API ключа"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"description": "Операции с транзакциями (покупка проверок)",
+			"item": [
+				{
+					"name": "Create Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"checksCount\": 10,\n  \"paymentMethod\": \"CARD\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"transactions"
+							]
+						},
+						"description": "Создание новой транзакции (покупка проверок)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/{{userId}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"{{userId}}",
+								"transactions"
+							]
+						},
+						"description": "Получение истории транзакций пользователя"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Автоматическое сохранение access_token из ответа при успешной аутентификации",
+					"if (pm.response.code === 200 && (pm.request.url.path.includes('login') || pm.request.url.path.includes('register') || pm.request.url.path.includes('oauth'))) {",
+					"    var jsonData = pm.response.json();",
+					"    if (jsonData && jsonData.accessToken) {",
+					"        pm.environment.set('access_token', jsonData.accessToken);",
+					"        console.log('Access token сохранен в переменных окружения');",
+					"    }",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "1",
+			"type": "string"
+		}
+	]
+} 

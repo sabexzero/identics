@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="notifications">
+    <div id="notifications-dropdown" class="notifications-dropdown">
+        <div class="notifications-header">
+            <h3>Уведомления</h3>
+            <button id="mark-all-read" class="mark-all-read">Отметить все как прочитанные</button>
+        </div>
+        <div class="notifications-tabs">
+            <button class="tab-button active" data-tab="all">Все</button>
+            <button class="tab-button" data-tab="unread">Непрочитанные</button>
+        </div>
+        <div id="notifications-container" class="notifications-container">
+            <div class="notifications-loading">Загрузка уведомлений...</div>
+        </div>
+        <div class="notifications-footer">
+            <a href="/notifications" class="view-all">Посмотреть все уведомления</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize notifications
+            const notificationsService = new NotificationService(currentUserId);
+            
+            // Get elements
+            const notificationsDropdown = document.getElementById('notifications-dropdown');
+            const notificationsContainer = document.getElementById('notifications-container');
+            const notificationsButton = document.getElementById('notifications-button');
+            const notificationsBadge = document.getElementById('notifications-badge');
+            const markAllReadButton = document.getElementById('mark-all-read');
+            const tabButtons = document.querySelectorAll('.tab-button');
+            
+            let currentTab = 'all';
+            
+            // Toggle notifications dropdown
+            if (notificationsButton) {
+                notificationsButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    notificationsDropdown.classList.toggle('open');
+                    
+                    if (notificationsDropdown.classList.contains('open')) {
+                        loadNotifications(currentTab);
+                    }
+                });
+            }
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (notificationsDropdown && !notificationsDropdown.contains(e.target) && 
+                    notificationsButton && !notificationsButton.contains(e.target)) {
+                    notificationsDropdown.classList.remove('open');
+                }
+            });
+            
+            // Mark all as read
+            if (markAllReadButton) {
+                markAllReadButton.addEventListener('click', function() {
+                    notificationsService.markAllAsRead().then(count => {
+                        loadNotifications(currentTab);
+                    });
+                });
+            }
+            
+            // Tab switching
+            if (tabButtons) {
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        tabButtons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+                        currentTab = this.dataset.tab;
+                        loadNotifications(currentTab);
+                    });
+                });
+            }
+            
+            // Function to load notifications based on tab
+            function loadNotifications(tab) {
+                notificationsContainer.innerHTML = '<div class="notifications-loading">Загрузка уведомлений...</div>';
+                
+                const loadPromise = tab === 'unread' 
+                    ? notificationsService.loadUnreadNotifications()
+                    : notificationsService.loadAllNotifications();
+                
+                loadPromise.then(notifications => {
+                    if (notifications.length === 0) {
+                        notificationsContainer.innerHTML = '<div class="notifications-empty">Нет уведомлений</div>';
+                        return;
+                    }
+                    
+                    notificationsContainer.innerHTML = '';
+                    
+                    notifications.forEach(notification => {
+                        const notificationElement = document.createElement('div');
+                        notificationElement.className = 'notification-item' + (notification.read ? ' read' : '');
+                        notificationElement.innerHTML = `
+                            <div class="notification-content">
+                                <div class="notification-title">${notification.title}</div>
+                                <div class="notification-message">${notification.message}</div>
+                                <div class="notification-time">${formatDate(notification.createdAt)}</div>
+                            </div>
+                        `;
+                        
+                        notificationElement.addEventListener('click', function() {
+                            if (!notification.read) {
+                                notificationsService.markAsRead(notification.id).then(success => {
+                                    if (success) {
+                                        notificationElement.classList.add('read');
+                                        notification.read = true;
+                                    }
+                                });
+                            }
+                            
+                            // Handle notification action if needed
+                            if (notification.documentId) {
+                                window.location.href = `/documents/${notification.documentId}`;
+                            }
+                        });
+                        
+                        notificationsContainer.appendChild(notificationElement);
+                    });
+                });
+            }
+            
+            // Format date helper
+            function formatDate(dateStr) {
+                const date = new Date(dateStr);
+                const now = new Date();
+                const diff = now - date;
+                
+                // Less than a day
+                if (diff < 86400000) {
+                    const hours = date.getHours().toString().padStart(2, '0');
+                    const minutes = date.getMinutes().toString().padStart(2, '0');
+                    return `${hours}:${minutes}`;
+                }
+                
+                // Less than a week
+                if (diff < 604800000) {
+                    const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+                    return days[date.getDay()];
+                }
+                
+                // Older
+                return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+            }
+            
+            // Connect to notifications server
+            notificationsService.connect().then(() => {
+                console.log('Connected to notifications server');
+                
+                // Set message callback
+                notificationsService.onMessage(notification => {
+                    // Display browser notification
+                    if (Notification.permission === 'granted') {
+                        notificationsService._createNotification(notification);
+                    }
+                    
+                    // If dropdown is open, refresh the list
+                    if (notificationsDropdown.classList.contains('open')) {
+                        loadNotifications(currentTab);
+                    }
+                });
+                
+            }).catch(error => {
+                console.error('Failed to connect to notifications server', error);
+            });
+        });
+    </script>
+</th:block>
+</html> 

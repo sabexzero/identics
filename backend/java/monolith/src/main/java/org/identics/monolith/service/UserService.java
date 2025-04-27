@@ -1,9 +1,12 @@
 package org.identics.monolith.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.identics.monolith.domain.tag.Tag;
 import org.identics.monolith.domain.user.User;
 import org.identics.monolith.domain.user.UserSettings;
+import org.identics.monolith.repository.TagRepository;
 import org.identics.monolith.repository.UserRepository;
 import org.identics.monolith.repository.UserSettingsRepository;
 import org.identics.monolith.web.requests.auth.UserRegistrationRequest;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
     private final UserSettingsRepository userSettingsRepository;
+    private final TagRepository tagRepository;
 
     /**
      * Creates a new user and their default settings
@@ -26,13 +30,11 @@ public class UserService {
      */
     @Transactional
     public User createUser(UserRegistrationRequest request) {
-        log.info("Creating new user: {}", request.getUsername());
+        log.info("Creating new user: {}", request.getEmail());
         
         // Create and save the user
         User user = User.builder()
                 .name(request.getName())
-                .surname(request.getSurname())
-                .patronymic(request.getPatronymic())
                 .city(request.getCity())
                 .institution(request.getInstitution())
                 .checksAvailable(0) // Default to 0 available checks
@@ -52,7 +54,18 @@ public class UserService {
         
         userSettingsRepository.save(userSettings);
         log.info("Default settings created for user ID: {}", savedUser.getId());
-        
+
+        tagRepository.saveAll(
+            List.of(
+                Tag.builder()
+                    .userId(savedUser.getId())
+                    .name("Избранное")
+                    .hexString("#3390EC")
+                    .isDefaultTag(true)
+                    .build()
+            )
+        );
+
         return savedUser;
     }
 } 

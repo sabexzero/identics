@@ -120,9 +120,15 @@ public class DocumentService {
         int page,
         int size
     ) {
-        Sort sort = createSort(sortBy, sortDirection);
+        // Обрабатываем особый случай сортировки по дате проверки
+        boolean isSortingByCheckDate = sortBy != null && sortBy.equalsIgnoreCase("date");
+        
+        // Если не сортируем по дате проверки, используем стандартную сортировку
+        Sort sort = isSortingByCheckDate ? Sort.unsorted() : createSort(sortBy, sortDirection);
         Pageable pageable = PageRequest.of(page, size, sort);
 
+        Page<DocumentWithTagsResponse> result;
+        
         if ((tagIds != null && !tagIds.isEmpty()) || (searchTerm != null && !searchTerm.trim().isEmpty())) {
             final List<Long> documentIds = (tagIds != null && !tagIds.isEmpty())
                 ? tagService.findDocumentsByTags(tagIds)
@@ -141,24 +147,53 @@ public class DocumentService {
                         .filter(doc -> documentIds.contains(doc.getId()))
                         .collect(Collectors.toList());
 
-                    return new PageImpl<>(
+                    result = new PageImpl<>(
                         filteredContent,
                         pageable,
                         filteredContent.size()
                     );
                 } else {
-                    return searchResults;
+                    result = searchResults;
                 }
             } else if (!documentIds.isEmpty()) {
                 // Only tag filtering
-                return documentRepository.findByUserIdAndIdIn(userId, documentIds, pageable)
+                result = documentRepository.findByUserIdAndIdIn(userId, documentIds, pageable)
                     .map(this::mapToDocumentResponse);
+            } else {
+                // Этот случай не должен произойти, но добавляем для безопасности
+                result = Page.empty();
             }
+        } else {
+            // No filters, return all user documents
+            result = documentRepository.findByUserId(userId, pageable)
+                .map(this::mapToDocumentResponse);
         }
-
-        // No filters, return all user documents
-        return documentRepository.findByUserId(userId, pageable)
-            .map(this::mapToDocumentResponse);
+        
+        // Применяем пост-сортировку по дате проверки, если требуется
+        if (isSortingByCheckDate) {
+            List<DocumentWithTagsResponse> sortedContent = result.getContent()
+                .stream()
+                .sorted((doc1, doc2) -> {
+                    // Сначала обрабатываем null значения
+                    if (doc1.getCheckDate() == null && doc2.getCheckDate() == null) {
+                        return 0; // Оба null, считаем равными
+                    } else if (doc1.getCheckDate() == null) {
+                        return sortDirection != null && sortDirection.equalsIgnoreCase("asc") ? -1 : 1; // null идет первым при asc, последним при desc
+                    } else if (doc2.getCheckDate() == null) {
+                        return sortDirection != null && sortDirection.equalsIgnoreCase("asc") ? 1 : -1; // null идет первым при asc, последним при desc
+                    }
+                    
+                    // Оба не null, сравниваем напрямую
+                    int comparison = doc1.getCheckDate().compareTo(doc2.getCheckDate());
+                    return sortDirection != null && sortDirection.equalsIgnoreCase("asc") ? comparison : -comparison;
+                })
+                .collect(Collectors.toList());
+            
+            // Создаем новую страницу с отсортированным контентом
+            result = new PageImpl<>(sortedContent, pageable, result.getTotalElements());
+        }
+        
+        return result;
     }
 
     @Transactional(readOnly = true)
@@ -250,21 +285,144 @@ public class DocumentService {
         if (sources == null || sources.isEmpty()) {
             return Collections.emptyList();
         }
+        
+        // Получаем текст оригинального документа для определения контекста
+        Document originalDocument = null;
+        if (!sources.isEmpty() && sources.get(0).getCheck() != null) {
+            Long contentId = sources.get(0).getCheck().getContentId();
+            if (contentId != null) {
+                originalDocument = documentRepository.findById(contentId).orElse(null);
+            }
+        }
+        
+        final String documentText = originalDocument != null ? originalDocument.getText() : "";
+        final int N_GRAM_SIZE = 7; // Размер n-граммы
+        final int CONTEXT_MAX_LENGTH = 100; // Максимальная длина контекста
+        
         return sources.stream()
             .map(s -> {
                 // Доступ к sourceDocumentRegistry вызовет его загрузку (если LAZY)
-                // Это может привести к проблеме N+1, если источников много.
-                // Рассмотрите использование fetch join в запросе репозитория,
-                // который получает DocumentSource, чтобы загрузить DocumentRegistry сразу.
                 DocumentRegistry registryInfo = s.getSourceDocumentRegistry(); // Получаем связанную сущность
+                
+                // Рассчитываем индексы символов из индексов n-грамм
+                Integer firstPosNGram = s.getFirstPos();
+                Integer secondPosNGram = s.getSecondPos();
+                
+                // Если документ не доступен или индексы некорректны - возвращаем базовую информацию
+                if (documentText.isEmpty() || firstPosNGram == null || secondPosNGram == null 
+                        || firstPosNGram < 0 || secondPosNGram < 0 
+                        || firstPosNGram > documentText.length() || secondPosNGram > documentText.length()) {
+                    return GetDocumentByIdResponse.SourceDTO.builder()
+                        .sourceInfo(registryInfo != null ? registryInfo.getOriginalFilename().replace(".txt", "").trim() : null)
+                        .firstPos(firstPosNGram)
+                        .secondPos(secondPosNGram)
+                        .build();
+                }
+                
+                // Важно! firstPosNGram это позиция первой совпавшей n-граммы,
+                // а secondPosNGram это позиция последней совпавшей n-граммы.
+                // Реальный конец плагиата находится в secondPosNGram + N_GRAM_SIZE
+                
+                // Пересчитываем индексы n-грамм в индексы символов
+                int startCharIndex = Math.max(0, firstPosNGram);
+                
+                // Учитываем, что secondPosNGram это только начало последней n-граммы,
+                // поэтому добавляем N_GRAM_SIZE, чтобы захватить весь текст плагиата
+                int endCharIndex = Math.min(documentText.length(), secondPosNGram + N_GRAM_SIZE);
+                
+                // Получаем весь контекст вокруг диапазона плагиата
+                String contextText = extractContextWithHighlight(documentText, startCharIndex, endCharIndex, CONTEXT_MAX_LENGTH);
 
                 return GetDocumentByIdResponse.SourceDTO.builder()
                     .sourceInfo(registryInfo != null ? registryInfo.getOriginalFilename().replace(".txt", "").trim() : null)
-                    .firstPos(s.getFirstPos())
-                    .secondPos(s.getSecondPos())
+                    .firstPos(firstPosNGram)
+                    .secondPos(secondPosNGram)
+                    .text(contextText)
+                    .startCharIndex(startCharIndex)
+                    .endCharIndex(endCharIndex) // Включает размер последней n-граммы
                     .build();
             })
             .collect(Collectors.toList());
+    }
+    
+    /**
+     * Извлекает контекст вокруг совпадения с учетом границ предложений
+     * @param documentText полный текст документа
+     * @param startIndex индекс начала совпадения
+     * @param endIndex индекс конца совпадения плюс размер n-граммы
+     * @param maxContextLength максимальная длина контекста до/после совпадения
+     * @return строка с текстом до, самим совпадением и текстом после
+     */
+    private String extractContextWithHighlight(String documentText, int startIndex, int endIndex, int maxContextLength) {
+        if (documentText.isEmpty() || startIndex >= endIndex || startIndex >= documentText.length()) {
+            return "";
+        }
+        
+        // Определяем границы текста до совпадения
+        int contextStart;
+        if (startIndex > 0) {
+            // Находим начало предложения (ищем точку слева от совпадения)
+            int sentenceStart = documentText.lastIndexOf(".", startIndex - 1);
+            if (sentenceStart == -1) {
+                // Если точка не найдена, берем начало документа
+                sentenceStart = 0;
+            } else {
+                // Сдвигаемся на один символ вправо после точки
+                sentenceStart = Math.min(sentenceStart + 1, startIndex);
+            }
+            
+            // Если расстояние от начала предложения до совпадения больше maxContextLength,
+            // сокращаем контекст
+            if (startIndex - sentenceStart > maxContextLength) {
+                contextStart = startIndex - maxContextLength;
+            } else {
+                contextStart = sentenceStart;
+            }
+        } else {
+            contextStart = 0;
+        }
+        
+        // Определяем границы текста после совпадения
+        int contextEnd;
+        if (endIndex < documentText.length()) {
+            // Находим конец предложения (ищем точку справа от совпадения)
+            int sentenceEnd = documentText.indexOf(".", endIndex);
+            if (sentenceEnd == -1) {
+                // Если точка не найдена, берем конец документа
+                sentenceEnd = documentText.length();
+            } else {
+                // Включаем точку в контекст
+                sentenceEnd = Math.min(sentenceEnd + 1, documentText.length());
+            }
+            
+            // Если расстояние от конца совпадения до конца предложения больше maxContextLength,
+            // сокращаем контекст
+            if (sentenceEnd - endIndex > maxContextLength) {
+                contextEnd = endIndex + maxContextLength;
+            } else {
+                contextEnd = sentenceEnd;
+            }
+        } else {
+            contextEnd = documentText.length();
+        }
+        
+        // Собираем весь необходимый контекст
+        StringBuilder result = new StringBuilder();
+        
+        // Добавляем многоточие, если контекст начинается не с начала предложения
+        if (contextStart > 0) {
+            result.append("...");
+        }
+        
+        // Добавляем весь текст от начала контекста до конца контекста, без разделения
+        result.append(documentText.substring(contextStart, Math.min(contextEnd, documentText.length())).trim());
+        
+        // Добавляем многоточие, если контекст заканчивается не концом предложения
+        if (contextEnd < documentText.length()) {
+            result.append("...");
+        }
+        
+        return result.toString().trim();
     }
 
     private Sort createSort(String sortBy, String sortDirection) {
@@ -278,7 +436,8 @@ public class DocumentService {
 
         return switch (sortBy.toLowerCase()) {
             case "title" -> Sort.by(direction, "title");
-            case "date" -> Sort.by(direction, "processingTime");
+            // Сортировка по дате проверки теперь обрабатывается отдельно
+            case "date" -> Sort.by(direction, "createdAt"); // Оставляем для совместимости, но не используем
             default -> Sort.by(direction, "id");
         };
     }

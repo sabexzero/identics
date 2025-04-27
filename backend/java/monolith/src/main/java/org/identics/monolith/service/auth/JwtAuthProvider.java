@@ -17,5 +17,5 @@ public interface JwtAuthProvider {
      * @return Authentication response with tokens
      * @throws IOException If registration fails
      */
-    SignInKeycloakResponse registerUser(UserRegistrationRequest request) throws IOException;
+    SignInKeycloakResponse registerUser(UserRegistrationRequest request, Long userId) throws IOException;
 }

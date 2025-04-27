@@ -9,9 +9,6 @@ import lombok.Data;
 @Data
 @Builder
 public class UserRegistrationRequest {
-    @NotBlank(message = "Username is required")
-    private String username;
-
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email is required")
     private String email;
@@ -20,13 +17,8 @@ public class UserRegistrationRequest {
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
-    @NotBlank(message = "First name is required")
+    @NotBlank(message = "Name is required")
     private String name;
-
-    @NotBlank(message = "Last name is required")
-    private String surname;
-
-    private String patronymic;
     
     private String city;
     private String institution;

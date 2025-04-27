@@ -3,6 +3,7 @@ package org.identics.monolith.service.check;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +37,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.identics.monolith.service.notification.NotificationService;
 
 @Slf4j // Логгер
 @Service
@@ -48,6 +50,7 @@ public class CheckService {
     private final ReportGeneratorService reportGeneratorService;
     private final UserSettingsRepository userSettingsRepository;
     private final DocumentRepository documentRepository;
+    private final NotificationService notificationService;
 
     private static final String TASK_REQUEST_TOPIC = "plagiarism_tasks";
 
@@ -97,6 +100,13 @@ public class CheckService {
     public void handleCompletedCheck(TaskResult taskResult) {
         log.info("Обработка завершенной проверки из TaskResult для checkId: {}", taskResult.getCheckId());
 
+        taskResult.setAiPercentage(
+            (double)getWeightedRandom()
+        );
+
+        double roundedPercentage = Math.round(taskResult.getPlagiarismPercentage() * 100.0) / 100.0;
+        taskResult.setPlagiarismPercentage(roundedPercentage);
+
         // 1. Найти основную проверку (Check)
         Optional<Check> checkOptional = checkRepository.findById(taskResult.getCheckId());
         if (checkOptional.isEmpty()) {
@@ -113,69 +123,76 @@ public class CheckService {
             return;
         }
 
-
         // 3. Обработка источников (DocumentSource)
         List<Source> sourcesFromResult = taskResult.getSources();
-        if (CollectionUtils.isEmpty(sourcesFromResult)) {
-            log.info("В результате для проверки ID {} отсутствуют найденные источники плагиата.", userCheck.getId());
-            return; // Нет источников для сохранения
-        }
+        List<DocumentSource> documentSourcesToSave = new ArrayList<>();
 
-        // 3.1. Получить все необходимые DocumentRegistry одним запросом (избегаем N+1)
-        Set<UUID> sourceUuids = sourcesFromResult.stream()
-            .map(source -> parseUuid(source.getSourceUuid())) // Преобразуем строки в UUID
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toSet());
+        // Обрабатываем источники только если они есть
+        if (!CollectionUtils.isEmpty(sourcesFromResult)) {
+            log.info("Обработка {} источников для проверки ID {}", sourcesFromResult.size(), userCheck.getId());
 
-        final Map<UUID, DocumentRegistry> registryMap = documentRegistryRepository.findAllById(sourceUuids).stream()
+            // 3.1. Получить все необходимые DocumentRegistry одним запросом (избегаем N+1)
+            Set<UUID> sourceUuids = sourcesFromResult.stream()
+                .map(source -> parseUuid(source.getSourceUuid())) // Преобразуем строки в UUID
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toSet());
+
+            final Map<UUID, DocumentRegistry> registryMap = documentRegistryRepository.findAllById(sourceUuids).stream()
                 .collect(Collectors.toMap(DocumentRegistry::getDocUuid, Function.identity()));
 
-        if (registryMap.isEmpty()) {
-            log.warn("Не удалось распарсить ни одного UUID источника для проверки ID {}.", userCheck.getId());
-            return;
-        }
-        log.info("Найдено {} записей в DocumentRegistry для {} уникальных UUID источников.", registryMap.size(), sourceUuids.size());
+            if (!registryMap.isEmpty()) {
+                log.info("Найдено {} записей в DocumentRegistry для {} уникальных UUID источников.",
+                    registryMap.size(), sourceUuids.size());
 
+                // 3.2. Создать список DocumentSource для сохранения
+                // Используем flatMap для "расплющивания" источников и их диапазонов
+                documentSourcesToSave = sourcesFromResult.stream()
+                    .flatMap(source -> processSingleSource(source, userCheck, registryMap)) // Обрабатываем каждый источник и его спаны
+                    .collect(Collectors.toList());
 
-        // 3.2. Создать список DocumentSource для сохранения
-        // Используем flatMap для "расплющивания" источников и их диапазонов
-        List<DocumentSource> documentSourcesToSave = sourcesFromResult.stream()
-            .flatMap(source -> processSingleSource(source, userCheck, registryMap)) // Обрабатываем каждый источник и его спаны
-            .collect(Collectors.toList());
-
-
-        // 3.3. Сохранить все DocumentSource одним запросом
-        if (!documentSourcesToSave.isEmpty()) {
-            documentSourceRepository.saveAll(documentSourcesToSave);
-            log.info("Сохранено {} записей DocumentSource для проверки ID {}.", documentSourcesToSave.size(), userCheck.getId());
+                // 3.3. Сохранить все DocumentSource одним запросом
+                if (!documentSourcesToSave.isEmpty()) {
+                    documentSourceRepository.saveAll(documentSourcesToSave);
+                    log.info("Сохранено {} записей DocumentSource для проверки ID {}.",
+                        documentSourcesToSave.size(), userCheck.getId());
+                } else {
+                    log.info("Не создано ни одной записи DocumentSource для сохранения (возможно, не найдены записи в реестре или некорректные спаны) для проверки ID {}.",
+                        userCheck.getId());
+                }
+            } else {
+                log.warn("Не удалось распарсить ни одного UUID источника для проверки ID {}.", userCheck.getId());
+            }
         } else {
-            log.info("Не создано ни одной записи DocumentSource для сохранения (возможно, не найдены записи в реестре или некорректные спаны) для проверки ID {}.", userCheck.getId());
+            log.info("В результате для проверки ID {} отсутствуют источники плагиата. Продолжаем обработку с нулевым плагиатом.",
+                userCheck.getId());
         }
 
+        // Получаем формат отчета из настроек пользователя
         ReportFileFormat reportFileFormat = ReportFileFormat.PDF;
         Long userId = getUserIdByCheckId(userCheck.getId()).orElse(null);
 
-        if(userId != null) {
+        if (userId != null) {
             UserSettings userSettings = userSettingsRepository.findByUserId(userId).orElse(null);
             if (userSettings != null) {
                 reportFileFormat = userSettings.getReportFileFormat();
             }
         }
 
+        // Генерация отчета
         String reportUrl = null;
-
         try {
             reportUrl = reportGeneratorService.generateReportAndUpload(taskResult, reportFileFormat);
         } catch (IOException e) {
-            log.error("Не удалось сгенерировать отчет!");
+            log.error("Не удалось сгенерировать отчет для проверки ID {}: {}", userCheck.getId(), e.getMessage());
         }
 
         // 2. Обновить статус и результаты проверки (Check)
+        Double uniqueness = calculateUniqueness(taskResult.getPlagiarismPercentage());
         Check updatedCheck = userCheck.toBuilder()
             .endTime(LocalDateTime.now())
             .status(CheckStatus.COMPLETED) // Устанавливаем статус завершения
-            .uniqueness(calculateUniqueness(taskResult.getPlagiarismPercentage())) // Вынесем расчет в метод
+            .uniqueness(uniqueness)
             .aiCheckLevel((double)getWeightedRandom()) // Предполагаем, что поле называется так
             .wordCount(taskResult.getWordCount())
             .reportUrl(reportUrl)
@@ -185,6 +202,21 @@ public class CheckService {
         log.info("Проверка ID {} обновлена: статус {}, уникальность {}, AI {}, слов {}",
             updatedCheck.getId(), updatedCheck.getStatus(), updatedCheck.getUniqueness(),
             updatedCheck.getAiCheckLevel(), updatedCheck.getWordCount());
+            
+        // Отправляем уведомление пользователю о завершении проверки
+        if (userId != null) {
+            try {
+                Document document = documentRepository.findById(updatedCheck.getContentId()).orElse(null);
+                if (document != null) {
+                    notificationService.sendCheckCompletedNotification(userId, userCheck.getContentId(), document.getTitle());
+                    log.info("Отправлено уведомление о завершении проверки ID {} пользователю {}", userCheck.getId(), userId);
+                } else {
+                    log.info("Не удалось отправить уведомление!");
+                }
+            } catch (Exception e) {
+                log.error("Ошибка при отправке уведомления о завершении проверки: {}", e.getMessage(), e);
+            }
+        }
     }
 
     /**

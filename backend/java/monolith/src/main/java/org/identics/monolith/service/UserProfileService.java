@@ -25,8 +25,6 @@ public class UserProfileService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id=" + userId));
         
         user.setName(request.getName());
-        user.setSurname(request.getSurname());
-        user.setPatronymic(request.getPatronymic());
         user.setCity(request.getCity());
         user.setInstitution(request.getInstitution());
         
@@ -37,10 +35,10 @@ public class UserProfileService {
     public void addChecksToUser(Long userId, Integer checksCount) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id=" + userId));
-        
+
         Integer currentChecks = user.getChecksAvailable() != null ? user.getChecksAvailable() : 0;
         user.setChecksAvailable(currentChecks + checksCount);
-        
+
         userRepository.save(user);
     }
 
@@ -48,11 +46,11 @@ public class UserProfileService {
     public void useCheck(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id=" + userId));
-        
+
         if (user.getChecksAvailable() == null || user.getChecksAvailable() <= 0) {
             throw new IllegalStateException("User has no available checks");
         }
-        
+
         user.setChecksAvailable(user.getChecksAvailable() - 1);
         userRepository.save(user);
     }
@@ -61,8 +59,6 @@ public class UserProfileService {
         return UserProfileDTO.builder()
                 .id(user.getId())
                 .name(user.getName())
-                .surname(user.getSurname())
-                .patronymic(user.getPatronymic())
                 .city(user.getCity())
                 .institution(user.getInstitution())
                 .checksAvailable(user.getChecksAvailable())

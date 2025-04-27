@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Уведомления</title>
+    <link rel="stylesheet" th:href="@{/css/notifications.css}"/>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="notifications-page">
+            <div class="notifications-page-header">
+                <h1>Уведомления</h1>
+                <button id="mark-all-read-btn" class="btn btn-primary">Отметить все как прочитанные</button>
+            </div>
+            
+            <div class="notifications-tabs">
+                <button class="tab-button active" data-tab="all">Все</button>
+                <button class="tab-button" data-tab="unread">Непрочитанные</button>
+            </div>
+            
+            <div id="notifications-list" class="notifications-list">
+                <div th:if="${notifications.empty}" class="notifications-empty">
+                    У вас нет уведомлений
+                </div>
+                <div th:each="notification : ${notifications}" th:class="'notification-item' + (${notification.read} ? ' read' : '')" th:data-id="${notification.id}">
+                    <div class="notification-content">
+                        <div class="notification-title" th:text="${notification.title}">Заголовок уведомления</div>
+                        <div class="notification-message" th:text="${notification.message}">Текст уведомления</div>
+                        <div class="notification-time" th:text="${#temporals.format(notification.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2023 12:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script th:inline="javascript">
+            const currentUserId = /*[[${userId}]]*/ 0;
+            const notificationsService = new NotificationService(currentUserId);
+            
+            document.addEventListener('DOMContentLoaded', function() {
+                const markAllReadBtn = document.getElementById('mark-all-read-btn');
+                const tabButtons = document.querySelectorAll('.tab-button');
+                const notificationItems = document.querySelectorAll('.notification-item');
+                
+                let currentTab = 'all';
+                
+                // Mark all as read button
+                if (markAllReadBtn) {
+                    markAllReadBtn.addEventListener('click', function() {
+                        notificationsService.markAllAsRead().then(count => {
+                            document.querySelectorAll('.notification-item:not(.read)').forEach(item => {
+                                item.classList.add('read');
+                            });
+                        });
+                    });
+                }
+                
+                // Tab switching
+                if (tabButtons) {
+                    tabButtons.forEach(button => {
+                        button.addEventListener('click', function() {
+                            tabButtons.forEach(btn => btn.classList.remove('active'));
+                            this.classList.add('active');
+                            currentTab = this.dataset.tab;
+                            loadNotifications(currentTab);
+                        });
+                    });
+                }
+                
+                // Notification item click
+                if (notificationItems) {
+                    notificationItems.forEach(item => {
+                        item.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            if (!this.classList.contains('read')) {
+                                notificationsService.markAsRead(id).then(success => {
+                                    if (success) {
+                                        this.classList.add('read');
+                                    }
+                                });
+                            }
+                            
+                            // Redirect if this notification has a documentId
+                            const documentId = this.dataset.documentId;
+                            if (documentId) {
+                                window.location.href = `/documents/${documentId}`;
+                            }
+                        });
+                    });
+                }
+                
+                // Function to load notifications based on tab
+                function loadNotifications(tab) {
+                    const notificationsList = document.getElementById('notifications-list');
+                    notificationsList.innerHTML = '<div class="notifications-loading">Загрузка уведомлений...</div>';
+                    
+                    const loadPromise = tab === 'unread' 
+                        ? notificationsService.loadUnreadNotifications()
+                        : notificationsService.loadAllNotifications();
+                    
+                    loadPromise.then(notifications => {
+                        if (notifications.length === 0) {
+                            notificationsList.innerHTML = '<div class="notifications-empty">Нет уведомлений</div>';
+                            return;
+                        }
+                        
+                        notificationsList.innerHTML = '';
+                        
+                        notifications.forEach(notification => {
+                            const notificationElement = document.createElement('div');
+                            notificationElement.className = 'notification-item' + (notification.read ? ' read' : '');
+                            notificationElement.dataset.id = notification.id;
+                            if (notification.documentId) {
+                                notificationElement.dataset.documentId = notification.documentId;
+                            }
+                            
+                            notificationElement.innerHTML = `
+                                <div class="notification-content">
+                                    <div class="notification-title">${notification.title}</div>
+                                    <div class="notification-message">${notification.message}</div>
+                                    <div class="notification-time">${formatDate(notification.createdAt)}</div>
+                                </div>
+                            `;
+                            
+                            notificationElement.addEventListener('click', function() {
+                                if (!notification.read) {
+                                    notificationsService.markAsRead(notification.id).then(success => {
+                                        if (success) {
+                                            this.classList.add('read');
+                                            notification.read = true;
+                                        }
+                                    });
+                                }
+                                
+                                // Handle notification action if needed
+                                if (notification.documentId) {
+                                    window.location.href = `/documents/${notification.documentId}`;
+                                }
+                            });
+                            
+                            notificationsList.appendChild(notificationElement);
+                        });
+                    });
+                }
+                
+                // Format date helper
+                function formatDate(dateStr) {
+                    const date = new Date(dateStr);
+                    return date.getDate().toString().padStart(2, '0') + '.' + 
+                           (date.getMonth() + 1).toString().padStart(2, '0') + '.' + 
+                           date.getFullYear() + ' ' +
+                           date.getHours().toString().padStart(2, '0') + ':' +
+                           date.getMinutes().toString().padStart(2, '0');
+                }
+                
+                // Connect to notifications service for real-time updates
+                notificationsService.connect().catch(error => {
+                    console.error('Failed to connect to notifications server', error);
+                });
+            });
+        </script>
+    </div>
+</body>
+</html> 

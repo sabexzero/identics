@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Notifications</title>
+</head>
+<body>
+<!-- Контейнер для уведомлений (пример) -->
+<div id="notifications-container"></div>
+
+<script>
+    // Класс для управления WebSocket соединением и уведомлениями
+    class NotificationSystem {
+        constructor(userId) {
+            this.userId = userId;
+            this.socket = null;
+            this.reconnectAttempts = 0;
+            this.maxReconnectAttempts = 5;
+            this.reconnectDelay = 3000; // 3 секунды
+            this.messageHandlers = [];
+
+            // Инициализируем сразу при создании
+            this.connect();
+        }
+
+        connect() {
+            // Закрываем предыдущее соединение, если оно есть
+            if (this.socket) {
+                this.socket.close();
+            }
+
+            // Создаем новое соединение
+            // Замените URL на ваш реальный WebSocket endpoint
+            const wsUrl = `ws://localhost:9091/api/ws/${this.userId}`;
+            this.socket = new WebSocket(wsUrl);
+
+            // Настройка обработчиков событий
+            this.socket.onopen = () => {
+                console.log('WebSocket connected successfully');
+                this.reconnectAttempts = 0;
+                this.showNotification('Соединение установлено', 'success');
+            };
+
+            this.socket.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log('Received message:', data);
+
+                    // Обрабатываем сообщение
+                    this.handleIncomingMessage(data);
+
+                    // Вызываем все зарегистрированные обработчики
+                    this.messageHandlers.forEach(handler => handler(data));
+
+                } catch (e) {
+                    console.error('Error parsing message:', e);
+                    this.showNotification('Ошибка формата сообщения', 'error');
+                }
+            };
+
+            this.socket.onclose = (event) => {
+                console.log(`WebSocket closed: ${event.code} ${event.reason}`);
+                this.showNotification('Соединение закрыто', 'warning');
+
+                // Пытаемся переподключиться, если это не было преднамеренное закрытие
+                if (event.code !== 1000 && this.reconnectAttempts < this.maxReconnectAttempts) {
+                    this.reconnectAttempts++;
+                    console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+                    setTimeout(() => this.connect(), this.reconnectDelay);
+                }
+            };
+
+            this.socket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                this.showNotification('Ошибка соединения', 'error');
+            };
+        }
+
+        // Базовый обработчик входящих сообщений
+        handleIncomingMessage(message) {
+            // Здесь можно добавить логику обработки разных типов уведомлений
+            if (message.type === 'notification') {
+                this.showNotification(message.content, message.level || 'info');
+            }
+            // Другие типы сообщений...
+        }
+
+        // Метод для отображения уведомления в UI
+        showNotification(text, type = 'info') {
+            const container = document.getElementById('notifications-container') || document.body;
+            const notification = document.createElement('div');
+
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                    <div class="notification-content">${text}</div>
+                    <button class="notification-close">&times;</button>
+                `;
+
+            // Добавляем уведомление в контейнер
+            container.appendChild(notification);
+
+            // Закрытие по кнопке
+            notification.querySelector('.notification-close').addEventListener('click', () => {
+                notification.remove();
+            });
+
+            // Автоматическое закрытие через 5 секунд
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Метод для отправки сообщений на сервер
+        send(message) {
+            if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                const payload = typeof message === 'object' ? JSON.stringify(message) : message;
+                this.socket.send(payload);
+                return true;
+            }
+            console.warn('WebSocket is not connected');
+            this.showNotification('Нет соединения с сервером', 'error');
+            return false;
+        }
+
+        // Метод для закрытия соединения
+        disconnect() {
+            if (this.socket) {
+                this.socket.close(1000, 'User initiated disconnect');
+            }
+        }
+
+        // Метод для добавления обработчиков сообщений
+        addMessageHandler(handler) {
+            if (typeof handler === 'function') {
+                this.messageHandlers.push(handler);
+            }
+        }
+
+        // Метод для удаления обработчиков сообщений
+        removeMessageHandler(handler) {
+            this.messageHandlers = this.messageHandlers.filter(h => h !== handler);
+        }
+    }
+
+    // Стили для уведомлений (можно вынести в CSS файл)
+    const style = document.createElement('style');
+    style.textContent = `
+            .notification {
+                position: relative;
+                padding: 15px;
+                margin: 10px 0;
+                border-radius: 4px;
+                color: white;
+                animation: fadeIn 0.3s;
+                max-width: 300px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            .notification-success {
+                background-color: #4CAF50;
+            }
+            .notification-error {
+                background-color: #F44336;
+            }
+            .notification-warning {
+                background-color: #FF9800;
+            }
+            .notification-info {
+                background-color: #2196F3;
+            }
+            .notification-close {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                background: none;
+                border: none;
+                color: white;
+                cursor: pointer;
+                font-size: 16px;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+    document.head.appendChild(style);
+
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        // Получаем userId (в реальном приложении он должен приходить с сервера)
+        const userId = getUserIdFromSomewhere(); // Замените на реальный способ получения ID
+
+        // Инициализируем систему уведомлений
+        window.notificationSystem = new NotificationSystem(userId);
+
+        // Пример отправки тестового сообщения
+        // window.notificationSystem.send({ type: 'test', content: 'Hello Server' });
+    });
+
+    // Заглушка для получения ID пользователя
+    function getUserIdFromSomewhere() {
+        // В реальном приложении вы должны получать ID пользователя:
+        // 1. Из сессии/куков
+        // 2. Из аутентификационной системы
+        // 3. Через API запрос
+        // Здесь просто для примера возвращаем 1
+        return 1;
+    }
+</script>
+</body>
+</html>

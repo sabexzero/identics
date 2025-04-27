@@ -37,5 +37,8 @@ public class GetDocumentByIdResponse {
         private String sourceInfo;       // Доп. инфо об источнике
         private Integer firstPos;         // Позиция начала совпадения в проверяемом документе
         private Integer secondPos;        // Позиция конца совпадения в проверяемом документе
+        private String text;              // Текст контекста вокруг совпадения
+        private Integer startCharIndex;   // Позиция начала совпадения в символах (не n-граммах)
+        private Integer endCharIndex;     // Позиция конца совпадения в символах (не n-граммах)
     }
 } 

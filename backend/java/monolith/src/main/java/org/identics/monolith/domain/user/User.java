@@ -24,8 +24,6 @@ public class User {
     private Long id;
 
     private String name;
-    private String surname;
-    private String patronymic;
     
     // Новые поля профиля
     private String city;
@@ -33,4 +31,5 @@ public class User {
     
     // Количество проверок
     private Integer checksAvailable;
+    private String email;
 }

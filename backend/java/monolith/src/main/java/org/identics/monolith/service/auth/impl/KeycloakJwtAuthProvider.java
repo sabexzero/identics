@@ -35,6 +35,8 @@ public class KeycloakJwtAuthProvider implements JwtAuthProvider {
     private final String logoutEndpoint = "logout";
     private final String usersEndpoint = "users";
 
+    private final String registerUrl = "https://keycloak.identics.tech/admin/realms/textsource-realm/users";
+
     private final HttpHeaders headers;
 
     @Override
@@ -143,15 +145,15 @@ public class KeycloakJwtAuthProvider implements JwtAuthProvider {
     }
     
     @Override
-    public SignInKeycloakResponse registerUser(UserRegistrationRequest request) throws IOException {
+    public SignInKeycloakResponse registerUser(UserRegistrationRequest request, Long userId) throws IOException {
         // Step 1: First get admin access token to create the user
         String adminToken = getAdminToken();
         
         // Step 2: Create user in KeyCloak
-        createKeycloakUser(adminToken, request);
+        createKeycloakUser(adminToken, request, userId);
         
         // Step 3: Get user tokens by logging in
-        SignInRequest signInRequest = new SignInRequest(request.getUsername(), request.getPassword());
+        SignInRequest signInRequest = new SignInRequest(request.getEmail(), request.getPassword());
         return getAccessToken(signInRequest);
     }
     
@@ -184,27 +186,26 @@ public class KeycloakJwtAuthProvider implements JwtAuthProvider {
             throw new IOException("Error getting admin token: " + e.getMessage(), e);
         }
     }
-    
-    private void createKeycloakUser(String adminToken, UserRegistrationRequest request) throws IOException {
+
+    private void createKeycloakUser(String adminToken, UserRegistrationRequest request, Long userId) throws IOException {
         // Prepare headers with authorization
         HttpHeaders adminHeaders = new HttpHeaders();
         adminHeaders.setContentType(MediaType.APPLICATION_JSON);
         adminHeaders.set("Authorization", "Bearer " + adminToken);
-        
+
         // Prepare user representation
         Map<String, Object> userRepresentation = new HashMap<>();
-        userRepresentation.put("username", request.getUsername());
+        userRepresentation.put("username", request.getEmail());
         userRepresentation.put("email", request.getEmail());
         userRepresentation.put("enabled", true);
+        userRepresentation.put("firstName", request.getName());
+        userRepresentation.put("lastName", request.getName());
         userRepresentation.put("emailVerified", true);
-        
-        // Add name attributes
-        Map<String, String> attributes = new HashMap<>();
-        attributes.put("firstName", request.getName());
-        attributes.put("lastName", request.getSurname());
-        if (request.getPatronymic() != null) {
-            attributes.put("patronymic", request.getPatronymic());
-        }
+
+        // Add user_id attribute
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("user_id", userId);
+
         if (request.getCity() != null) {
             attributes.put("city", request.getCity());
         }
@@ -212,22 +213,22 @@ public class KeycloakJwtAuthProvider implements JwtAuthProvider {
             attributes.put("institution", request.getInstitution());
         }
         userRepresentation.put("attributes", attributes);
-        
-        // Add credentials
+
+        // Add credentials in requested format
         Map<String, Object> credential = new HashMap<>();
         credential.put("type", "password");
         credential.put("value", request.getPassword());
         credential.put("temporary", false);
         userRepresentation.put("credentials", Collections.singletonList(credential));
-        
+
         try {
             ResponseEntity<String> response = restTemplate.exchange(
-                clientUrl + usersEndpoint,
+                registerUrl,
                 HttpMethod.POST,
                 new HttpEntity<>(userRepresentation, adminHeaders),
                 String.class
             );
-            
+
             if (!response.getStatusCode().is2xxSuccessful()) {
                 throw new IOException("Failed to create user: " + response.getStatusCode());
             }
