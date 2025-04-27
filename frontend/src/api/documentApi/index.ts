@@ -1,4 +1,4 @@
-import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { BaseQueryFn, createApi, FetchArgs } from "@reduxjs/toolkit/query/react";
 import {
     IAdditionalDocumentCheck,
     IEditDocument,
@@ -12,21 +12,16 @@ import {
     IUploadTextDocument,
 } from "./types.ts";
 import { ErrorHandler } from "@/api/store.ts";
-
-const baseUrl = import.meta.env.VITE_BASE_URL;
+import { baseQueryWithReauth } from "@/api/authApi";
 
 export const documentApi = createApi({
     reducerPath: "documentApi",
-    baseQuery: fetchBaseQuery({ baseUrl: baseUrl }) as BaseQueryFn<
-        string | FetchArgs,
-        unknown,
-        ErrorHandler
-    >,
+    baseQuery: baseQueryWithReauth as BaseQueryFn<string | FetchArgs, unknown, ErrorHandler>,
     tagTypes: ["UpdateTable"],
     endpoints: (build) => ({
         getDocuments: build.query<IGetDocumentsResponse, IGetDocuments>({
             providesTags: ["UpdateTable"],
-            query: ({ userId, tagIds, page, size }) => {
+            query: ({ userId, tagIds, page, size, search, sortDirection, sortBy }) => {
                 const searchParams = new URLSearchParams();
                 if (tagIds) {
                     for (const tagId of tagIds) {
@@ -36,6 +31,18 @@ export const documentApi = createApi({
 
                 searchParams.set("page", page.toString());
                 searchParams.set("size", size.toString());
+
+                if (search) {
+                    searchParams.set("search", search);
+                }
+
+                if (sortDirection) {
+                    searchParams.set("sortDirection", sortDirection);
+                }
+
+                if (sortBy) {
+                    searchParams.set("sortBy", sortBy);
+                }
 
                 return `/api/v1/${userId}/documents?${searchParams.toString()}`;
             },
@@ -75,7 +82,7 @@ export const documentApi = createApi({
                 searchParams.set("title", title);
 
                 return {
-                    url: `/api/v1/${userId}/documents/text?${searchParams}`,
+                    url: `/api/v1/${userId}/documents/file?${searchParams}`,
                     method: "POST",
                     body: formData,
                 };

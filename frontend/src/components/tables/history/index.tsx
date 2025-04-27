@@ -31,10 +31,10 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import EditTagsDialog from "@/components/dialogs/history/tags/edit.tsx";
-import { formatDateISO } from "@/lib/utils.ts";
 import { useGetTagsQuery } from "@/api/tagsApi";
 import DeleteDocumentDialog from "@/components/dialogs/history/documents/delete.tsx";
 import EditDocumentDialog from "@/components/dialogs/history/documents/create.tsx";
+import { formatDate } from "@/lib/utils.ts";
 
 export default function HistoryTable() {
     const navigate = useNavigate();
@@ -185,7 +185,7 @@ export default function HistoryTable() {
                             data.content.map((item) => (
                                 <TableRow key={item.id} className="hover:bg-muted/50">
                                     <TableCell className="font-medium text-center">
-                                        {item.checkDate ? formatDateISO(item.checkDate) : null}
+                                        {item.checkDate ? formatDate(item.checkDate) : null}
                                     </TableCell>
                                     <TableCell className="flex flex-col">
                                         <div className="flex gap-2">
@@ -279,16 +279,11 @@ export default function HistoryTable() {
                                                 <Eye className="h-4 w-4" />
                                                 <span className="sr-only">Просмотр</span>
                                             </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    console.log(`Скачивание отчета ${item.id}`);
-                                                }}
-                                            >
-                                                <Download className="h-4 w-4" />
-                                                <span className="sr-only">Скачать</span>
+                                            <Button variant="ghost" size="icon">
+                                                <a href={item.reportUrl} target="_blank">
+                                                    <Download className="h-4 w-4" />
+                                                    <span className="sr-only">Скачать</span>
+                                                </a>
                                             </Button>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>

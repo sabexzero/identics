@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import {
     ICreateTagResponse,
     IDeleteTag,
@@ -8,12 +8,11 @@ import {
     IGetTagsResponse,
     ITagsResponse,
 } from "@/api/tagsApi/types.ts";
-
-const baseUrl = import.meta.env.VITE_BASE_URL;
+import { baseQueryWithReauth } from "@/api/authApi";
 
 export const tagsApi = createApi({
     reducerPath: "tagsApi",
-    baseQuery: fetchBaseQuery({ baseUrl: baseUrl }),
+    baseQuery: baseQueryWithReauth,
     tagTypes: ["UpdateTags", "UpdateExactTags"],
     endpoints: (build) => ({
         getTags: build.query<IGetTagsResponse, IGetTags>({

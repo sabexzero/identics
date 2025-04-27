@@ -20,6 +20,9 @@ export interface IGetDocuments {
     size: number;
     userId: number;
     tagIds?: number[];
+    search?: string;
+    sortBy?: "title" | "date";
+    sortDirection?: "asc" | "desc";
 }
 
 export interface IGetDocumentById {
@@ -43,22 +46,45 @@ export interface IAdditionalDocumentCheck extends IUserIdBase {
 
 // ==================== Ответы ====================
 export interface IGetDocumentsResponse {
+    totalElements: number;
+    totalPages: number;
+    size: number;
     content: {
         id: number;
         title: string;
         userId: number;
         checkDate: string;
-        uniqueness: number | null;
-        aiLevel: number | null;
-        tags: ITagsBase[];
+        uniqueness: number;
+        aiLevel: number;
+        tags: {
+            id: number;
+            name: string;
+            hexString: string;
+        }[];
+        reportUrl: string;
     }[];
-    empty: string;
-    last: boolean;
-    first: boolean;
     number: number;
-    numberOfElement: number;
-    size: number;
-    totalPages: number;
+    sort: {
+        empty: boolean;
+        sorted: boolean;
+        unsorted: boolean;
+    };
+    pageable: {
+        offset: number;
+        sort: {
+            empty: boolean;
+            sorted: boolean;
+            unsorted: boolean;
+        };
+        pageSize: number;
+        paged: boolean;
+        pageNumber: number;
+        unpaged: boolean;
+    };
+    numberOfElements: 0;
+    first: true;
+    last: true;
+    empty: true;
 }
 
 export interface IGetDocumentByIdResponse {

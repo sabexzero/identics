@@ -1,13 +1,50 @@
 import { AppSidebar } from "@/components/layout/sidebar";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button.tsx";
-import { Bell, House, Search } from "lucide-react";
+import { Bell, Check, CheckCheck, House, Info, Search } from "lucide-react";
 import { Input } from "@/components/ui/input.tsx";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar.tsx";
-import { Toaster } from "sonner";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast, Toaster } from "sonner";
+import { useWebSocket } from "@/hooks/use-websockets";
+import { useState } from "react";
+import { format } from "date-fns";
+
+type NotificationType = "CHECK_COMPLETED" | "SYSTEM";
 
 export default function Layout() {
+    const base_url = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
+
+    const [open, setOpen] = useState(false);
+
+    const { notifications, unreadCount, markAllAsRead, markAsRead } = useWebSocket({
+        url: `${base_url}/api/ws/1`,
+        onMessage: (data) => {
+            toast(data.title, {
+                description: data.message,
+                position: "top-right",
+            });
+        },
+    });
+
+    const getNotificationIcon = (type: NotificationType) => {
+        switch (type) {
+            case "CHECK_COMPLETED":
+                return <CheckCheck className="h-4 w-4 text-green-500" />;
+            case "SYSTEM":
+                return <Info className="h-4 w-4 text-blue-500" />;
+            default:
+                return <Info className="h-4 w-4" />;
+        }
+    };
+
+    const handleNotificationClick = (id: number) => {
+        navigate(`/dashboard/review/${id}`);
+        markAsRead(id);
+    };
 
     return (
         <div className="flex bg-background">
@@ -39,15 +76,79 @@ export default function Layout() {
                                 </div>
                             </form>
 
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="relative"
-                            >
-                                <Bell className="h-4 w-4" />
-                                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary" />
-                                <span className="sr-only">Уведомления</span>
-                            </Button>
+                            <Popover open={open} onOpenChange={setOpen}>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" size="icon" className="relative">
+                                        <Bell className="h-4 w-4" />
+                                        {unreadCount > 0 && (
+                                            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary" />
+                                        )}
+                                        <span className="sr-only">Уведомления</span>
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-80 p-0" align="end">
+                                    <div className="flex items-center justify-between p-4 pb-2">
+                                        <h3 className="font-medium">Уведомления</h3>
+                                        {notifications.length > 0 && (
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-auto p-1 text-xs"
+                                                onClick={markAllAsRead}
+                                            >
+                                                <Check className="mr-1 h-3 w-3" />
+                                                Прочитать все
+                                            </Button>
+                                        )}
+                                    </div>
+                                    <Separator />
+                                    <ScrollArea className="h-[300px]">
+                                        {notifications.length > 0 ? (
+                                            <div className="flex flex-col gap-1 p-1">
+                                                {notifications.map((notification, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="flex items-start gap-3 rounded-md p-3 transition-colors hover:bg-muted"
+                                                        onClick={() =>
+                                                            handleNotificationClick(
+                                                                notification.documentId
+                                                            )
+                                                        }
+                                                    >
+                                                        <div className="mt-1">
+                                                            {getNotificationIcon(notification.type)}
+                                                        </div>
+                                                        <div className="flex-1 space-y-1">
+                                                            <div className="flex items-center justify-between">
+                                                                <p className="text-sm font-medium">
+                                                                    {notification.title}
+                                                                </p>
+                                                                <p className="text-xs text-muted-foreground">
+                                                                    {format(
+                                                                        new Date(
+                                                                            notification.timestamp
+                                                                        ),
+                                                                        "HH:mm"
+                                                                    )}
+                                                                </p>
+                                                            </div>
+                                                            <p className="text-sm text-muted-foreground">
+                                                                {notification.message}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="flex h-full items-center justify-center p-4">
+                                                <p className="text-sm text-muted-foreground">
+                                                    Нет уведомлений
+                                                </p>
+                                            </div>
+                                        )}
+                                    </ScrollArea>
+                                </PopoverContent>
+                            </Popover>
                         </div>
                     </header>
 

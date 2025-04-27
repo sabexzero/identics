@@ -1,7 +1,6 @@
-import { useState } from "react";
+import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,10 +8,13 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { schema } from "@/components/forms/auth/register/schema.ts";
+import { useRegisterMutation } from "@/api/authApi";
+import { toast } from "sonner";
 
 export default function RegisterForm() {
-    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+
+    const [register, { isLoading }] = useRegisterMutation();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -25,13 +27,24 @@ export default function RegisterForm() {
     });
 
     function onSubmit(values: z.infer<typeof schema>) {
-        console.log(values);
-        setIsLoading(true);
-        // Имитация регистрации - в реальном приложении здесь будет вызов вашего бэкенда
-        setTimeout(() => {
-            setIsLoading(false);
-            navigate("/dashboard");
-        }, 1000);
+        try {
+            register({
+                email: values.email,
+                name: values.name,
+                password: values.password,
+            })
+                .unwrap()
+                .then((result) => {
+                    if (result.accessToken) {
+                        localStorage.setItem("accessToken", result.accessToken);
+                        navigate("/dashboard");
+                        toast.success("Вы успешно зарегистрировались!");
+                    }
+                });
+        } catch (error) {
+            toast.error("Возникла ошибка при регистрации...");
+            console.log(error);
+        }
     }
 
     return (

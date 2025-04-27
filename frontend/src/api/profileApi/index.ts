@@ -1,11 +1,10 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { IEditProfile, IGetProfile, IProfileResponse } from "@/api/profileApi/types.ts";
-
-const baseUrl = import.meta.env.BASE_URL;
+import { baseQueryWithReauth } from "@/api/authApi";
 
 export const profileApi = createApi({
     reducerPath: "profileApi",
-    baseQuery: fetchBaseQuery({ baseUrl: baseUrl }),
+    baseQuery: baseQueryWithReauth,
     endpoints: (build) => ({
         getProfile: build.query<IProfileResponse, IGetProfile>({
             query: ({ userId }) => {

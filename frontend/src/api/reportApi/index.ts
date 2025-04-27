@@ -1,11 +1,10 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { IGetReport, IGetReportResponse } from "@/api/reportApi/types.ts";
-
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
+import { baseQueryWithReauth } from "@/api/authApi";
 
 export const reportApi = createApi({
     reducerPath: "reportApi",
-    baseQuery: fetchBaseQuery({ baseUrl: baseUrl }),
+    baseQuery: baseQueryWithReauth,
     endpoints: (build) => ({
         getReport: build.query<IGetReportResponse, IGetReport>({
             query: ({ userId, id, format }) => {

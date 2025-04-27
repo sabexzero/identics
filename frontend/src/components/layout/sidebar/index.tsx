@@ -3,7 +3,6 @@ import {
     History,
     Settings,
     BookOpen,
-    BarChart2,
     HelpCircle,
     ChevronDown,
     LogOut,
@@ -48,6 +47,12 @@ import {
 } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip.tsx";
 
 interface Menu {
     reports: boolean;
@@ -124,76 +129,49 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarGroupLabel>Отчеты и аналитика</SidebarGroupLabel>
                     <SidebarGroupContent>
-                        <Collapsible
-                            open={openMenus.reports}
-                            onOpenChange={() => toggleMenu("reports")}
-                            className="group/collapsible"
-                        >
-                            <SidebarMenu>
-                                <SidebarMenuItem>
-                                    <CollapsibleTrigger asChild>
-                                        <SidebarMenuButton tooltip="Отчеты">
-                                            <BarChart2 />
-                                            <span>Отчеты</span>
-                                            <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                                        </SidebarMenuButton>
-                                    </CollapsibleTrigger>
-                                </SidebarMenuItem>
-                            </SidebarMenu>
+                        <TooltipProvider>
+                            <Collapsible
+                                open={openMenus.resources}
+                                onOpenChange={() => toggleMenu("resources")}
+                                className="group/collapsible"
+                            >
+                                <SidebarMenu>
+                                    <SidebarMenuItem>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <div className="w-full">
+                                                    <CollapsibleTrigger asChild disabled={true}>
+                                                        <SidebarMenuButton>
+                                                            <BookOpen />
+                                                            <span>Ресурсы</span>
+                                                            <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                                                        </SidebarMenuButton>
+                                                    </CollapsibleTrigger>
+                                                </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Данная функция находится в разработке</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </SidebarMenuItem>
+                                </SidebarMenu>
 
-                            <CollapsibleContent>
-                                <SidebarMenuSub>
-                                    <SidebarMenuSubItem>
-                                        <SidebarMenuSubButton>
-                                            <span>Отчеты о сходстве</span>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                    <SidebarMenuSubItem>
-                                        <SidebarMenuSubButton>
-                                            <span>Детальный анализ</span>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                    <SidebarMenuSubItem>
-                                        <SidebarMenuSubButton>
-                                            <span>Экспорт отчетов</span>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                </SidebarMenuSub>
-                            </CollapsibleContent>
-                        </Collapsible>
-
-                        <Collapsible
-                            open={openMenus.resources}
-                            onOpenChange={() => toggleMenu("resources")}
-                            className="group/collapsible"
-                        >
-                            <SidebarMenu>
-                                <SidebarMenuItem>
-                                    <CollapsibleTrigger asChild>
-                                        <SidebarMenuButton tooltip="Ресурсы">
-                                            <BookOpen />
-                                            <span>Ресурсы</span>
-                                            <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                                        </SidebarMenuButton>
-                                    </CollapsibleTrigger>
-                                </SidebarMenuItem>
-                            </SidebarMenu>
-
-                            <CollapsibleContent>
-                                <SidebarMenuSub>
-                                    <SidebarMenuSubItem>
-                                        <SidebarMenuSubButton>
-                                            <span>Руководство по цитированию</span>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                    <SidebarMenuSubItem>
-                                        <SidebarMenuSubButton>
-                                            <span>Академическая честность</span>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                </SidebarMenuSub>
-                            </CollapsibleContent>
-                        </Collapsible>
+                                <CollapsibleContent>
+                                    <SidebarMenuSub>
+                                        <SidebarMenuSubItem>
+                                            <SidebarMenuSubButton>
+                                                <span>Руководство по цитированию</span>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+                                        <SidebarMenuSubItem>
+                                            <SidebarMenuSubButton>
+                                                <span>Академическая честность</span>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+                                    </SidebarMenuSub>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        </TooltipProvider>
 
                         <SidebarMenu>
                             <SidebarMenuItem>
