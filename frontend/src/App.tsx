@@ -1,4 +1,11 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    useLocation,
+    Outlet,
+    Navigate,
+} from "react-router-dom";
 import AuthPage from "@/pages/auth/page.tsx";
 import DashboardPage from "@/pages/dashboard/page.tsx";
 import HistoryPage from "@/pages/history/page.tsx";
@@ -9,16 +16,26 @@ import { store } from "./api/store.ts";
 import "./index.css";
 import ReviewPage from "@/pages/review/page.tsx";
 import Settings from "@/pages/settings/page.tsx";
-import PrivateRoute from "@/pages/private";
+import useAuth from "./hooks/use-auth.ts";
 
-const AnimatedRoutes = () => {
+function ProtectedRoute() {
+    const { isAuthenticated } = useAuth();
+
+    if (isAuthenticated || isAuthenticated === null) {
+        return <Outlet />;
+    }
+
+    return <Navigate to="/auth" replace />;
+}
+
+function AnimatedRoutes() {
     const location = useLocation();
 
     return (
         <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
                 <Route path="/auth" element={<AuthPage />} />
-                <Route element={<PrivateRoute />}>
+                <Route element={<ProtectedRoute />}>
                     <Route path="/dashboard" element={<Layout />}>
                         <Route index element={<DashboardPage />} />
                         <Route path="/dashboard/history" element={<HistoryPage />} />
@@ -29,7 +46,7 @@ const AnimatedRoutes = () => {
             </Routes>
         </AnimatePresence>
     );
-};
+}
 
 function App() {
     return (

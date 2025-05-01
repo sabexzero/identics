@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast, Toaster } from "sonner";
-import { useWebSocket } from "@/hooks/use-websockets";
+import { useNotifications } from "@/hooks/use-notifications.ts";
 import { useState } from "react";
 import { format } from "date-fns";
 
@@ -20,7 +20,7 @@ export default function Layout() {
 
     const [open, setOpen] = useState(false);
 
-    const { notifications, unreadCount, markAllAsRead, markAsRead } = useWebSocket({
+    const { notifications, unreadCount, markAllAsRead, markAsRead } = useNotifications({
         url: `${base_url}/api/ws/1`,
         onMessage: (data) => {
             toast(data.title, {

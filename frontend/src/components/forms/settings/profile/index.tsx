@@ -32,10 +32,15 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { useLogoutMutation } from "@/api/authApi";
+import { useNavigate } from "react-router-dom";
 
 const ProfileSettings: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [logout] = useLogoutMutation();
+    const navigate = useNavigate();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -45,6 +50,17 @@ const ProfileSettings: React.FC = () => {
             phone: "+7 (999) 999 99 99",
         },
     });
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            localStorage.clear();
+            navigate("/auth");
+        } catch (error) {
+            console.error(error);
+            toast.error("Возникла ошибка при выходе из аккаунта");
+        }
+    };
 
     const onSubmit = (data: z.infer<typeof schema>) => {
         setIsSubmitting(true);
@@ -212,7 +228,7 @@ const ProfileSettings: React.FC = () => {
                                         </p>
                                     </div>
                                 </div>
-                                <Button variant="outline" size="sm">
+                                <Button variant="outline" size="sm" onClick={handleLogout}>
                                     Выйти
                                 </Button>
                             </div>

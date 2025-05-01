@@ -6,8 +6,6 @@ import {
     HelpCircle,
     ChevronDown,
     LogOut,
-    User,
-    Bell,
     Sparkles,
     FileCheck,
     Bookmark,
@@ -15,7 +13,6 @@ import {
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -53,6 +50,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip.tsx";
+import { useLogoutMutation } from "@/api/authApi";
+import { toast } from "sonner";
 
 interface Menu {
     reports: boolean;
@@ -62,6 +61,19 @@ interface Menu {
 export function AppSidebar() {
     const navigate = useNavigate();
     const location = useLocation();
+
+    const [logout] = useLogoutMutation();
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            localStorage.clear();
+            navigate("/auth");
+        } catch (error) {
+            console.error(error);
+            toast.error("Возникла ошибка при выходе из аккаунта");
+        }
+    };
 
     const [openMenus, setOpenMenus] = useState<Menu>({
         reports: true,
@@ -271,23 +283,10 @@ export function AppSidebar() {
                                     </div>
                                 </div>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    <User className="mr-2 h-4 w-4" />
-                                    <span>Профиль</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <Bell className="mr-2 h-4 w-4" />
-                                    <span>Уведомления</span>
-                                    <Badge variant="secondary" className="ml-auto">
-                                        3
-                                    </Badge>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <Settings className="mr-2 h-4 w-4" />
-                                    <span>Настройки аккаунта</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-destructive focus:text-destructive">
+                                <DropdownMenuItem
+                                    className="text-destructive focus:text-destructive"
+                                    onClick={handleLogout}
+                                >
                                     <LogOut className="mr-2 h-4 w-4" />
                                     <span>Выйти</span>
                                 </DropdownMenuItem>

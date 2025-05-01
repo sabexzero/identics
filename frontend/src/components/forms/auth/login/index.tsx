@@ -34,7 +34,7 @@ export default function LoginForm() {
             navigate("/dashboard");
             toast.success("Вы авторизировались!");
         } catch (error) {
-            console.error("[ERROR]", error);
+            console.error(error);
             toast.error("Ошибка авторизации");
         }
     };

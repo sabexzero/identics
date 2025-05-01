@@ -10,12 +10,12 @@ export interface NotificationPayload {
     timestamp: string;
 }
 
-interface UseWebSocketOptions {
+interface useNotificationsOptions {
     url: string;
     onMessage?: (data: NotificationPayload) => void;
 }
 
-export function useWebSocket({ url, onMessage }: UseWebSocketOptions) {
+export function useNotifications({ url, onMessage }: useNotificationsOptions) {
     const [isConnected, setIsConnected] = useState(false);
     const [notifications, setNotifications] = useState<NotificationPayload[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);

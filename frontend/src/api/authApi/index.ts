@@ -73,6 +73,14 @@ export const authApi = createApi({
             query: () => ({
                 url: `/api/v1/auth/signout`,
                 method: "POST",
+                credentials: "include",
+            }),
+        }),
+        refresh: build.mutation<void, void>({
+            query: () => ({
+                url: "/api/v1/auth/refresh-token",
+                method: "POST",
+                credentials: "include",
             }),
         }),
         register: build.mutation<IPostLoginResponse, IPostRegister>({
@@ -89,4 +97,5 @@ export const authApi = createApi({
     }),
 });
 
-export const { useLoginMutation, useLogoutMutation, useRegisterMutation } = authApi;
+export const { useLoginMutation, useLogoutMutation, useRegisterMutation, useRefreshMutation } =
+    authApi;
