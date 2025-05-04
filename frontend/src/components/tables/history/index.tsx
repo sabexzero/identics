@@ -35,10 +35,13 @@ import { useGetTagsQuery } from "@/api/tagsApi";
 import DeleteDocumentDialog from "@/components/dialogs/history/documents/delete.tsx";
 import EditDocumentDialog from "@/components/dialogs/history/documents/create.tsx";
 import { formatDate } from "@/lib/utils.ts";
+import { useSelector } from "react-redux";
+import { RootState } from "@/api/store.ts";
 
 export default function HistoryTable() {
     const navigate = useNavigate();
     const idRef = useRef<number>(null!);
+    const userId = useSelector((state: RootState) => state.user.userId);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage] = useState<number>(5);
@@ -48,7 +51,7 @@ export default function HistoryTable() {
     const [editDocumentDialogOpen, setEditDocumentDialogOpen] = useState<boolean>(false);
 
     const { data } = useGetDocumentsQuery({
-        userId: 1,
+        userId: userId!,
         page: currentPage - 1,
         size: itemsPerPage,
     });

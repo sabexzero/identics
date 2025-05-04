@@ -12,8 +12,8 @@ import { Input } from "@/components/ui/input.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
 import { cn } from "@/lib/utils.ts";
 import { tagsApi, useGetDocumentTagsQuery, useGetTagsQuery } from "@/api/tagsApi";
-import { ErrorHandler } from "@/api/store.ts";
-import { useDispatch } from "react-redux";
+import { ErrorHandler, RootState } from "@/api/store.ts";
+import { useDispatch, useSelector } from "react-redux";
 import { useEditDocumentTagsMutation } from "@/api/documentApi";
 
 interface EditTagsFormProps {
@@ -24,10 +24,11 @@ interface EditTagsFormProps {
 const EditTagsForm: React.FC<EditTagsFormProps> = ({ id, onOpenChange }) => {
     const [search, setSearch] = useState<string>("");
     const dispatch = useDispatch();
+    const userId = useSelector((state: RootState) => state.user.userId);
 
     const { data: allTags } = useGetTagsQuery({ userId: 1 });
     const { data: documentTags, isLoading: isDocumentLoading } = useGetDocumentTagsQuery({
-        userId: 1,
+        userId: userId!,
         id: id,
     });
     const [editDocuments, { isLoading }] = useEditDocumentTagsMutation();

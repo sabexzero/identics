@@ -4,6 +4,8 @@ import { reportApi } from "@/api/reportApi";
 import { profileApi } from "@/api/profileApi";
 import { tagsApi } from "@/api/tagsApi";
 import { authApi } from "@/api/authApi";
+import { notificationApi } from "@/api/notificationApi";
+import userReducer from "@/api/userSlice";
 
 export const store = configureStore({
     reducer: {
@@ -12,6 +14,8 @@ export const store = configureStore({
         [profileApi.reducerPath]: profileApi.reducer,
         [tagsApi.reducerPath]: tagsApi.reducer,
         [authApi.reducerPath]: authApi.reducer,
+        [notificationApi.reducerPath]: notificationApi.reducer,
+        user: userReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
@@ -19,7 +23,8 @@ export const store = configureStore({
             reportApi.middleware,
             profileApi.middleware,
             tagsApi.middleware,
-            authApi.middleware
+            authApi.middleware,
+            notificationApi.middleware
         ),
 });
 

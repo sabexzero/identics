@@ -8,9 +8,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast, Toaster } from "sonner";
-import { useNotifications } from "@/hooks/use-notifications.ts";
+import { NotificationPayload, useNotifications } from "@/hooks/use-notifications.ts";
 import { useState } from "react";
 import { format } from "date-fns";
+import { useSelector } from "react-redux";
+import { RootState } from "@/api/store.ts";
 
 type NotificationType = "CHECK_COMPLETED" | "SYSTEM";
 
@@ -20,8 +22,8 @@ export default function Layout() {
 
     const [open, setOpen] = useState(false);
 
-    const { notifications, unreadCount, markAllAsRead, markAsRead } = useNotifications({
-        url: `${base_url}/api/ws/1`,
+    const { notifications, markAllAsRead, markAsRead } = useNotifications({
+        url: `${base_url}/api/ws`,
         onMessage: (data) => {
             toast(data.title, {
                 description: data.message,
@@ -29,22 +31,6 @@ export default function Layout() {
             });
         },
     });
-
-    const getNotificationIcon = (type: NotificationType) => {
-        switch (type) {
-            case "CHECK_COMPLETED":
-                return <CheckCheck className="h-4 w-4 text-green-500" />;
-            case "SYSTEM":
-                return <Info className="h-4 w-4 text-blue-500" />;
-            default:
-                return <Info className="h-4 w-4" />;
-        }
-    };
-
-    const handleNotificationClick = (id: number) => {
-        navigate(`/dashboard/review/${id}`);
-        markAsRead(id);
-    };
 
     return (
         <div className="flex bg-background">
@@ -80,7 +66,7 @@ export default function Layout() {
                                 <PopoverTrigger asChild>
                                     <Button variant="outline" size="icon" className="relative">
                                         <Bell className="h-4 w-4" />
-                                        {unreadCount > 0 && (
+                                        {notifications.some((item) => !item.read) && (
                                             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary" />
                                         )}
                                         <span className="sr-only">Уведомления</span>
@@ -89,7 +75,7 @@ export default function Layout() {
                                 <PopoverContent className="w-80 p-0" align="end">
                                     <div className="flex items-center justify-between p-4 pb-2">
                                         <h3 className="font-medium">Уведомления</h3>
-                                        {notifications.length > 0 && (
+                                        {notifications.some((item) => !item.read) && (
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
@@ -103,49 +89,10 @@ export default function Layout() {
                                     </div>
                                     <Separator />
                                     <ScrollArea className="h-[300px]">
-                                        {notifications.length > 0 ? (
-                                            <div className="flex flex-col gap-1 p-1">
-                                                {notifications.map((notification, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="flex items-start gap-3 rounded-md p-3 transition-colors hover:bg-muted"
-                                                        onClick={() =>
-                                                            handleNotificationClick(
-                                                                notification.documentId
-                                                            )
-                                                        }
-                                                    >
-                                                        <div className="mt-1">
-                                                            {getNotificationIcon(notification.type)}
-                                                        </div>
-                                                        <div className="flex-1 space-y-1">
-                                                            <div className="flex items-center justify-between">
-                                                                <p className="text-sm font-medium">
-                                                                    {notification.title}
-                                                                </p>
-                                                                <p className="text-xs text-muted-foreground">
-                                                                    {format(
-                                                                        new Date(
-                                                                            notification.timestamp
-                                                                        ),
-                                                                        "HH:mm"
-                                                                    )}
-                                                                </p>
-                                                            </div>
-                                                            <p className="text-sm text-muted-foreground">
-                                                                {notification.message}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div className="flex h-full items-center justify-center p-4">
-                                                <p className="text-sm text-muted-foreground">
-                                                    Нет уведомлений
-                                                </p>
-                                            </div>
-                                        )}
+                                        <RenderNotifications
+                                            notifications={notifications}
+                                            markAsRead={markAsRead}
+                                        />
                                     </ScrollArea>
                                 </PopoverContent>
                             </Popover>
@@ -160,6 +107,75 @@ export default function Layout() {
                     </main>
                 </div>
             </SidebarProvider>
+        </div>
+    );
+}
+
+interface NotificationProps {
+    notifications: NotificationPayload[];
+    markAsRead: (userId: number | null, id: number) => void;
+}
+
+function RenderNotifications({ notifications, markAsRead }: NotificationProps) {
+    const navigate = useNavigate();
+    const userId = useSelector((state: RootState) => state.user.userId);
+    const items = notifications.filter((item) => !item.read);
+
+    const getNotificationIcon = (type: NotificationType) => {
+        switch (type) {
+            case "CHECK_COMPLETED":
+                return <CheckCheck className="h-4 w-4 text-green-500" />;
+            case "SYSTEM":
+                return <Info className="h-4 w-4 text-blue-500" />;
+            default:
+                return <Info className="h-4 w-4" />;
+        }
+    };
+
+    const handleNotificationClick = (id: number, documentId: number) => {
+        navigate(`/dashboard/review/${documentId}`);
+        markAsRead(userId, id);
+    };
+
+    if (!items) {
+        return (
+            <div className="flex h-full items-center justify-center p-4">
+                <p className="text-sm text-muted-foreground">Нет уведомлений</p>
+            </div>
+        );
+    }
+
+    console.log("items", items);
+
+    return (
+        <div className="flex flex-col gap-1 p-1">
+            {items.map((notification, index) => (
+                <div
+                    key={index}
+                    className="flex items-start gap-3 rounded-md p-3 transition-colors hover:bg-muted"
+                >
+                    <div
+                        className="mt-1 cursor-pointer"
+                        onClick={() => markAsRead(userId, notification.id)}
+                    >
+                        {getNotificationIcon(notification.type as NotificationType)}
+                    </div>
+                    <div
+                        className="flex-1 space-y-1"
+                        onClick={() =>
+                            handleNotificationClick(notification.id, notification.documentId)
+                        }
+                    >
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium">{notification.title}</p>
+                            <p className="text-xs text-muted-foreground">
+                                {format(new Date(notification.createdAt), "HH:mm")}
+                            </p>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{notification.message}</p>
+                    </div>
+                </div>
+            ))}
         </div>
     );
 }

@@ -10,31 +10,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs.t
 import { FileUploaderForm } from "@/components/forms/dashboard/file";
 import { useState } from "react";
 import { Button } from "@/components/ui/button.tsx";
-import { AlertCircle, CheckCircle, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useGetDocumentsQuery } from "@/api/documentApi";
-import { Progress } from "@/components/ui/progress.tsx";
 import { formatDate } from "@/lib/utils.ts";
 import TextUploaderForm from "@/components/forms/dashboard/text";
-
-function DashboardPageUniqueness({ uniqueness }: { uniqueness: number | null }) {
-    if (!uniqueness) {
-        return <Progress className="mr-1 h-3 w-3" />;
-    }
-
-    if (uniqueness > 20) {
-        return <CheckCircle className="mr-1 h-3 w-3 text-primary" />;
-    }
-
-    return <AlertCircle className="mr-1 h-3 w-3 text-destructive" />;
-}
+import { useSelector } from "react-redux";
+import { RootState } from "@/api/store.ts";
 
 export default function DashboardPage() {
     const [activeTab, setActiveTab] = useState("text");
     const navigate = useNavigate();
+    const userId = useSelector((state: RootState) => state.user.userId);
 
     const { data } = useGetDocumentsQuery({
-        userId: 1,
+        userId: userId!,
         page: 0,
         size: 3,
         sortBy: "date",
@@ -123,11 +113,12 @@ export default function DashboardPage() {
                                                 <span>{formatDate(check.checkDate)}</span>
                                                 <span className="mx-2">•</span>
                                                 <span className="flex items-center">
-                                                    <DashboardPageUniqueness
-                                                        uniqueness={check.uniqueness}
-                                                    />
+                                                    {check.uniqueness}%
                                                 </span>
                                                 <span className="mx-2">•</span>
+                                                <span className="flex items-center">
+                                                    {check.aiLevel}%
+                                                </span>
                                             </div>
                                         </div>
                                     </div>

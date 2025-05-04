@@ -7,10 +7,11 @@ import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { useEditDocumentMutation } from "@/api/documentApi";
 import { toast } from "sonner";
-import type { ErrorHandler } from "@/api/store.ts";
+import { ErrorHandler, RootState } from "@/api/store.ts";
 import { DialogFooter } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { AnimatedDialogWrapper } from "@/components/ui/animated-dialog.tsx";
+import { useSelector } from "react-redux";
 
 interface EditDocumentFormProps {
     id: number;
@@ -24,6 +25,7 @@ export default function EditDocumentForm({
     tagsIds = [],
 }: EditDocumentFormProps) {
     const [editDocument, { isLoading }] = useEditDocumentMutation();
+    const userId = useSelector((state: RootState) => state.user.userId);
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -36,7 +38,7 @@ export default function EditDocumentForm({
     const onSubmit = async (values: z.infer<typeof schema>) => {
         try {
             await editDocument({
-                userId: 1,
+                userId: userId!,
                 id: id,
                 tagsIds: tagsIds,
                 title: values.title,

@@ -10,10 +10,12 @@ import { Button } from "@/components/ui/button.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
 import { toast } from "sonner";
 import { useCreateTagMutation } from "@/api/tagsApi";
-import { ErrorHandler } from "@/api/store.ts";
+import { ErrorHandler, RootState } from "@/api/store.ts";
+import { useSelector } from "react-redux";
 
 export default function CreateTagsForm() {
     const [createTagMutation, { isLoading }] = useCreateTagMutation();
+    const userId = useSelector((state: RootState) => state.user.userId);
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -30,7 +32,7 @@ export default function CreateTagsForm() {
         console.log(values);
         try {
             await createTagMutation({
-                userId: 1,
+                userId: userId!,
                 name: values.name,
                 hexString: values.color,
             });

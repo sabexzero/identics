@@ -10,7 +10,6 @@ import AuthPage from "@/pages/auth/page.tsx";
 import DashboardPage from "@/pages/dashboard/page.tsx";
 import HistoryPage from "@/pages/history/page.tsx";
 import Layout from "@/components/layout";
-import { AnimatePresence } from "framer-motion";
 import { Provider } from "react-redux";
 import { store } from "./api/store.ts";
 import "./index.css";
@@ -32,19 +31,17 @@ function AnimatedRoutes() {
     const location = useLocation();
 
     return (
-        <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-                <Route path="/auth" element={<AuthPage />} />
-                <Route element={<ProtectedRoute />}>
-                    <Route path="/dashboard" element={<Layout />}>
-                        <Route index element={<DashboardPage />} />
-                        <Route path="/dashboard/history" element={<HistoryPage />} />
-                        <Route path="/dashboard/review/:id" element={<ReviewPage />} />
-                        <Route path="/dashboard/settings" element={<Settings />} />
-                    </Route>
+        <Routes location={location}>
+            <Route path="/auth" element={<AuthPage />} />
+            <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Layout />}>
+                    <Route index element={<DashboardPage />} />
+                    <Route path="/dashboard/history" element={<HistoryPage />} />
+                    <Route path="/dashboard/review/:id" element={<ReviewPage />} />
+                    <Route path="/dashboard/settings" element={<Settings />} />
                 </Route>
-            </Routes>
-        </AnimatePresence>
+            </Route>
+        </Routes>
     );
 }
 
@@ -52,9 +49,7 @@ function App() {
     return (
         <Provider store={store}>
             <Router>
-                <AnimatePresence mode="wait">
-                    <AnimatedRoutes />
-                </AnimatePresence>
+                <AnimatedRoutes />
             </Router>
         </Provider>
     );

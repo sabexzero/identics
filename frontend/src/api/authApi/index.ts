@@ -1,5 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { IPostLogin, IPostLoginResponse, IPostRegister } from "@/api/authApi/types";
+import {
+    IPostLogin,
+    IPostLoginResponse,
+    IPostRegister,
+    IRefreshResponse,
+} from "@/api/authApi/types";
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -76,7 +81,7 @@ export const authApi = createApi({
                 credentials: "include",
             }),
         }),
-        refresh: build.mutation<void, void>({
+        refresh: build.mutation<IRefreshResponse, void>({
             query: () => ({
                 url: "/api/v1/auth/refresh-token",
                 method: "POST",
