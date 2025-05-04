@@ -137,15 +137,13 @@ function RenderNotifications({ notifications, markAsRead }: NotificationProps) {
         markAsRead(userId, id);
     };
 
-    if (!items) {
+    if (items.length === 0) {
         return (
             <div className="flex h-full items-center justify-center p-4">
                 <p className="text-sm text-muted-foreground">Нет уведомлений</p>
             </div>
         );
     }
-
-    console.log("items", items);
 
     return (
         <div className="flex flex-col gap-1 p-1">

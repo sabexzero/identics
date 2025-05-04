@@ -7,7 +7,6 @@ import {
     ChevronDown,
     LogOut,
     Sparkles,
-    FileCheck,
     Bookmark,
     ChevronRight,
 } from "lucide-react";
@@ -52,6 +51,7 @@ import {
 } from "@/components/ui/tooltip.tsx";
 import { useLogoutMutation } from "@/api/authApi";
 import { toast } from "sonner";
+import logo from "../../../assets/logo.svg";
 
 interface Menu {
     reports: boolean;
@@ -91,11 +91,11 @@ export function AppSidebar() {
         <Sidebar variant="sidebar" className="px-0 py-0">
             <SidebarHeader className="pb-0 gap-4">
                 <div className="flex items-center gap-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                        <FileCheck className="h-6 w-6" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-md text-primary-foreground">
+                        <img src={logo} alt="logo" className="h-6 w-6" />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-lg font-semibold">АнтиПлагиат</span>
+                        <span className="text-lg font-semibold">TextSource</span>
                         <span className="text-xs text-muted-foreground">
                             Профессиональная версия
                         </span>

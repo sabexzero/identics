@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Logo } from "@/components/ui/logo";
 import LoginForm from "@/components/forms/auth/login";
 import RegisterForm from "@/components/forms/auth/register";
+import logo from "../../assets/logo.svg";
 
 export default function AuthPage() {
     const [activeTab, setActiveTab] = useState("login");
@@ -11,8 +11,8 @@ export default function AuthPage() {
         <div className="min-h-screen min-w-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4">
             <div className="w-full max-w-md">
                 <div className="flex flex-col items-center space-y-4 mb-8">
-                    <Logo className="h-12 w-12" />
-                    <h1 className="text-2xl font-bold text-center">ПлагиатСкан</h1>
+                    <img src={logo} alt="logo" className="h-12 w-12" />
+                    <h1 className="text-2xl font-bold text-center">TextSource</h1>
                     <p className="text-muted-foreground text-center">
                         Надежный инструмент для проверки уникальности текста
                     </p>

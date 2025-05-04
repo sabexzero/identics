@@ -28,6 +28,7 @@ export default function DashboardPage() {
         page: 0,
         size: 3,
         sortBy: "date",
+        sortDirection: "desc",
     });
 
     return (

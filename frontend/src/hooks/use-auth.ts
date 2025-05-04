@@ -9,7 +9,6 @@ export default function useAuth() {
     const dispatch = useDispatch();
     const userId = useSelector((state: RootState) => state.user.userId);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-    console.log("test");
 
     useEffect(() => {
         const checkAuth = async () => {
