@@ -40,7 +40,6 @@ import {
     Percent,
     Link,
     BarChart,
-    Stamp,
     Palette,
     FileCheck,
     Clock,
@@ -62,7 +61,6 @@ const ReportSettings: React.FC = () => {
             includeSimilarityScore: true,
             includeSourceLinks: true,
             includeStatistics: true,
-            watermarkText: "Конфиденциально",
             reportColorScheme: "standard",
             reportRetentionDays: 90,
         },
@@ -268,18 +266,6 @@ const ReportSettings: React.FC = () => {
                                                             <FormItem className="flex items-center space-x-0 space-y-0 rounded-lg border p-3 hover:bg-muted/50 transition-colors">
                                                                 <FormControl>
                                                                     <RadioGroupItem
-                                                                        value="docx"
-                                                                        className="data-[state=checked]:border-primary data-[state=checked]:text-primary"
-                                                                    />
-                                                                </FormControl>
-                                                                <FormLabel className="font-medium flex items-center gap-2">
-                                                                    <FileText className="h-4 w-4 text-blue-500" />
-                                                                    DOCX
-                                                                </FormLabel>
-                                                            </FormItem>
-                                                            <FormItem className="flex items-center space-x-0 space-y-0 rounded-lg border p-3 hover:bg-muted/50 transition-colors">
-                                                                <FormControl>
-                                                                    <RadioGroupItem
                                                                         value="html"
                                                                         className="data-[state=checked]:border-primary data-[state=checked]:text-primary"
                                                                     />
@@ -409,34 +395,6 @@ const ReportSettings: React.FC = () => {
                                                             className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                         />
                                                     </FormControl>
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="watermarkText"
-                                            render={({ field }) => (
-                                                <FormItem className="space-y-4 p-4 rounded-xl border border-primary/10 shadow-sm">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="p-2 rounded-full bg-primary/10">
-                                                            <Stamp className="h-5 w-5 text-primary" />
-                                                        </div>
-                                                        <FormLabel className="text-base font-medium">
-                                                            Текст водяного знака
-                                                        </FormLabel>
-                                                    </div>
-                                                    <FormControl>
-                                                        <Input
-                                                            {...field}
-                                                            className="h-11 px-4 transition-all border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary"
-                                                        />
-                                                    </FormControl>
-                                                    <FormDescription className="text-xs">
-                                                        Текст, который будет отображаться как
-                                                        водяной знак на страницах отчета
-                                                    </FormDescription>
-                                                    <FormMessage />
                                                 </FormItem>
                                             )}
                                         />

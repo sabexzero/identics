@@ -7,9 +7,6 @@ export const schema = z.object({
     includeSimilarityScore: z.boolean(),
     includeSourceLinks: z.boolean(),
     includeStatistics: z.boolean(),
-    watermarkText: z.string().max(50, {
-        message: "Текст водяного знака не должен превышать 50 символов",
-    }),
     reportColorScheme: z.enum(["standard", "highContrast", "monochrome"]),
     reportRetentionDays: z.number().min(1).max(365),
 });
