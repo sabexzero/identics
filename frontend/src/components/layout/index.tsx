@@ -21,6 +21,7 @@ export default function Layout() {
     const navigate = useNavigate();
 
     const [open, setOpen] = useState(false);
+    const userId = useSelector((state: RootState) => state.user.userId);
 
     const { notifications, markAllAsRead, markAsRead } = useNotifications({
         url: `${base_url}/api/ws`,
@@ -80,7 +81,7 @@ export default function Layout() {
                                                 variant="ghost"
                                                 size="sm"
                                                 className="h-auto p-1 text-xs"
-                                                onClick={markAllAsRead}
+                                                onClick={() => markAllAsRead(userId!)}
                                             >
                                                 <Check className="mr-1 h-3 w-3" />
                                                 Прочитать все
@@ -90,6 +91,7 @@ export default function Layout() {
                                     <Separator />
                                     <ScrollArea className="h-[300px]">
                                         <RenderNotifications
+                                            userId={userId}
                                             notifications={notifications}
                                             markAsRead={markAsRead}
                                         />
@@ -114,11 +116,11 @@ export default function Layout() {
 interface NotificationProps {
     notifications: NotificationPayload[];
     markAsRead: (userId: number | null, id: number) => void;
+    userId: number | null;
 }
 
-function RenderNotifications({ notifications, markAsRead }: NotificationProps) {
+function RenderNotifications({ notifications, markAsRead, userId }: NotificationProps) {
     const navigate = useNavigate();
-    const userId = useSelector((state: RootState) => state.user.userId);
     const items = notifications.filter((item) => !item.read);
 
     const getNotificationIcon = (type: NotificationType) => {

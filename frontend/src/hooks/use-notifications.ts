@@ -1,5 +1,9 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useGetNotificationsQuery, useReadNotificationsMutation } from "@/api/notificationApi";
+import {
+    useGetNotificationsQuery,
+    useReadAllNotificationsMutation,
+    useReadNotificationsMutation,
+} from "@/api/notificationApi";
 import { RootState } from "@/api/store.ts";
 import { useSelector } from "react-redux";
 
@@ -25,6 +29,7 @@ export function useNotifications({ url, onMessage }: useNotificationsOptions) {
         userId: userId!,
     });
     const [readNotification] = useReadNotificationsMutation();
+    const [readAllNotifications] = useReadAllNotificationsMutation();
 
     const [isConnected, setIsConnected] = useState(false);
     const [notifications, setNotifications] = useState<NotificationPayload[]>([]);
@@ -89,12 +94,16 @@ export function useNotifications({ url, onMessage }: useNotificationsOptions) {
         }
     }, [userId]);
 
-    const markAllAsRead = useCallback(() => {
-        setNotifications([]);
+    const markAllAsRead = useCallback((userId: number | null) => {
+        if (userId) {
+            readAllNotifications({
+                userId: userId!,
+            });
+            setNotifications([]);
+        }
     }, []);
 
     const markAsRead = useCallback((userId: number | null, id: number) => {
-        console.log(userId);
         if (userId) {
             readNotification({
                 userId: userId,
