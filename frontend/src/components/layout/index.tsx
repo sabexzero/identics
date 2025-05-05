@@ -24,7 +24,7 @@ export default function Layout() {
     const userId = useSelector((state: RootState) => state.user.userId);
 
     const { notifications, markAllAsRead, markAsRead } = useNotifications({
-        url: `${base_url}/api/ws`,
+        url: `${base_url}api/ws`,
         onMessage: (data) => {
             toast(data.title, {
                 description: data.message,
