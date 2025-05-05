@@ -3,13 +3,7 @@
 import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
@@ -25,16 +19,7 @@ import {
     CardFooter,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-    User,
-    Mail,
-    Phone,
-    LogOut,
-    UserX,
-    Upload,
-    Check,
-    Loader2,
-} from "lucide-react";
+import { User, Mail, Phone, LogOut, UserX, Upload, Check, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import {
     AlertDialog,
@@ -47,19 +32,35 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { useLogoutMutation } from "@/api/authApi";
+import { useNavigate } from "react-router-dom";
 
 const ProfileSettings: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [logout] = useLogoutMutation();
+    const navigate = useNavigate();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
-            name: "Виталик Жирная и Нищая",
-            email: "VitalikLox@jirniy.nishiy",
+            name: "Владислав Петров",
+            email: "vladislavPetrov@example.com",
             phone: "+7 (999) 999 99 99",
         },
     });
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            localStorage.clear();
+            navigate("/auth");
+        } catch (error) {
+            console.error(error);
+            toast.error("Возникла ошибка при выходе из аккаунта");
+        }
+    };
 
     const onSubmit = (data: z.infer<typeof schema>) => {
         setIsSubmitting(true);
@@ -97,22 +98,16 @@ const ProfileSettings: React.FC = () => {
                             </div>
                         </div>
                         <div>
-                            <CardTitle className="text-2xl font-bold">
-                                Профиль
-                            </CardTitle>
+                            <CardTitle className="text-2xl font-bold">Профиль</CardTitle>
                             <CardDescription className="text-base">
-                                Управление личной информацией и настройками
-                                аккаунта
+                                Управление личной информацией и настройками аккаунта
                             </CardDescription>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent className="pb-6">
                     <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="space-y-6"
-                        >
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                             <div className="space-y-4">
                                 <FormField
                                     control={form.control}
@@ -213,12 +208,9 @@ const ProfileSettings: React.FC = () => {
 
             <Card className="border border-destructive/10 shadow-lg shadow-destructive/5">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-xl font-bold">
-                        Действия с аккаунтом
-                    </CardTitle>
+                    <CardTitle className="text-xl font-bold">Действия с аккаунтом</CardTitle>
                     <CardDescription>
-                        Будьте осторожны с этими действиями — некоторые из них
-                        необратимы
+                        Будьте осторожны с этими действиями — некоторые из них необратимы
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="pb-6">
@@ -230,16 +222,13 @@ const ProfileSettings: React.FC = () => {
                                         <LogOut className="h-5 w-5 text-muted-foreground" />
                                     </div>
                                     <div>
-                                        <h3 className="font-medium">
-                                            Выйти со всех устройств
-                                        </h3>
+                                        <h3 className="font-medium">Выйти со всех устройств</h3>
                                         <p className="text-sm text-muted-foreground">
-                                            Завершить все активные сессии кроме
-                                            текущей
+                                            Завершить все активные сессии кроме текущей
                                         </p>
                                     </div>
                                 </div>
-                                <Button variant="outline" size="sm">
+                                <Button variant="outline" size="sm" onClick={handleLogout}>
                                     Выйти
                                 </Button>
                             </div>
@@ -256,12 +245,9 @@ const ProfileSettings: React.FC = () => {
                                                 <UserX className="h-5 w-5 text-destructive" />
                                             </div>
                                             <div>
-                                                <h3 className="font-medium">
-                                                    Удалить аккаунт
-                                                </h3>
+                                                <h3 className="font-medium">Удалить аккаунт</h3>
                                                 <p className="text-sm text-muted-foreground">
-                                                    Удалить аккаунт и все
-                                                    связанные данные
+                                                    Удалить аккаунт и все связанные данные
                                                 </p>
                                             </div>
                                         </div>
@@ -277,15 +263,12 @@ const ProfileSettings: React.FC = () => {
                                         Вы действительно хотите удалить аккаунт?
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        Это действие полностью удалит ваш
-                                        аккаунт и все данные. Это действие
-                                        необратимо.
+                                        Это действие полностью удалит ваш аккаунт и все данные. Это
+                                        действие необратимо.
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                        Отмена
-                                    </AlertDialogCancel>
+                                    <AlertDialogCancel>Отмена</AlertDialogCancel>
                                     <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/65">
                                         Удалить аккаунт
                                     </AlertDialogAction>
@@ -295,8 +278,7 @@ const ProfileSettings: React.FC = () => {
                     </div>
                 </CardContent>
                 <CardFooter className="py-3 text-xs text-muted-foreground italic">
-                    Удаление аккаунта приведет к потере всех данных и не может
-                    быть отменено
+                    Удаление аккаунта приведет к потере всех данных и не может быть отменено
                 </CardFooter>
             </Card>
         </div>

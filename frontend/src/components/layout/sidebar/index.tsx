@@ -3,20 +3,15 @@ import {
     History,
     Settings,
     BookOpen,
-    BarChart2,
     HelpCircle,
     ChevronDown,
     LogOut,
-    User,
-    Bell,
     Sparkles,
-    FileCheck,
     Bookmark,
     ChevronRight,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -27,11 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 import {
     Sidebar,
@@ -52,6 +43,15 @@ import {
 } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip.tsx";
+import { useLogoutMutation } from "@/api/authApi";
+import { toast } from "sonner";
+import logo from "../../../assets/logo.svg";
 
 interface Menu {
     reports: boolean;
@@ -61,6 +61,19 @@ interface Menu {
 export function AppSidebar() {
     const navigate = useNavigate();
     const location = useLocation();
+
+    const [logout] = useLogoutMutation();
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            localStorage.clear();
+            navigate("/auth");
+        } catch (error) {
+            console.error(error);
+            toast.error("Возникла ошибка при выходе из аккаунта");
+        }
+    };
 
     const [openMenus, setOpenMenus] = useState<Menu>({
         reports: true,
@@ -78,13 +91,11 @@ export function AppSidebar() {
         <Sidebar variant="sidebar" className="px-0 py-0">
             <SidebarHeader className="pb-0 gap-4">
                 <div className="flex items-center gap-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                        <FileCheck className="h-6 w-6" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-md text-primary-foreground">
+                        <img src={logo} alt="logo" className="h-6 w-6" />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-lg font-semibold">
-                            АнтиПлагиат
-                        </span>
+                        <span className="text-lg font-semibold">TextSource</span>
                         <span className="text-xs text-muted-foreground">
                             Профессиональная версия
                         </span>
@@ -95,19 +106,15 @@ export function AppSidebar() {
                 </div>
             </SidebarHeader>
 
-            <SidebarSeparator />
+            <SidebarSeparator className="w-[30%]" />
 
             <SidebarContent className="overflow-hidden">
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            <SidebarMenuItem
-                                onClick={() => navigate("/dashboard")}
-                            >
+                            <SidebarMenuItem onClick={() => navigate("/dashboard")}>
                                 <SidebarMenuButton
-                                    isActive={
-                                        location.pathname === "/dashboard"
-                                    }
+                                    isActive={location.pathname === "/dashboard"}
                                     tooltip="Панель управления"
                                 >
                                     <LayoutDashboard className="text-primary" />
@@ -115,14 +122,9 @@ export function AppSidebar() {
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
 
-                            <SidebarMenuItem
-                                onClick={() => navigate("/dashboard/history")}
-                            >
+                            <SidebarMenuItem onClick={() => navigate("/dashboard/history")}>
                                 <SidebarMenuButton
-                                    isActive={
-                                        location.pathname ===
-                                        "/dashboard/history"
-                                    }
+                                    isActive={location.pathname === "/dashboard/history"}
                                     tooltip="История проверок"
                                 >
                                     <History />
@@ -139,78 +141,49 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarGroupLabel>Отчеты и аналитика</SidebarGroupLabel>
                     <SidebarGroupContent>
-                        <Collapsible
-                            open={openMenus.reports}
-                            onOpenChange={() => toggleMenu("reports")}
-                            className="group/collapsible"
-                        >
-                            <SidebarMenu>
-                                <SidebarMenuItem>
-                                    <CollapsibleTrigger asChild>
-                                        <SidebarMenuButton tooltip="Отчеты">
-                                            <BarChart2 />
-                                            <span>Отчеты</span>
-                                            <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                                        </SidebarMenuButton>
-                                    </CollapsibleTrigger>
-                                </SidebarMenuItem>
-                            </SidebarMenu>
+                        <TooltipProvider>
+                            <Collapsible
+                                open={openMenus.resources}
+                                onOpenChange={() => toggleMenu("resources")}
+                                className="group/collapsible"
+                            >
+                                <SidebarMenu>
+                                    <SidebarMenuItem>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <div className="w-full">
+                                                    <CollapsibleTrigger asChild disabled={true}>
+                                                        <SidebarMenuButton>
+                                                            <BookOpen />
+                                                            <span>Ресурсы</span>
+                                                            <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                                                        </SidebarMenuButton>
+                                                    </CollapsibleTrigger>
+                                                </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Данная функция находится в разработке</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </SidebarMenuItem>
+                                </SidebarMenu>
 
-                            <CollapsibleContent>
-                                <SidebarMenuSub>
-                                    <SidebarMenuSubItem>
-                                        <SidebarMenuSubButton>
-                                            <span>Отчеты о сходстве</span>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                    <SidebarMenuSubItem>
-                                        <SidebarMenuSubButton>
-                                            <span>Детальный анализ</span>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                    <SidebarMenuSubItem>
-                                        <SidebarMenuSubButton>
-                                            <span>Экспорт отчетов</span>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                </SidebarMenuSub>
-                            </CollapsibleContent>
-                        </Collapsible>
-
-                        <Collapsible
-                            open={openMenus.resources}
-                            onOpenChange={() => toggleMenu("resources")}
-                            className="group/collapsible"
-                        >
-                            <SidebarMenu>
-                                <SidebarMenuItem>
-                                    <CollapsibleTrigger asChild>
-                                        <SidebarMenuButton tooltip="Ресурсы">
-                                            <BookOpen />
-                                            <span>Ресурсы</span>
-                                            <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                                        </SidebarMenuButton>
-                                    </CollapsibleTrigger>
-                                </SidebarMenuItem>
-                            </SidebarMenu>
-
-                            <CollapsibleContent>
-                                <SidebarMenuSub>
-                                    <SidebarMenuSubItem>
-                                        <SidebarMenuSubButton>
-                                            <span>
-                                                Руководство по цитированию
-                                            </span>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                    <SidebarMenuSubItem>
-                                        <SidebarMenuSubButton>
-                                            <span>Академическая честность</span>
-                                        </SidebarMenuSubButton>
-                                    </SidebarMenuSubItem>
-                                </SidebarMenuSub>
-                            </CollapsibleContent>
-                        </Collapsible>
+                                <CollapsibleContent>
+                                    <SidebarMenuSub>
+                                        <SidebarMenuSubItem>
+                                            <SidebarMenuSubButton>
+                                                <span>Руководство по цитированию</span>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+                                        <SidebarMenuSubItem>
+                                            <SidebarMenuSubButton>
+                                                <span>Академическая честность</span>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+                                    </SidebarMenuSub>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        </TooltipProvider>
 
                         <SidebarMenu>
                             <SidebarMenuItem>
@@ -229,15 +202,10 @@ export function AppSidebar() {
                     <SidebarGroupLabel>Система</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            <SidebarMenuItem
-                                onClick={() => navigate("/dashboard/settings")}
-                            >
+                            <SidebarMenuItem onClick={() => navigate("/dashboard/settings")}>
                                 <SidebarMenuButton
                                     tooltip="Настройки"
-                                    isActive={
-                                        location.pathname ===
-                                        "/dashboard/settings"
-                                    }
+                                    isActive={location.pathname === "/dashboard/settings"}
                                 >
                                     <Settings />
                                     <span>Настройки</span>
@@ -258,24 +226,16 @@ export function AppSidebar() {
             <SidebarSeparator />
 
             <SidebarFooter>
-                <div className="px-3 py-2">
+                <div className="py-2">
                     <div className="mb-2 space-y-1 rounded-lg bg-muted/50 p-2">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium">
-                                Использовано проверок
-                            </span>
+                            <span className="text-xs font-medium">Использовано проверок</span>
                             <span className="text-xs font-medium">70%</span>
                         </div>
                         <Progress value={70} className="h-1.5" />
                         <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">
-                                70/100
-                            </span>
-                            <Button
-                                variant="link"
-                                size="sm"
-                                className="h-auto p-0 text-xs"
-                            >
+                            <span className="text-xs text-muted-foreground">70/100</span>
+                            <Button variant="link" size="sm" className="h-auto p-0 text-xs">
                                 <Sparkles className="mr-1 h-3 w-3" />
                                 Обновить
                             </Button>
@@ -294,14 +254,10 @@ export function AppSidebar() {
                                                 src="/placeholder.svg?height=32&width=32"
                                                 alt="User"
                                             />
-                                            <AvatarFallback className="text-xs">
-                                                ИП
-                                            </AvatarFallback>
+                                            <AvatarFallback className="text-xs">ИП</AvatarFallback>
                                         </Avatar>
                                         <div className="flex flex-col items-start">
-                                            <span className="text-sm font-medium">
-                                                Иван Петров
-                                            </span>
+                                            <span className="text-sm font-medium">Иван Петров</span>
                                             <span className="text-xs text-muted-foreground">
                                                 ivan@example.com
                                             </span>
@@ -320,35 +276,17 @@ export function AppSidebar() {
                                         <AvatarFallback>ИП</AvatarFallback>
                                     </Avatar>
                                     <div className="flex flex-col">
-                                        <span className="font-medium">
-                                            Иван Петров
-                                        </span>
+                                        <span className="font-medium">Иван Петров</span>
                                         <span className="text-xs text-muted-foreground">
                                             ivan@example.com
                                         </span>
                                     </div>
                                 </div>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    <User className="mr-2 h-4 w-4" />
-                                    <span>Профиль</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <Bell className="mr-2 h-4 w-4" />
-                                    <span>Уведомления</span>
-                                    <Badge
-                                        variant="secondary"
-                                        className="ml-auto"
-                                    >
-                                        3
-                                    </Badge>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <Settings className="mr-2 h-4 w-4" />
-                                    <span>Настройки аккаунта</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-destructive focus:text-destructive">
+                                <DropdownMenuItem
+                                    className="text-destructive focus:text-destructive"
+                                    onClick={handleLogout}
+                                >
                                     <LogOut className="mr-2 h-4 w-4" />
                                     <span>Выйти</span>
                                 </DropdownMenuItem>

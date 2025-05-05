@@ -32,7 +32,7 @@ const NotificationSettings: React.FC = () => {
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
-            emailNotifications: true,
+            telegramNotifications: false,
             browserNotifications: true,
             reportReadyNotifications: true,
         },
@@ -58,22 +58,16 @@ const NotificationSettings: React.FC = () => {
                             <Bell className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                            <CardTitle className="text-2xl font-bold">
-                                Уведомления
-                            </CardTitle>
+                            <CardTitle className="text-2xl font-bold">Уведомления</CardTitle>
                             <CardDescription className="text-base">
-                                Настройте способы и частоту получения
-                                уведомлений
+                                Настройте способы и частоту получения уведомлений
                             </CardDescription>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent className="pb-6">
                     <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="space-y-8"
-                        >
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                             <div className="space-y-6">
                                 <div>
                                     <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
@@ -84,28 +78,24 @@ const NotificationSettings: React.FC = () => {
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <FormField
                                             control={form.control}
-                                            name="emailNotifications"
+                                            name="telegramNotifications"
                                             render={({ field }) => (
                                                 <FormItem className="flex flex-row items-center justify-between rounded-xl border border-primary/10 p-4 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
                                                     <div className="space-y-1">
                                                         <FormLabel className="text-base font-medium flex items-center gap-2">
                                                             <Mail className="h-5 w-5 text-primary" />
-                                                            Email уведомления
+                                                            Telegram уведомления
                                                         </FormLabel>
                                                         <FormDescription className="text-sm">
-                                                            Получать уведомления
-                                                            на email
+                                                            Получать уведомления в Telegram
                                                         </FormDescription>
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <FormControl>
                                                             <Switch
-                                                                checked={
-                                                                    field.value
-                                                                }
-                                                                onCheckedChange={
-                                                                    field.onChange
-                                                                }
+                                                                disabled={true}
+                                                                checked={field.value}
+                                                                onCheckedChange={field.onChange}
                                                                 className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                             />
                                                         </FormControl>
@@ -122,24 +112,17 @@ const NotificationSettings: React.FC = () => {
                                                     <div className="space-y-1">
                                                         <FormLabel className="text-base font-medium flex items-center gap-2">
                                                             <Bell className="h-5 w-5 text-primary" />
-                                                            Уведомления в
-                                                            браузере
+                                                            Уведомления в браузере
                                                         </FormLabel>
                                                         <FormDescription className="text-sm">
-                                                            Получать
-                                                            push-уведомления в
-                                                            браузере
+                                                            Получать push-уведомления в браузере
                                                         </FormDescription>
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <FormControl>
                                                             <Switch
-                                                                checked={
-                                                                    field.value
-                                                                }
-                                                                onCheckedChange={
-                                                                    field.onChange
-                                                                }
+                                                                checked={field.value}
+                                                                onCheckedChange={field.onChange}
                                                                 className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                             />
                                                         </FormControl>
@@ -170,19 +153,14 @@ const NotificationSettings: React.FC = () => {
                                                             Готовность отчетов
                                                         </FormLabel>
                                                         <FormDescription className="text-sm">
-                                                            Уведомления о
-                                                            готовности отчетов
+                                                            Уведомления о готовности отчетов
                                                         </FormDescription>
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <FormControl>
                                                             <Switch
-                                                                checked={
-                                                                    field.value
-                                                                }
-                                                                onCheckedChange={
-                                                                    field.onChange
-                                                                }
+                                                                checked={field.value}
+                                                                onCheckedChange={field.onChange}
                                                                 className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                             />
                                                         </FormControl>

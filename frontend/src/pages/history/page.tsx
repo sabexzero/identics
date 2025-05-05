@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { HistoryTable } from "@/components/tables/history";
+import HistoryTable from "@/components/tables/history";
 
 export default function HistoryPage() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -10,9 +10,7 @@ export default function HistoryPage() {
         <div className="grid gap-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">
-                        История проверок
-                    </h1>
+                    <h1 className="text-3xl font-bold tracking-tight">История проверок</h1>
                     <p className="text-muted-foreground">
                         Просмотр всех ваших проверок на плагиат.
                     </p>
