@@ -41,6 +41,7 @@ function AnimatedRoutes() {
                     <Route path="/dashboard/settings" element={<Settings />} />
                 </Route>
             </Route>
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
     );
 }
