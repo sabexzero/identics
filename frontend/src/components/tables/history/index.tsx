@@ -174,19 +174,19 @@ export default function HistoryTable() {
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-center">
-                                    {item.uniqueness && (
+                                    {item.uniqueness >= 0 && (
                                         <Badge
                                             variant={
-                                                item.uniqueness >= 90
+                                                item.uniqueness >= 80
                                                     ? "default"
-                                                    : item.uniqueness >= 80
+                                                    : item.uniqueness >= 50
                                                       ? "secondary"
                                                       : "outline"
                                             }
                                             className={
-                                                item.uniqueness >= 90
+                                                item.uniqueness >= 80
                                                     ? "bg-green-100 text-green-800 hover:bg-green-100 hover:text-green-800"
-                                                    : item.uniqueness >= 80
+                                                    : item.uniqueness >= 50
                                                       ? "bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-800"
                                                       : "bg-amber-100 text-amber-800 hover:bg-amber-100 hover:text-amber-800"
                                             }
