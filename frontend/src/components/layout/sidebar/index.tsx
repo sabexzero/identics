@@ -106,9 +106,8 @@ export function AppSidebar() {
                 </div>
             </SidebarHeader>
 
-            <SidebarSeparator className="w-[30%]" />
-
             <SidebarContent className="overflow-hidden">
+                <SidebarSeparator />
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
@@ -223,9 +222,8 @@ export function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
 
-            <SidebarSeparator />
-
             <SidebarFooter>
+                <SidebarSeparator />
                 <div className="py-2">
                     <div className="mb-2 space-y-1 rounded-lg bg-muted/50 p-2">
                         <div className="flex items-center justify-between">
