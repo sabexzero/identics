@@ -26,7 +26,7 @@ export default function Layout() {
     const { notifications, markAllAsRead, markAsRead } = useNotifications({
         url: `${base_url}api/ws`,
         onMessage: (data) => {
-            toast(data.title, {
+            toast.info(data.title, {
                 description: data.message,
                 position: "top-right",
             });
@@ -105,7 +105,7 @@ export default function Layout() {
                         <div className="mx-auto max-w-7xl">
                             <Outlet />
                         </div>
-                        <Toaster />
+                        <Toaster richColors />
                     </main>
                 </div>
             </SidebarProvider>

@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { schema } from "@/components/forms/auth/login/schema.ts";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 import { useLoginMutation } from "@/api/authApi";
 
 export default function LoginForm() {
@@ -31,11 +31,11 @@ export default function LoginForm() {
             }).unwrap();
 
             localStorage.setItem("accessToken", result.accessToken);
-            navigate("/dashboard");
             toast.success("Вы авторизировались!");
+            navigate("/dashboard");
         } catch (error) {
+            toast.error("Ошибка авторизации", { description: "Неверно указан логин или пароль" });
             console.error(error);
-            toast.error("Ошибка авторизации");
         }
     };
 
@@ -102,6 +102,7 @@ export default function LoginForm() {
                     )}
                 </Button>
             </form>
+            <Toaster richColors position="top-center" />
         </Form>
     );
 }
