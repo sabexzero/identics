@@ -228,12 +228,17 @@ export function AppSidebar() {
                     <div className="mb-2 space-y-1 rounded-lg bg-muted/50 p-2">
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-medium">Использовано проверок</span>
-                            <span className="text-xs font-medium">70%</span>
+                            <span className="text-xs font-medium">0%</span>
                         </div>
-                        <Progress value={70} className="h-1.5" />
+                        <Progress value={0} className="h-1.5" />
                         <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">70/100</span>
-                            <Button variant="link" size="sm" className="h-auto p-0 text-xs">
+                            <span className="text-xs text-muted-foreground">70/&infin;</span>
+                            <Button
+                                disabled={true}
+                                variant="link"
+                                size="sm"
+                                className="h-auto p-0 text-xs"
+                            >
                                 <Sparkles className="mr-1 h-3 w-3" />
                                 Обновить
                             </Button>
