@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.identics.monolith.configuration.security.RequiresUserIdMatch;
 import org.identics.monolith.dto.ApiKeyDTO;
 import org.identics.monolith.service.ApiKeyService;
 import org.identics.monolith.web.dto.ErrorResponse;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequiresUserIdMatch
 @RequestMapping("/api/v1/{userId}/api-keys")
 @Tag(name = "API Ключи", description = "API для управления API ключами")
 @Validated

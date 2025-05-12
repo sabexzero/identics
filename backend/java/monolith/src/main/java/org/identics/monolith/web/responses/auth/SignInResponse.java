@@ -4,7 +4,8 @@ import lombok.Builder;
 
 @Builder
 public record SignInResponse(
-        String accessToken,
-        Long expiresIn
+    Long userId,
+    String accessToken,
+    Long expiresIn
 ) {
 }

@@ -36,9 +36,15 @@ import lombok.NoArgsConstructor;
         @JoinColumn(name = "source_uuid", referencedColumnName = "doc_uuid", nullable = false) // Указываем на PK в DocumentRegistry
         private DocumentRegistry sourceDocumentRegistry; // Поле для связи с DocumentRegistry
 
+        @Column(name = "coverage")
+        private Double coverage;
+
         @Column(name = "first_pos")
         private Integer firstPos;
 
         @Column(name = "second_pos")
         private Integer secondPos;
+        
+        @Column(name = "method")
+        private String method;
     }

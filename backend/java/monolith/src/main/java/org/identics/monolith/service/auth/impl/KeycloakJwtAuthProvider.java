@@ -73,11 +73,11 @@ public class KeycloakJwtAuthProvider implements JwtAuthProvider {
                 .expiresIn(jsonNode.get("expires_in").asLong())
                 .build();
         } catch (HttpClientErrorException e) {
-            throw new IOException("Client error occurred while retrieving access token: " + e.getMessage());
+            throw new IOException("Client error occurred while retrieving access token: " + e.getLocalizedMessage());
         } catch (HttpServerErrorException e) {
-            throw new IOException("Server error occurred while retrieving access token: " + e.getMessage());
+            throw new IOException("Server error occurred while retrieving access token: " + e.getLocalizedMessage());
         } catch (Exception e) {
-            throw new IOException("An unexpected error occurred while retrieving access token: " + e.getMessage());
+            throw new IOException("An unexpected error occurred while retrieving access token: " + e.getLocalizedMessage());
         }
     }
 
@@ -183,7 +183,7 @@ public class KeycloakJwtAuthProvider implements JwtAuthProvider {
             JsonNode jsonNode = objectMapper.readTree(responseBody);
             return jsonNode.get("access_token").asText();
         } catch (Exception e) {
-            throw new IOException("Error getting admin token: " + e.getMessage(), e);
+            throw new IOException("Error getting admin token: " + e.getLocalizedMessage());
         }
     }
 
@@ -233,9 +233,9 @@ public class KeycloakJwtAuthProvider implements JwtAuthProvider {
                 throw new IOException("Failed to create user: " + response.getStatusCode());
             }
         } catch (HttpClientErrorException e) {
-            throw new IOException("Client error creating user: " + e.getMessage() + ", Response: " + e.getResponseBodyAsString());
+            throw new IOException("Client error creating user: " + e.getLocalizedMessage() + ", Response: " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            throw new IOException("Error creating KeyCloak user: " + e.getMessage(), e);
+            throw new IOException("Error creating KeyCloak user: " + e.getLocalizedMessage());
         }
     }
 }

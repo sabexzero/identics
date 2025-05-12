@@ -35,6 +35,7 @@ public class GetDocumentByIdResponse {
     @AllArgsConstructor
     public static class SourceDTO { // Переименуем DTO для ясности
         private String sourceInfo;       // Доп. инфо об источнике
+        private String sourceUrl;
         private Integer firstPos;         // Позиция начала совпадения в проверяемом документе
         private Integer secondPos;        // Позиция конца совпадения в проверяемом документе
         private String text;              // Текст контекста вокруг совпадения

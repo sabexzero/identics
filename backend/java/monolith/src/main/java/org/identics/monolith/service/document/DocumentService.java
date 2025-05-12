@@ -120,15 +120,65 @@ public class DocumentService {
         int page,
         int size
     ) {
-        // Обрабатываем особый случай сортировки по дате проверки
+        // Определяем, сортируем ли по дате проверки
         boolean isSortingByCheckDate = sortBy != null && sortBy.equalsIgnoreCase("date");
         
-        // Если не сортируем по дате проверки, используем стандартную сортировку
-        Sort sort = isSortingByCheckDate ? Sort.unsorted() : createSort(sortBy, sortDirection);
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        Page<DocumentWithTagsResponse> result;
+        // Создаем параметры сортировки и пагинации
+        Sort sort = createSort(sortBy, sortDirection);
         
+        // Для сортировки по дате проверки нам нужен особый подход
+        if (isSortingByCheckDate) {
+            // Получаем все документы пользователя с применением фильтров, но без пагинации
+            List<DocumentWithTagsResponse> allDocuments = getAllDocumentsWithFilters(userId, tagIds, searchTerm);
+            
+            // Сортируем все документы по дате проверки
+            Sort.Direction direction = sortDirection != null && sortDirection.equalsIgnoreCase("asc")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+                
+            allDocuments.sort((doc1, doc2) -> {
+                // Обработка null значений
+                if (doc1.getCheckDate() == null && doc2.getCheckDate() == null) {
+                    return 0; // Оба null, считаем равными
+                } else if (doc1.getCheckDate() == null) {
+                    return direction == Sort.Direction.ASC ? -1 : 1; // null идет первым при asc, последним при desc
+                } else if (doc2.getCheckDate() == null) {
+                    return direction == Sort.Direction.ASC ? 1 : -1; // null идет первым при asc, последним при desc
+                }
+                
+                // Оба не null, сравниваем напрямую
+                int comparison = doc1.getCheckDate().compareTo(doc2.getCheckDate());
+                return direction == Sort.Direction.ASC ? comparison : -comparison;
+            });
+            
+            // Применяем пагинацию к отсортированному списку
+            int fromIndex = page * size;
+            if (fromIndex >= allDocuments.size()) {
+                // Запрошенная страница выходит за границы
+                return new PageImpl<>(Collections.emptyList(), PageRequest.of(page, size), allDocuments.size());
+            }
+            
+            int toIndex = Math.min(fromIndex + size, allDocuments.size());
+            List<DocumentWithTagsResponse> pageContent = allDocuments.subList(fromIndex, toIndex);
+            
+            // Возвращаем страницу с уже отсортированными документами
+            return new PageImpl<>(pageContent, PageRequest.of(page, size), allDocuments.size());
+        } else {
+            // Для остальных типов сортировки используем стандартный подход
+            Pageable pageable = PageRequest.of(page, size, sort);
+            return getDocumentsPageWithFilters(userId, tagIds, searchTerm, pageable);
+        }
+    }
+    
+    /**
+     * Получает документы пользователя с применением фильтров и пагинации
+     */
+    private Page<DocumentWithTagsResponse> getDocumentsPageWithFilters(
+        Long userId, 
+        List<Long> tagIds, 
+        String searchTerm, 
+        Pageable pageable
+    ) {
         if ((tagIds != null && !tagIds.isEmpty()) || (searchTerm != null && !searchTerm.trim().isEmpty())) {
             final List<Long> documentIds = (tagIds != null && !tagIds.isEmpty())
                 ? tagService.findDocumentsByTags(tagIds)
@@ -147,53 +197,73 @@ public class DocumentService {
                         .filter(doc -> documentIds.contains(doc.getId()))
                         .collect(Collectors.toList());
 
-                    result = new PageImpl<>(
+                    return new PageImpl<>(
                         filteredContent,
                         pageable,
                         filteredContent.size()
                     );
                 } else {
-                    result = searchResults;
+                    return searchResults;
                 }
             } else if (!documentIds.isEmpty()) {
                 // Only tag filtering
-                result = documentRepository.findByUserIdAndIdIn(userId, documentIds, pageable)
+                return documentRepository.findByUserIdAndIdIn(userId, documentIds, pageable)
                     .map(this::mapToDocumentResponse);
             } else {
                 // Этот случай не должен произойти, но добавляем для безопасности
-                result = Page.empty();
+                return Page.empty();
             }
         } else {
             // No filters, return all user documents
-            result = documentRepository.findByUserId(userId, pageable)
+            return documentRepository.findByUserId(userId, pageable)
                 .map(this::mapToDocumentResponse);
         }
+    }
+    
+    /**
+     * Получает все документы пользователя с применением фильтров, но без пагинации
+     */
+    private List<DocumentWithTagsResponse> getAllDocumentsWithFilters(
+        Long userId, 
+        List<Long> tagIds, 
+        String searchTerm
+    ) {
+        List<Document> documents;
         
-        // Применяем пост-сортировку по дате проверки, если требуется
-        if (isSortingByCheckDate) {
-            List<DocumentWithTagsResponse> sortedContent = result.getContent()
-                .stream()
-                .sorted((doc1, doc2) -> {
-                    // Сначала обрабатываем null значения
-                    if (doc1.getCheckDate() == null && doc2.getCheckDate() == null) {
-                        return 0; // Оба null, считаем равными
-                    } else if (doc1.getCheckDate() == null) {
-                        return sortDirection != null && sortDirection.equalsIgnoreCase("asc") ? -1 : 1; // null идет первым при asc, последним при desc
-                    } else if (doc2.getCheckDate() == null) {
-                        return sortDirection != null && sortDirection.equalsIgnoreCase("asc") ? 1 : -1; // null идет первым при asc, последним при desc
-                    }
-                    
-                    // Оба не null, сравниваем напрямую
-                    int comparison = doc1.getCheckDate().compareTo(doc2.getCheckDate());
-                    return sortDirection != null && sortDirection.equalsIgnoreCase("asc") ? comparison : -comparison;
-                })
-                .collect(Collectors.toList());
-            
-            // Создаем новую страницу с отсортированным контентом
-            result = new PageImpl<>(sortedContent, pageable, result.getTotalElements());
+        if ((tagIds != null && !tagIds.isEmpty()) || (searchTerm != null && !searchTerm.trim().isEmpty())) {
+            final List<Long> documentIds = (tagIds != null && !tagIds.isEmpty())
+                ? tagService.findDocumentsByTags(tagIds)
+                : Collections.emptyList();
+
+            if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+                // Получаем все документы по поисковому запросу без пагинации
+                List<Document> searchResults = documentRepository
+                    .searchAllByUserIdAndTitleOrId(userId, searchTerm);
+
+                // Применяем фильтрацию по тегам, если нужно
+                if (!documentIds.isEmpty()) {
+                    documents = searchResults.stream()
+                        .filter(doc -> documentIds.contains(doc.getId()))
+                        .collect(Collectors.toList());
+                } else {
+                    documents = searchResults;
+                }
+            } else if (!documentIds.isEmpty()) {
+                // Только фильтрация по тегам
+                documents = documentRepository.findAllByUserIdAndIdIn(userId, documentIds);
+            } else {
+                // Этот случай не должен произойти, но добавляем для безопасности
+                documents = Collections.emptyList();
+            }
+        } else {
+            // Без фильтров, возвращаем все документы пользователя
+            documents = documentRepository.findAllByUserId(userId);
         }
         
-        return result;
+        // Преобразуем документы в ответ с тегами
+        return documents.stream()
+            .map(this::mapToDocumentResponse)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -212,7 +282,6 @@ public class DocumentService {
             .aiContent(check == null ? null : check.getAiCheckLevel())
             .processingTime(check == null || check.getEndTime() == null ? 0L : Duration.between(check.getEndTime(), check.getStartTime()).getSeconds())
             .sources(check == null ? null : mapSourcesFromRegistry(sourceRepository.findByCheck_Id(check.getId())))
-            .reportUrl(check == null ? null : check.getReportUrl())
             .tags(tagService.getDocumentTags(document.getId()))
             .build();
     }
@@ -273,10 +342,10 @@ public class DocumentService {
             .title(document.getTitle())
             .userId(document.getUserId())
             .checkDate(check.map(Check::getStartTime).orElse(null))
-            .uniqueness(check.map(Check::getUniqueness).orElse(null))
+            .uniqueness(check.map(c -> c.getUniqueness() == null ? null : Math.round(c.getUniqueness() * 100.0) / 100.0)
+                .orElse(null))
             .aiLevel(check.map(Check::getAiCheckLevel).orElse(null))
             .tags(tagService.getDocumentTags(document.getId()))
-            .reportUrl(check.map(Check::getReportUrl).orElse(null))
             .build();
     }
 
@@ -313,7 +382,8 @@ public class DocumentService {
                         || firstPosNGram < 0 || secondPosNGram < 0 
                         || firstPosNGram > documentText.length() || secondPosNGram > documentText.length()) {
                     return GetDocumentByIdResponse.SourceDTO.builder()
-                        .sourceInfo(registryInfo != null ? registryInfo.getOriginalFilename().replace(".txt", "").trim() : null)
+                        .sourceInfo(registryInfo != null ? registryInfo.getTitle().trim() : null)
+                        .sourceUrl(registryInfo != null ? registryInfo.getArticleUrl().trim() : null)
                         .firstPos(firstPosNGram)
                         .secondPos(secondPosNGram)
                         .build();
@@ -334,7 +404,8 @@ public class DocumentService {
                 String contextText = extractContextWithHighlight(documentText, startCharIndex, endCharIndex, CONTEXT_MAX_LENGTH);
 
                 return GetDocumentByIdResponse.SourceDTO.builder()
-                    .sourceInfo(registryInfo != null ? registryInfo.getOriginalFilename().replace(".txt", "").trim() : null)
+                    .sourceInfo(registryInfo != null ? registryInfo.getTitle().trim() : null)
+                    .sourceUrl(registryInfo != null ? registryInfo.getArticleUrl().trim() : null)
                     .firstPos(firstPosNGram)
                     .secondPos(secondPosNGram)
                     .text(contextText)
@@ -436,8 +507,7 @@ public class DocumentService {
 
         return switch (sortBy.toLowerCase()) {
             case "title" -> Sort.by(direction, "title");
-            // Сортировка по дате проверки теперь обрабатывается отдельно
-            case "date" -> Sort.by(direction, "createdAt"); // Оставляем для совместимости, но не используем
+            case "date" -> Sort.by(direction, "id"); // Для совместимости, реальная сортировка по дате обрабатывается отдельно
             default -> Sort.by(direction, "id");
         };
     }

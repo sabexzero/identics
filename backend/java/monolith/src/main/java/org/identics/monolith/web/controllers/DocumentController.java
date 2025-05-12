@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.identics.monolith.configuration.security.RequiresUserIdMatch;
 import org.identics.monolith.domain.check.ContentType;
 import org.identics.monolith.service.document.DocumentService;
 import org.identics.monolith.service.facade.CheckFacade;
@@ -43,6 +44,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
+@RequiresUserIdMatch
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/{userId}/documents")

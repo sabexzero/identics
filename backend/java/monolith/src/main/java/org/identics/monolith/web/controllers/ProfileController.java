@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.identics.monolith.configuration.security.RequiresUserIdMatch;
 import org.identics.monolith.dto.TransactionDTO;
 import org.identics.monolith.dto.UserProfileDTO;
 import org.identics.monolith.service.TransactionService;
@@ -22,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiresUserIdMatch
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/{userId}/profile")
 @Tag(name = "Профиль", description = "API для работы с профилем пользователя")

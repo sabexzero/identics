@@ -37,7 +37,7 @@ public class UserService {
                 .name(request.getName())
                 .city(request.getCity())
                 .institution(request.getInstitution())
-                .checksAvailable(0) // Default to 0 available checks
+                .checksAvailable(100000) // Default to 0 available checks
                 .build();
         
         User savedUser = userRepository.save(user);

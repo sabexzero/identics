@@ -1,23 +1,20 @@
-package org.identics.monolith.web;
+package org.identics.monolith.web.controllers;
 
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.identics.monolith.configuration.security.RequiresUserIdMatch;
 import org.identics.monolith.dto.notification.NotificationDTO;
 import org.identics.monolith.service.notification.NotificationService;
 import org.identics.monolith.web.responses.ApiListResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/{userId}/notifications")
 @RequiredArgsConstructor
+@RequiresUserIdMatch
 public class NotificationController {
     private final NotificationService notificationService;
 

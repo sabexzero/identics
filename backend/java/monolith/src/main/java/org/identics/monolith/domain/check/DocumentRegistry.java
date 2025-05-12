@@ -22,8 +22,17 @@ public class DocumentRegistry {
     @Column(name = "doc_uuid", nullable = false, updatable = false)
     private UUID docUuid; // Имя поля совпадает с column name после преобразования
 
-    @Column(name = "original_filename", nullable = false, length = 1024)
-    private String originalFilename;
+    @Column(name = "title", nullable = false, length = 1024)
+    private String title;
+
+    @Column(name = "article_url", nullable = false, length = 1024)
+    private String articleUrl;
+
+    @Column(name = "pdf_url", nullable = false, length = 1024)
+    private String pdfUrl;
+
+    @Column(name = "processed_sentence_count", nullable = false, length = 1024)
+    private String processedSentenceCount;
 
     @Column(name = "source_info", columnDefinition = "TEXT") // Явно указываем TEXT
     private String sourceInfo;
@@ -31,7 +40,9 @@ public class DocumentRegistry {
     @Column(name = "word_count")
     private Integer wordCount;
 
-    @Column(name = "import_timestamp", nullable = false, updatable = false,
-            columnDefinition = "TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP") // Стандартный JPA: позволяет БД установить значение
+    @Column(name = "import_timestamp", nullable = false, updatable = false) // Стандартный JPA: позволяет БД установить значение
     private OffsetDateTime importTimestamp;
+
+    @Column(name = "last_updated_timestamp")
+    private OffsetDateTime lastUpdatedTimestamp;
 }

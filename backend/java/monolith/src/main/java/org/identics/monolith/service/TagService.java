@@ -41,6 +41,7 @@ public class TagService {
             .name(request.getName())
             .hexString(request.getHexString())
             .userId(userId)
+            .isDefaultTag(false)
             .build();
 
         return mapToDto(tagRepository.save(tag));

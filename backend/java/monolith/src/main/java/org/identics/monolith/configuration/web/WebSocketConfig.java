@@ -42,7 +42,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer, WebSoc
         // SockJS fallback options are enabled for browsers where WebSockets aren't available
         registry
             .addEndpoint("/ws")
-            .setAllowedOrigins("*") // In production, restrict this to specific origins
+            .setAllowedOrigins("http://localhost:5173", "http://localhost:63342","http://127.0.0.1:8080", "https://textsource.ru") // In production, restrict this to specific origins
             .withSockJS();
     }
 
@@ -54,7 +54,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer, WebSoc
         registry
             .addHandler(nativeWebSocketHandler, "/api/ws/{userId}")
             .addInterceptors(handshakeInterceptor)
-            .setAllowedOrigins("*");
+            .setAllowedOrigins("http://localhost:5173", "http://localhost:63342","http://127.0.0.1:8080", "https://textsource.ru");
     }
     
     @Bean

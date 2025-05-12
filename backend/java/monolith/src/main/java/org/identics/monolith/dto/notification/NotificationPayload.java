@@ -12,18 +12,20 @@ public class NotificationPayload {
     private String title;
     private String message;
     private String type; // CHECK_COMPLETED, SYSTEM, etc.
-    private LocalDateTime timestamp;
-    
+    private LocalDateTime createdAt;
+    private Boolean read;
+
     // Дополнительные поля для разных типов уведомлений
     private Long documentId;
 
     public static NotificationPayload forCheckCompleted(Long documentId, String title) {
         return NotificationPayload.builder()
-                .title("Проверка завершена")
-                .message("Проверка документа под названием \"" + title + "\" завершена!")
-                .type("CHECK_COMPLETED")
-                .documentId(documentId)
-                .timestamp(LocalDateTime.now())
-                .build();
+            .title("Проверка завершена")
+            .message("Проверка документа под названием \"" + title + "\" завершена!")
+            .type("CHECK_COMPLETED")
+            .documentId(documentId)
+            .createdAt(LocalDateTime.now())
+            .read(false)
+            .build();
     }
 } 

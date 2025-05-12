@@ -20,5 +20,5 @@ public class TaskResult {
     private Double aiPercentage;
     private List<Source> sources;
     private Integer wordCount;
-    private Long checkId;
+    private String checkId;
 }

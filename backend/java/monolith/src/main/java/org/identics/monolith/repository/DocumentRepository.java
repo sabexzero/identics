@@ -22,4 +22,17 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     Page<Document> searchByUserIdAndTitleOrId(@Param("userId") Long userId, 
                                               @Param("searchTerm") String searchTerm,
                                               Pageable pageable);
+    
+    // Методы без пагинации для оптимизации сортировки по дате проверки
+    @Query("SELECT d FROM Document d WHERE d.userId = :userId")
+    List<Document> findAllByUserId(@Param("userId") Long userId);
+    
+    @Query("SELECT d FROM Document d WHERE d.userId = :userId AND d.id IN (:ids)")
+    List<Document> findAllByUserIdAndIdIn(@Param("userId") Long userId, @Param("ids") List<Long> ids);
+    
+    @Query("SELECT d FROM Document d WHERE d.userId = :userId AND " +
+           "(:searchTerm IS NULL OR LOWER(d.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+           "CAST(d.id AS string) LIKE CONCAT('%', :searchTerm, '%'))")
+    List<Document> searchAllByUserIdAndTitleOrId(@Param("userId") Long userId, 
+                                                @Param("searchTerm") String searchTerm);
 }

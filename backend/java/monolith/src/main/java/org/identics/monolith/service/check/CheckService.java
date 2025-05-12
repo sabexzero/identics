@@ -1,7 +1,6 @@
 package org.identics.monolith.service.check;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,6 @@ import org.identics.monolith.repository.DocumentRegistryRepository;
 import org.identics.monolith.repository.DocumentRepository;
 import org.identics.monolith.repository.DocumentSourceRepository;
 import org.identics.monolith.repository.UserSettingsRepository;
-import org.identics.monolith.service.kafka.KafkaService;
 import org.identics.monolith.service.report.ReportGeneratorService;
 import org.identics.monolith.web.dto.kafka.Source;
 import org.identics.monolith.web.dto.kafka.TaskRequest;
@@ -100,17 +98,30 @@ public class CheckService {
     public void handleCompletedCheck(TaskResult taskResult) {
         log.info("Обработка завершенной проверки из TaskResult для checkId: {}", taskResult.getCheckId());
 
-        taskResult.setAiPercentage(
-            (double)getWeightedRandom()
-        );
-
         double roundedPercentage = Math.round(taskResult.getPlagiarismPercentage() * 100.0) / 100.0;
         taskResult.setPlagiarismPercentage(roundedPercentage);
 
+        // Преобразуем checkId из String в Long
+        Long checkId = null;
+        try {
+            if (taskResult.getCheckId() != null && !taskResult.getCheckId().isEmpty()) {
+                checkId = Long.parseLong(taskResult.getCheckId());
+            }
+        } catch (NumberFormatException e) {
+            log.error("Не удалось преобразовать checkId '{}' в Long. Ошибка: {}", 
+                      taskResult.getCheckId(), e.getMessage());
+            return;
+        }
+
+        if (checkId == null) {
+            log.warn("Получен null или пустой checkId в TaskResult");
+            return;
+        }
+
         // 1. Найти основную проверку (Check)
-        Optional<Check> checkOptional = checkRepository.findById(taskResult.getCheckId());
+        Optional<Check> checkOptional = checkRepository.findById(checkId);
         if (checkOptional.isEmpty()) {
-            log.warn("Не найдена проверка с ID {} для обработки результата.", taskResult.getCheckId());
+            log.warn("Не найдена проверка с ID {} для обработки результата.", checkId);
             // Возможно, стоит отправить сообщение в DLQ или предпринять другие действия
             return;
         }
@@ -179,23 +190,14 @@ public class CheckService {
             }
         }
 
-        // Генерация отчета
-        String reportUrl = null;
-        try {
-            reportUrl = reportGeneratorService.generateReportAndUpload(taskResult, reportFileFormat);
-        } catch (IOException e) {
-            log.error("Не удалось сгенерировать отчет для проверки ID {}: {}", userCheck.getId(), e.getMessage());
-        }
-
         // 2. Обновить статус и результаты проверки (Check)
         Double uniqueness = calculateUniqueness(taskResult.getPlagiarismPercentage());
         Check updatedCheck = userCheck.toBuilder()
             .endTime(LocalDateTime.now())
             .status(CheckStatus.COMPLETED) // Устанавливаем статус завершения
             .uniqueness(uniqueness)
-            .aiCheckLevel((double)getWeightedRandom()) // Предполагаем, что поле называется так
+            .aiCheckLevel(taskResult.getAiPercentage())
             .wordCount(taskResult.getWordCount())
-            .reportUrl(reportUrl)
             .build();
 
         checkRepository.save(updatedCheck); // Сохраняем обновленную проверку
@@ -336,13 +338,31 @@ public class CheckService {
             return Stream.empty(); // Пропускаем, если нет записи в реестре
         }
 
-        // Проверяем спаны
-        List<int[]> spans = source.getMatchedSpans();
+        // Сначала проверяем ngram спаны из нового формата
+        List<int[]> spans = source.getNgramSpans();
+        
+        // Если ngram спаны пусты, используем старое поле matchedSpans для обратной совместимости
         if (CollectionUtils.isEmpty(spans)) {
-            log.warn("Источник UUID '{}' (проверка ID {}) не содержит диапазонов совпадений (matchedSpans).", sourceUuid, check.getId());
+            spans = source.getMatchedSpans();
+            log.info("Используем matchedSpans для источника UUID '{}' (проверка ID {}), ngramSpans отсутствуют.", sourceUuid, check.getId());
+        }
+        
+        if (CollectionUtils.isEmpty(spans)) {
+            log.warn("Источник UUID '{}' (проверка ID {}) не содержит диапазонов совпадений (ни ngramSpans, ни matchedSpans).", 
+                    sourceUuid, check.getId());
             return Stream.empty(); // Пропускаем, если нет спанов
         }
 
+        // Получаем coverage из подходящего поля и задаем значение по умолчанию сразу
+        final Double finalCoverage = (source.getFinalScore() != null) ? 
+                                    source.getFinalScore() : 
+                                    (source.getCoverage() != null ? source.getCoverage() : 0.0);
+        
+        if (finalCoverage == 0.0) {
+            log.warn("Источник UUID '{}' (проверка ID {}) не содержит finalScore или coverage, используем 0.0", 
+                    sourceUuid, check.getId());
+        }
+        
         // Создаем DocumentSource для КАЖДОГО валидного спана
         return spans.stream()
             .filter(span -> span != null && span.length == 2) // Убеждаемся, что спан валиден
@@ -351,6 +371,8 @@ public class CheckService {
                 .sourceDocumentRegistry(registryDoc) // Ссылка на найденный реестр
                 .firstPos(span[0]) // Начальная позиция
                 .secondPos(span[1]) // Конечная позиция
+                .coverage(finalCoverage) // Используем финальный скор или coverage
+                .method(source.getMethod()) // Добавляем метод из нового формата (если есть)
                 // Установите другие поля DocumentSource, если они есть
                 .build()
             );

@@ -225,6 +225,12 @@
 			<artifactId>stomp-websocket</artifactId>
 			<version>2.3.4</version>
 		</dependency>
+		
+		<!-- Spring AOP для работы аспектов -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

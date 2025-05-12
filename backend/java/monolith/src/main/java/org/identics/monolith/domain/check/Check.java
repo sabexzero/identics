@@ -30,7 +30,6 @@ public class Check {
     private CheckStatus status;
     private ContentType contentType;
     private String contentUrl;
-    private String reportUrl;
 
     // New fields for additional document information
     private Integer wordCount;

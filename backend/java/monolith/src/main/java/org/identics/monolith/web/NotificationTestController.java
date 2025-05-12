@@ -26,18 +26,19 @@ public class NotificationTestController {
     @PostMapping("/test/{userId}")
     public ResponseEntity<String> sendTestNotification(@PathVariable Long userId, @RequestBody(required = false) String message) {
         log.info("Sending test notification to user {}", userId);
-        
+
         // Create a test notification payload
         NotificationPayload payload = NotificationPayload.builder()
-                .title("Test Notification")
-                .message(message != null ? message : "This is a test notification")
-                .type("TEST")
-                .timestamp(LocalDateTime.now())
-                .build();
-        
+            .title("Test Notification")
+            .message(message != null ? message : "This is a test notification")
+            .type("TEST")
+            .createdAt(LocalDateTime.now())
+            .read(false)
+            .build();
+
         // Send the notification
         notificationService.sendNotification(userId, payload);
-        
+
         return ResponseEntity.ok("Notification sent to user " + userId);
     }
 } 

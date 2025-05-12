@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Base64;
 import javax.naming.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,8 @@ import org.identics.monolith.web.requests.auth.UserRegistrationRequest;
 import org.identics.monolith.web.responses.auth.RefreshTokenResponse;
 import org.identics.monolith.web.responses.auth.SignInKeycloakResponse;
 import org.identics.monolith.web.responses.auth.SignInResponse;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Slf4j
 @RestController
@@ -33,6 +36,35 @@ import org.identics.monolith.web.responses.auth.SignInResponse;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private final AuthService authService;
+    private final ObjectMapper objectMapper;
+
+    private Long extractUserIdFromToken(String accessToken) {
+        try {
+            // JWT token consists of three parts: header.payload.signature
+            String[] parts = accessToken.split("\\.");
+            if (parts.length != 3) {
+                log.warn("Invalid JWT token format");
+                return null;
+            }
+            
+            // Decode the payload (second part)
+            String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
+            JsonNode jsonNode = objectMapper.readTree(payload);
+            
+            // Try to extract userId from different claims
+            if (jsonNode.has("userId")) {
+                return jsonNode.get("userId").asLong();
+            } else if (jsonNode.has("user_id")) {
+                return jsonNode.get("user_id").asLong();
+            }
+            
+            log.warn("JWT token does not contain userId or user_id claim");
+            return null;
+        } catch (Exception e) {
+            log.error("Error extracting userId from token: {}", e.getMessage());
+            return null;
+        }
+    }
 
     @PostMapping("/login")
     @Operation(
@@ -73,9 +105,13 @@ public class AuthController {
                 .partitioned(true)
                 .maxAge(Duration.ofDays(1000))
                 .build();
+                
+            // Extract userId from the access token
+            Long userId = extractUserIdFromToken(authResponse.accessToken());
 
             // Формирование тела ответа
             SignInResponse responseBody = SignInResponse.builder()
+                .userId(userId)
                 .accessToken(authResponse.accessToken())
                 .expiresIn(authResponse.expiresIn())
                 .build();
@@ -87,7 +123,7 @@ public class AuthController {
 
         } catch (AuthenticationException e) {
             return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.UNAUTHORIZED)
                 .body("Invalid request: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity
@@ -137,9 +173,13 @@ public class AuthController {
                 .partitioned(true)
                 .maxAge(Duration.ofDays(1000))
                 .build();
+            
+            // Extract userId from the access token
+            Long userId = extractUserIdFromToken(authResponse.accessToken());
                 
             // Create response body
             SignInResponse responseBody = SignInResponse.builder()
+                .userId(userId)
                 .accessToken(authResponse.accessToken())
                 .expiresIn(authResponse.expiresIn())
                 .build();
@@ -190,9 +230,14 @@ public class AuthController {
         @CookieValue("refresh_token") String token
     ) throws AuthenticationException {
         String newToken = authService.refreshToken(token);
+        
+        // Extract userId from the access token
+        Long userId = extractUserIdFromToken(newToken);
+        
         return ResponseEntity.ok(
             RefreshTokenResponse.builder()
                 .token(newToken)
+                .userId(userId)
                 .build()
         );
     }

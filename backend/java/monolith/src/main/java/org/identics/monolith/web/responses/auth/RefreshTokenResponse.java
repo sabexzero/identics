@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder(toBuilder = true)
 public record RefreshTokenResponse(
-    String token
+    String token,
+    Long userId
 ) {
 }

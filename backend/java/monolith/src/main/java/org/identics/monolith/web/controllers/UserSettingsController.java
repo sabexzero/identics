@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.identics.monolith.configuration.security.RequiresUserIdMatch;
 import org.identics.monolith.service.UserSettingsService;
 import org.identics.monolith.web.dto.ErrorResponse;
 import org.identics.monolith.web.requests.UpdateUserSettingsRequest;
@@ -18,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiresUserIdMatch
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/{userId}/settings")
 @Tag(name = "Настройки пользователя", description = "API для работы с настройками пользователя")

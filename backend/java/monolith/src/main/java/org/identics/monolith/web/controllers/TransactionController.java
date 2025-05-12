@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.identics.monolith.configuration.security.RequiresUserIdMatch;
 import org.identics.monolith.dto.TransactionDTO;
 import org.identics.monolith.service.TransactionService;
 import org.identics.monolith.web.dto.ErrorResponse;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequiresUserIdMatch
 @RequestMapping("/api/v1/{userId}/transactions")
 @Tag(name = "Транзакции", description = "API для работы с историей транзакций")
 @Validated
