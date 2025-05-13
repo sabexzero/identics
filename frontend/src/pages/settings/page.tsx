@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs.t
 
 export default function Settings() {
     const lastVisitedTab = sessionStorage.getItem("lastVisitedTab") || "profile";
-
     const handleClick = (tab: string) => {
         sessionStorage.setItem("lastVisitedTab", tab);
     };

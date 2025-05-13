@@ -26,7 +26,7 @@ const EditTagsForm: React.FC<EditTagsFormProps> = ({ id, onOpenChange }) => {
     const dispatch = useDispatch();
     const userId = useSelector((state: RootState) => state.user.userId);
 
-    const { data: allTags } = useGetTagsQuery({ userId: 1 });
+    const { data: allTags } = useGetTagsQuery({ userId: userId! });
     const { data: documentTags, isLoading: isDocumentLoading } = useGetDocumentTagsQuery({
         userId: userId!,
         id: id,
@@ -58,7 +58,7 @@ const EditTagsForm: React.FC<EditTagsFormProps> = ({ id, onOpenChange }) => {
     const handleSubmit = async (values: z.infer<typeof schema>) => {
         try {
             await editDocuments({
-                userId: 1,
+                userId: userId!,
                 id: id,
                 tagsIds: values.tags,
             }).unwrap();

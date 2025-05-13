@@ -13,6 +13,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { useSelector } from "react-redux";
 import { RootState } from "@/api/store.ts";
+import { useGetProfileQuery } from "@/api/profileApi";
 
 type NotificationType = "CHECK_COMPLETED" | "SYSTEM";
 
@@ -21,7 +22,9 @@ export default function Layout() {
     const navigate = useNavigate();
 
     const [open, setOpen] = useState(false);
+
     const userId = useSelector((state: RootState) => state.user.userId);
+    const { data: profile } = useGetProfileQuery({ userId: userId! });
 
     const { notifications, markAllAsRead, markAsRead } = useNotifications({
         url: `${base_url}/api/ws`,
@@ -37,7 +40,7 @@ export default function Layout() {
         <div className="flex bg-background">
             <SidebarProvider>
                 <div className="w-fit border-none">
-                    <AppSidebar />
+                    <AppSidebar {...profile} />
                 </div>
 
                 <div className="flex-1">

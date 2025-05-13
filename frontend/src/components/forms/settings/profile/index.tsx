@@ -1,7 +1,6 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
@@ -19,7 +18,7 @@ import {
     CardFooter,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Mail, Phone, LogOut, UserX, Upload, Check, Loader2 } from "lucide-react";
+import { User, Mail, LogOut, UserX, Upload, Check, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import {
     AlertDialog,
@@ -35,25 +34,34 @@ import {
 import { toast } from "sonner";
 import { useLogoutMutation } from "@/api/authApi";
 import { useNavigate } from "react-router-dom";
+import { getInitials } from "@/lib/utils.ts";
+import { useSelector } from "react-redux";
+import { RootState } from "@/api/store.ts";
+import { useEditProfileMutation, useGetProfileQuery } from "@/api/profileApi";
 
-const ProfileSettings: React.FC = () => {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
+const ProfileSettings = () => {
     const [logout] = useLogoutMutation();
     const navigate = useNavigate();
+
+    const userId = useSelector((state: RootState) => state.user.userId);
+    const { data: profile, isSuccess: isProfileSuccess } = useGetProfileQuery(
+        { userId: userId! },
+        { skip: !userId }
+    );
+
+    const [editProfile, { isLoading, isSuccess }] = useEditProfileMutation();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
-            name: "Владислав Петров",
-            email: "vladislavPetrov@example.com",
-            phone: "+7 (999) 999 99 99",
+            name: profile?.name || "",
+            email: profile?.email || "",
         },
     });
 
     const handleLogout = async () => {
         try {
-            await logout();
+            await logout().unwrap();
             localStorage.clear();
             navigate("/auth");
         } catch (error) {
@@ -62,24 +70,28 @@ const ProfileSettings: React.FC = () => {
         }
     };
 
-    const onSubmit = (data: z.infer<typeof schema>) => {
-        setIsSubmitting(true);
+    const onSubmit = async (data: z.infer<typeof schema>) => {
+        try {
+            await editProfile({
+                userId: userId!,
+                name: data.name,
+                email: data.email,
+            }).unwrap();
+        } catch (error) {
+            toast.error("Ошибка!", { description: "Возникла ошибка при попытке изменить профиль" });
+            console.error(error);
+        }
         console.log(data);
-        setTimeout(() => {
-            setIsSubmitting(false);
-            setIsSuccess(true);
-            setTimeout(() => setIsSuccess(false), 2000);
-        }, 1000);
     };
 
-    const getInitials = (name: string) => {
-        return name
-            .split(" ")
-            .map((part) => part[0])
-            .join("")
-            .toUpperCase()
-            .substring(0, 2);
-    };
+    useEffect(() => {
+        if (isProfileSuccess && profile) {
+            form.reset({
+                name: profile.name || "",
+                email: profile.email || "",
+            });
+        }
+    }, [isProfileSuccess, profile, form]);
 
     return (
         <div className="space-y-6">
@@ -155,38 +167,15 @@ const ProfileSettings: React.FC = () => {
                                         </FormItem>
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
-                                    name="phone"
-                                    render={({ field }) => (
-                                        <FormItem className="space-y-2">
-                                            <Label
-                                                htmlFor="phone"
-                                                className="flex items-center gap-2 text-base font-medium"
-                                            >
-                                                <Phone className="h-4 w-4 text-muted-foreground" />
-                                                Номер телефона
-                                            </Label>
-                                            <FormControl>
-                                                <Input
-                                                    id="phone"
-                                                    {...field}
-                                                    className="h-11 px-4 transition-all border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
                             </div>
 
                             <div className="pt-2">
                                 <Button
                                     type="submit"
                                     className="h-11 px-6 w-full md:w-auto relative overflow-hidden"
-                                    disabled={isSubmitting || isSuccess}
+                                    disabled={isLoading}
                                 >
-                                    {isSubmitting ? (
+                                    {isLoading ? (
                                         <>
                                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                                             Сохранение...

@@ -13,7 +13,11 @@ import { useCreateTagMutation } from "@/api/tagsApi";
 import { ErrorHandler, RootState } from "@/api/store.ts";
 import { useSelector } from "react-redux";
 
-export default function CreateTagsForm() {
+interface CreateTagsFormProps {
+    onOpenChange: () => void;
+}
+
+export default function CreateTagsForm({ onOpenChange }: CreateTagsFormProps) {
     const [createTagMutation, { isLoading }] = useCreateTagMutation();
     const userId = useSelector((state: RootState) => state.user.userId);
 
@@ -29,7 +33,6 @@ export default function CreateTagsForm() {
     const colorValue = form.watch("color");
 
     const onSubmit = async (values: z.infer<typeof schema>) => {
-        console.log(values);
         try {
             await createTagMutation({
                 userId: userId!,
@@ -40,6 +43,8 @@ export default function CreateTagsForm() {
             toast.success("Новый тег успешно создан!");
         } catch (error) {
             toast.error(`При создании возникла ошибка: ${(error as ErrorHandler).data.error}`);
+        } finally {
+            onOpenChange();
         }
     };
 
@@ -87,6 +92,7 @@ export default function CreateTagsForm() {
                 >
                     <Badge
                         style={{
+                            maxWidth: "320px",
                             backgroundColor: nameValue.length > 0 ? colorValue : "white",
                             minHeight: 32,
                             fontSize: "2rem",

@@ -35,7 +35,7 @@ export default function EditTagsDialog({ id, open, onOpenChange }: EditTagsDialo
 
     return (
         <Dialog open={open} onOpenChange={handleOnOpenChange}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] max-w-[300px]">
                 <DialogHeader>
                     <DialogTitle>Редактирование тегов</DialogTitle>
                     <DialogDescription>
@@ -60,7 +60,7 @@ export default function EditTagsDialog({ id, open, onOpenChange }: EditTagsDialo
                                 >
                                     <div ref={contentRef}>
                                         <TabsContent value="create">
-                                            <CreateTagsForm />
+                                            <CreateTagsForm onOpenChange={onOpenChange} />
                                         </TabsContent>
                                     </div>
                                 </motion.div>

@@ -23,4 +23,4 @@ export const profileApi = createApi({
     }),
 });
 
-export const { useGetProfileQuery } = profileApi;
+export const { useGetProfileQuery, useEditProfileMutation } = profileApi;

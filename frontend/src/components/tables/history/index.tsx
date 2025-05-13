@@ -49,7 +49,7 @@ export default function HistoryTable() {
         size: itemsPerPage,
     });
     const { data: userTags } = useGetTagsQuery({
-        userId: 1,
+        userId: userId!,
     });
 
     const handleSizeChange = (size: number) => {

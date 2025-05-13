@@ -37,3 +37,12 @@ export function formatDate(date: Date | string | null | undefined): string {
 
     return `${day} ${months[monthIndex]} ${year}`;
 }
+
+export function getInitials(name: string) {
+    return name
+        .split(" ")
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase()
+        .substring(0, 2);
+}

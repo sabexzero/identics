@@ -33,7 +33,6 @@ import {
     SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
-    SidebarMenuBadge,
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarMenuSub,
@@ -58,7 +57,13 @@ interface Menu {
     resources: boolean;
 }
 
-export function AppSidebar() {
+interface AppSidebarProps {
+    name?: string;
+    checksUsed?: number;
+    email?: string;
+}
+
+export function AppSidebar({ name, checksUsed, email }: AppSidebarProps) {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -94,11 +99,8 @@ export function AppSidebar() {
                     <div className="flex h-10 w-10 items-center justify-center rounded-md text-primary-foreground">
                         <img src={logo} alt="logo" className="h-6 w-6" />
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex items-end h-8 w-10">
                         <span className="text-lg font-semibold">TextSource</span>
-                        <span className="text-xs text-muted-foreground">
-                            Профессиональная версия
-                        </span>
                     </div>
                 </div>
                 <div className="pb-2">
@@ -129,7 +131,6 @@ export function AppSidebar() {
                                     <History />
                                     <span>История проверок</span>
                                 </SidebarMenuButton>
-                                <SidebarMenuBadge>12</SidebarMenuBadge>
                             </SidebarMenuItem>
                         </SidebarMenu>
                     </SidebarGroupContent>
@@ -232,7 +233,9 @@ export function AppSidebar() {
                         </div>
                         <Progress value={0} className="h-1.5" />
                         <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">70/&infin;</span>
+                            <span className="text-xs text-muted-foreground">
+                                {checksUsed}/&infin;
+                            </span>
                             <Button
                                 disabled={true}
                                 variant="link"
@@ -257,12 +260,18 @@ export function AppSidebar() {
                                                 src="/placeholder.svg?height=32&width=32"
                                                 alt="User"
                                             />
-                                            <AvatarFallback className="text-xs">ИП</AvatarFallback>
+                                            <AvatarFallback className="text-xs">
+                                                {name
+                                                    ?.split(" ")
+                                                    .map(([c]) => c)
+                                                    .slice(0, 2)
+                                                    .join("")}
+                                            </AvatarFallback>
                                         </Avatar>
                                         <div className="flex flex-col items-start">
-                                            <span className="text-sm font-medium">Иван Петров</span>
+                                            <span className="text-sm font-medium">{name}</span>
                                             <span className="text-xs text-muted-foreground">
-                                                ivan@example.com
+                                                {email}
                                             </span>
                                         </div>
                                     </div>
@@ -276,12 +285,18 @@ export function AppSidebar() {
                                             src="/placeholder.svg?height=40&width=40"
                                             alt="User"
                                         />
-                                        <AvatarFallback>ИП</AvatarFallback>
+                                        <AvatarFallback>
+                                            {name
+                                                ?.split(" ")
+                                                .map(([c]) => c)
+                                                .slice(0, 2)
+                                                .join("")}
+                                        </AvatarFallback>
                                     </Avatar>
                                     <div className="flex flex-col">
-                                        <span className="font-medium">Иван Петров</span>
+                                        <span className="font-medium">{name}</span>
                                         <span className="text-xs text-muted-foreground">
-                                            ivan@example.com
+                                            {email}
                                         </span>
                                     </div>
                                 </div>

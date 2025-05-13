@@ -4,18 +4,17 @@ export interface IGetProfile {
 
 export interface IEditProfile extends IGetProfile {
     name: string;
-    surname: string;
-    patronymic: string;
-    city: string;
-    institution: string;
+    email: string;
+    city?: string;
+    institution?: string;
 }
 
 export interface IProfileResponse {
-    id: 0;
-    name: "string";
-    surname: "string";
-    patronymic: "string";
-    city: "string";
-    institution: "string";
-    checksAvailable: 0;
+    id: number;
+    name: string;
+    city?: string;
+    institution?: string;
+    checksAvailable: number;
+    email: string;
+    checksUsed: number;
 }

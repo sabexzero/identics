@@ -20,8 +20,20 @@ import useAuth from "./hooks/use-auth.ts";
 function ProtectedRoute() {
     const { isAuthenticated } = useAuth();
 
-    if (isAuthenticated || isAuthenticated === null) {
-        return <Outlet />;
+    if (isAuthenticated === null) {
+        return (
+            <div className="blur-sm transition-all duration-300">
+                <Outlet />
+            </div>
+        );
+    }
+
+    if (isAuthenticated) {
+        return (
+            <div className="transition-all duration-500">
+                <Outlet />
+            </div>
+        );
     }
 
     return <Navigate to="/auth" replace />;
