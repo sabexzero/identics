@@ -29,13 +29,13 @@ export default function TextUploaderForm() {
                 userId: userId!,
                 content: values.content,
                 title: values.title,
-            });
+            }).unwrap();
 
             toast.success("Текст успешно отправился на обработку");
         } catch (error) {
-            toast.error(
-                `Возникла ошибка при отправке данных: ${(error as ErrorHandler).data.error}`
-            );
+            toast.error("Ошибка", {
+                description: `Возникла ошибка при отправке данных: ${(error as ErrorHandler).data.error}`,
+            });
         }
     };
 

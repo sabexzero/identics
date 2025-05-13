@@ -1,5 +1,4 @@
 import type React from "react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -24,29 +23,37 @@ import {
 } from "@/components/ui/card";
 import { Bell, Mail, Globe, FileCheck, Check, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useEditSettingsMutation, useGetSettingsQuery } from "@/api/settingsApi";
+import { RootState } from "@/api/store.ts";
+import { useSelector } from "react-redux";
+import { toast } from "sonner";
 
 const NotificationSettings: React.FC = () => {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
+    const userId = useSelector((state: RootState) => state.user.userId);
+    const { data: settings } = useGetSettingsQuery({ userId: userId! }, { skip: !userId });
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
             telegramNotifications: false,
-            browserNotifications: true,
-            reportReadyNotifications: true,
+            browserNotifications: false,
+            isCompleteCheckNotificationsEnabled: true,
         },
     });
 
-    const onSubmit = (data: z.infer<typeof schema>) => {
-        setIsSubmitting(true);
-        console.log(data);
-        // Simulate API call
-        setTimeout(() => {
-            setIsSubmitting(false);
-            setIsSuccess(true);
-            setTimeout(() => setIsSuccess(false), 2000);
-        }, 1000);
+    const [editSettings, { isLoading, isSuccess }] = useEditSettingsMutation();
+
+    const onSubmit = async (data: z.infer<typeof schema>) => {
+        try {
+            await editSettings({
+                ...settings!,
+                userId: userId!,
+                isCompleteCheckNotificationsEnabled: data.isCompleteCheckNotificationsEnabled,
+            });
+        } catch (error) {
+            toast.error("Ошибка!", { description: "Возникла ошибка при сохранении настроек!" });
+            console.error(error);
+        }
     };
 
     return (
@@ -94,7 +101,7 @@ const NotificationSettings: React.FC = () => {
                                                         <FormControl>
                                                             <Switch
                                                                 disabled={true}
-                                                                checked={field.value}
+                                                                checked={false}
                                                                 onCheckedChange={field.onChange}
                                                                 className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                             />
@@ -121,7 +128,8 @@ const NotificationSettings: React.FC = () => {
                                                     <div className="flex items-center gap-2">
                                                         <FormControl>
                                                             <Switch
-                                                                checked={field.value}
+                                                                disabled={true}
+                                                                checked={false}
                                                                 onCheckedChange={field.onChange}
                                                                 className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                             />
@@ -144,7 +152,7 @@ const NotificationSettings: React.FC = () => {
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <FormField
                                             control={form.control}
-                                            name="reportReadyNotifications"
+                                            name="isCompleteCheckNotificationsEnabled"
                                             render={({ field }) => (
                                                 <FormItem className="flex flex-row items-center justify-between rounded-xl border border-primary/10 p-4 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
                                                     <div className="space-y-1">
@@ -176,11 +184,11 @@ const NotificationSettings: React.FC = () => {
                                 <Button
                                     type="submit"
                                     className="h-11 px-6 w-full md:w-auto relative overflow-hidden group"
-                                    disabled={isSubmitting || isSuccess}
+                                    disabled={isLoading}
                                 >
                                     <span className="absolute inset-0 translate-y-full group-hover:translate-y-0 bg-primary/90 transition-transform duration-300 ease-out"></span>
                                     <span className="relative z-10 group-hover:text-white transition-colors duration-300 flex items-center gap-2">
-                                        {isSubmitting ? (
+                                        {isLoading ? (
                                             <>
                                                 <Loader2 className="h-4 w-4 animate-spin" />
                                                 Сохранение...

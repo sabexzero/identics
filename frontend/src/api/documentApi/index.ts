@@ -61,7 +61,7 @@ export const documentApi = createApi({
         }),
         uploadTextDocument: build.mutation<IUploadDocumentResponse, IUploadTextDocument>({
             invalidatesTags: ["UpdateTable"],
-            query: ({ userId, title, userIds, content }) => {
+            query: ({ userId, title, content }) => {
                 return {
                     url: `/api/v1/${userId}/documents/text`,
                     method: "POST",
@@ -69,12 +69,12 @@ export const documentApi = createApi({
                         title: title,
                         content: content,
                         contentType: "RAW_TEXT",
-                        userIds: userIds,
                     },
                 };
             },
         }),
         uploadFileDocument: build.mutation<IUploadDocumentResponse, IUploadFileDocument>({
+            invalidatesTags: ["UpdateTable"],
             query: ({ userId, title, file }) => {
                 const searchParams = new URLSearchParams();
                 const formData = new FormData();

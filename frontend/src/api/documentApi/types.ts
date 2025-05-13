@@ -32,7 +32,6 @@ export interface IGetDocumentById {
 
 export interface IUploadTextDocument extends IUpdateDocument {
     content: string;
-    userIds?: number[];
 }
 
 export interface IUploadFileDocument extends IUpdateDocument {

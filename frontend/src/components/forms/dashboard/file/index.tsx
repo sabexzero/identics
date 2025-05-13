@@ -63,17 +63,17 @@ export function FileUploaderForm() {
     const onSubmit = async (data: z.infer<typeof schema>) => {
         if (!data.file) return;
         try {
-            uploadFile({
+            await uploadFile({
                 userId: userId!,
                 file: data.file,
                 title: data.title,
-            });
+            }).unwrap();
 
             toast.success("Файл успешно отправился на обработку");
         } catch (error) {
-            toast.error(
-                `Возникла ошибка при отправке данных: ${(error as ErrorHandler).data.error}`
-            );
+            toast.error("Ошибка!", {
+                description: `Возникла ошибка при отправке данных: ${(error as ErrorHandler).data.error}`,
+            });
         }
     };
 

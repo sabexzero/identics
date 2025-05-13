@@ -24,31 +24,21 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
 import {
     AlertCircle,
     Copy,
     RefreshCw,
     Code,
-    Globe,
-    Gauge,
     Webhook,
     Bell,
     FileText,
     Check,
     Loader2,
     KeyRound,
-    ShieldCheck,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge.tsx";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const ApiSettings: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,12 +99,9 @@ const ApiSettings: React.FC = () => {
                             <Code className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                            <CardTitle className="text-2xl font-bold">
-                                API Настройки
-                            </CardTitle>
+                            <CardTitle className="text-2xl font-bold">API Настройки</CardTitle>
                             <CardDescription className="text-base">
-                                Настройте доступ к API для интеграции с другими
-                                сервисами
+                                Настройте доступ к API для интеграции с другими сервисами
                             </CardDescription>
                         </div>
                     </div>
@@ -124,17 +111,13 @@ const ApiSettings: React.FC = () => {
                         <AlertCircle className="h-5 w-5" />
                         <AlertTitle className="font-semibold">Важно</AlertTitle>
                         <AlertDescription className="text-sm">
-                            Ваш API ключ дает полный доступ к вашему аккаунту.
-                            Никогда не делитесь им и не публикуйте в открытом
-                            коде.
+                            Ваш API ключ дает полный доступ к вашему аккаунту. Никогда не делитесь
+                            им и не публикуйте в открытом коде.
                         </AlertDescription>
                     </Alert>
 
                     <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="space-y-8"
-                        >
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                             <div className="space-y-6">
                                 <div>
                                     <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
@@ -167,16 +150,12 @@ const ApiSettings: React.FC = () => {
                                                         </FormControl>
                                                         <TooltipProvider>
                                                             <Tooltip>
-                                                                <TooltipTrigger
-                                                                    asChild
-                                                                >
+                                                                <TooltipTrigger asChild>
                                                                     <Button
                                                                         type="button"
                                                                         size="icon"
                                                                         variant="outline"
-                                                                        onClick={
-                                                                            copyApiKey
-                                                                        }
+                                                                        onClick={copyApiKey}
                                                                         className="h-11 w-11 transition-all border-muted-foreground/20 hover:border-primary hover:bg-primary/5"
                                                                     >
                                                                         {isCopied ? (
@@ -197,20 +176,14 @@ const ApiSettings: React.FC = () => {
                                                         </TooltipProvider>
                                                         <TooltipProvider>
                                                             <Tooltip>
-                                                                <TooltipTrigger
-                                                                    asChild
-                                                                >
+                                                                <TooltipTrigger asChild>
                                                                     <Button
                                                                         type="button"
                                                                         size="icon"
                                                                         variant="outline"
-                                                                        onClick={
-                                                                            regenerateApiKey
-                                                                        }
+                                                                        onClick={regenerateApiKey}
                                                                         className="h-11 w-11 transition-all border-muted-foreground/20 hover:border-primary hover:bg-primary/5"
-                                                                        disabled={
-                                                                            isRegenerating
-                                                                        }
+                                                                        disabled={isRegenerating}
                                                                     >
                                                                         {isRegenerating ? (
                                                                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -220,152 +193,14 @@ const ApiSettings: React.FC = () => {
                                                                     </Button>
                                                                 </TooltipTrigger>
                                                                 <TooltipContent>
-                                                                    <p>
-                                                                        Сгенерировать
-                                                                        новый
-                                                                        ключ
-                                                                    </p>
+                                                                    <p>Сгенерировать новый ключ</p>
                                                                 </TooltipContent>
                                                             </Tooltip>
                                                         </TooltipProvider>
                                                     </div>
                                                     <FormDescription className="text-xs">
-                                                        Используйте этот ключ
-                                                        для аутентификации API
+                                                        Используйте этот ключ для аутентификации API
                                                         запросов
-                                                    </FormDescription>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="enableApi"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-center justify-between rounded-xl border border-primary/10 p-4 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
-                                                    <div className="space-y-1">
-                                                        <FormLabel className="text-base font-medium flex items-center gap-2">
-                                                            <ShieldCheck className="h-5 w-5 text-primary" />
-                                                            Включить API
-                                                        </FormLabel>
-                                                        <FormDescription className="text-sm">
-                                                            Разрешить доступ к
-                                                            API для внешних
-                                                            сервисов
-                                                        </FormDescription>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <FormControl>
-                                                            <Switch
-                                                                checked={
-                                                                    field.value
-                                                                }
-                                                                onCheckedChange={
-                                                                    field.onChange
-                                                                }
-                                                                className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-                                                            />
-                                                        </FormControl>
-                                                    </div>
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                </div>
-
-                                <Separator />
-
-                                <div>
-                                    <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
-                                        <Gauge className="h-5 w-5 text-primary" />
-                                        Ограничения и доступ
-                                    </h3>
-
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="rateLimitPerMinute"
-                                            render={({ field }) => (
-                                                <FormItem className="space-y-4 p-4 rounded-xl border border-primary/10 shadow-sm">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="p-2 rounded-full bg-primary/10">
-                                                            <Gauge className="h-5 w-5 text-primary" />
-                                                        </div>
-                                                        <FormLabel className="text-base font-medium">
-                                                            Лимит запросов в
-                                                            минуту
-                                                        </FormLabel>
-                                                    </div>
-                                                    <FormControl>
-                                                        <div className="space-y-3">
-                                                            <Slider
-                                                                min={10}
-                                                                max={500}
-                                                                step={10}
-                                                                defaultValue={[
-                                                                    field.value,
-                                                                ]}
-                                                                onValueChange={(
-                                                                    vals
-                                                                ) =>
-                                                                    field.onChange(
-                                                                        vals[0]
-                                                                    )
-                                                                }
-                                                            />
-                                                            <div className="flex justify-between items-center">
-                                                                <span className="text-xs text-muted-foreground">
-                                                                    10
-                                                                </span>
-                                                                <Badge
-                                                                    variant="outline"
-                                                                    className="bg-primary/10 text-primary border-primary/20 font-medium"
-                                                                >
-                                                                    {
-                                                                        field.value
-                                                                    }{" "}
-                                                                    запросов
-                                                                </Badge>
-                                                                <span className="text-xs text-muted-foreground">
-                                                                    500
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </FormControl>
-                                                    <FormDescription className="text-xs">
-                                                        Максимальное количество
-                                                        API запросов в минуту
-                                                    </FormDescription>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="allowedDomains"
-                                            render={({ field }) => (
-                                                <FormItem className="space-y-4 p-4 rounded-xl border border-primary/10 shadow-sm">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="p-2 rounded-full bg-primary/10">
-                                                            <Globe className="h-5 w-5 text-primary" />
-                                                        </div>
-                                                        <FormLabel className="text-base font-medium">
-                                                            Разрешенные домены
-                                                        </FormLabel>
-                                                    </div>
-                                                    <FormControl>
-                                                        <Input
-                                                            {...field}
-                                                            placeholder="example.com, mysite.org"
-                                                            className="h-11 px-4 transition-all border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary"
-                                                        />
-                                                    </FormControl>
-                                                    <FormDescription className="text-xs">
-                                                        Список доменов, с
-                                                        которых разрешены
-                                                        запросы (через запятую)
                                                     </FormDescription>
                                                     <FormMessage />
                                                 </FormItem>
@@ -391,24 +226,18 @@ const ApiSettings: React.FC = () => {
                                                     <div className="space-y-1">
                                                         <FormLabel className="text-base font-medium flex items-center gap-2">
                                                             <Bell className="h-5 w-5 text-primary" />
-                                                            Уведомлять о
-                                                            завершении проверки
+                                                            Уведомлять о завершении проверки
                                                         </FormLabel>
                                                         <FormDescription className="text-sm">
-                                                            Отправлять webhook
-                                                            при завершении
+                                                            Отправлять webhook при завершении
                                                             проверки на плагиат
                                                         </FormDescription>
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <FormControl>
                                                             <Switch
-                                                                checked={
-                                                                    field.value
-                                                                }
-                                                                onCheckedChange={
-                                                                    field.onChange
-                                                                }
+                                                                checked={field.value}
+                                                                onCheckedChange={field.onChange}
                                                                 className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                             />
                                                         </FormControl>
@@ -425,23 +254,17 @@ const ApiSettings: React.FC = () => {
                                                     <div className="space-y-1">
                                                         <FormLabel className="text-base font-medium flex items-center gap-2">
                                                             <FileText className="h-5 w-5 text-primary" />
-                                                            Логировать API
-                                                            вызовы
+                                                            Логировать API вызовы
                                                         </FormLabel>
                                                         <FormDescription className="text-sm">
-                                                            Сохранять историю
-                                                            всех API запросов
+                                                            Сохранять историю всех API запросов
                                                         </FormDescription>
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <FormControl>
                                                             <Switch
-                                                                checked={
-                                                                    field.value
-                                                                }
-                                                                onCheckedChange={
-                                                                    field.onChange
-                                                                }
+                                                                checked={field.value}
+                                                                onCheckedChange={field.onChange}
                                                                 className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                             />
                                                         </FormControl>
@@ -471,9 +294,8 @@ const ApiSettings: React.FC = () => {
                                                         />
                                                     </FormControl>
                                                     <FormDescription className="text-xs">
-                                                        URL, на который будут
-                                                        отправляться уведомления
-                                                        о событиях
+                                                        URL, на который будут отправляться
+                                                        уведомления о событиях
                                                     </FormDescription>
                                                     <FormMessage />
                                                 </FormItem>
