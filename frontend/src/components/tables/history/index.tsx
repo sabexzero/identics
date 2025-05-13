@@ -37,7 +37,7 @@ export default function HistoryTable() {
     const userId = useSelector((state: RootState) => state.user.userId);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [itemsPerPage, setItemsPerPage] = useState<number>(5);
+    const [itemsPerPage, setItemsPerPage] = useState<number>(10);
 
     const [editTagsDialogOpen, setEditTagsDialogOpen] = useState<boolean>(false);
     const [deleteDocumentDialogOpen, setDeleteDocumentDialogOpen] = useState<boolean>(false);

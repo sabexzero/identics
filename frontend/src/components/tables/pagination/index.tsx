@@ -28,7 +28,7 @@ export function TablePagination({
     totalItems,
     currentPage,
     pageSize,
-    pageSizeOptions = [1, 5, 10, 15, 20],
+    pageSizeOptions = [5, 10, 15, 20],
     maxPageButtons = 5,
     onPageChangeAction,
     onPageSizeChangeAction,
