@@ -25,6 +25,7 @@ import { Bell, Mail, Globe, FileCheck, Check, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useEditSettingsMutation, useGetSettingsQuery } from "@/api/settingsApi";
 import { toast } from "sonner";
+import { ErrorHandler } from "@/api/store.ts";
 
 const NotificationSettings: React.FC = () => {
     const { data: settings, isLoading: settingsLoading } = useGetSettingsQuery();

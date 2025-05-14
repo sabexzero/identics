@@ -75,7 +75,7 @@ export const authApi = createApi({
                 credentials: "include",
             }),
         }),
-        refresh: build.mutation<void, void>({
+        refresh: build.mutation<{ userId: number }, void>({
             query: () => ({
                 url: "/api/v1/auth/refresh-token",
                 method: "POST",
