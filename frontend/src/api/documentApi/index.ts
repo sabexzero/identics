@@ -24,9 +24,7 @@ export const documentApi = createApi({
             query: ({ tagIds, page, size, searchTerm, sortDirection, sortBy }) => {
                 const searchParams = new URLSearchParams();
                 if (tagIds) {
-                    for (const tagId of tagIds) {
-                        searchParams.set("tagIds", tagId.toString());
-                    }
+                    searchParams.set("tagIds", tagIds.toString());
                 }
 
                 searchParams.set("page", page.toString());

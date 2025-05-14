@@ -31,9 +31,10 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner.tsx";
 
 interface HistoryTableProps {
     search: string;
+    tag: string;
 }
 
-export default function HistoryTable({ search }: HistoryTableProps) {
+export default function HistoryTable({ search, tag }: HistoryTableProps) {
     const navigate = useNavigate();
     const idRef = useRef<number>(null!);
 
@@ -48,6 +49,7 @@ export default function HistoryTable({ search }: HistoryTableProps) {
         page: currentPage - 1,
         size: itemsPerPage,
         searchTerm: search,
+        tagIds: +tag,
     });
     const { data: userTags } = useGetTagsQuery();
 

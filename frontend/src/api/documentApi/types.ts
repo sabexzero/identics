@@ -11,7 +11,7 @@ export interface IUpdateDocument {
 export interface IGetDocuments {
     page: number;
     size: number;
-    tagIds?: number[];
+    tagIds?: number;
     searchTerm?: string;
     sortBy?: "title" | "date";
     sortDirection?: "asc" | "desc";

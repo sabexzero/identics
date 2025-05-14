@@ -7,7 +7,6 @@ import {
     ChevronDown,
     LogOut,
     Sparkles,
-    Bookmark,
     ChevronRight,
 } from "lucide-react";
 
@@ -184,15 +183,6 @@ export function AppSidebar({ name, checksUsed, email }: AppSidebarProps) {
                                 </CollapsibleContent>
                             </Collapsible>
                         </TooltipProvider>
-
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton tooltip="Избранное">
-                                    <Bookmark />
-                                    <span>Избранное</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
 
