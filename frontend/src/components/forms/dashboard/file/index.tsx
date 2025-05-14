@@ -9,14 +9,12 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Input } from "@/components/ui/input.tsx";
 import { useUploadFileDocumentMutation } from "@/api/documentApi";
 import { toast } from "sonner";
-import { ErrorHandler, RootState } from "@/api/store.ts";
+import { ErrorHandler } from "@/api/store.ts";
 import { schema } from "@/components/forms/dashboard/file/schema.ts";
-import { useSelector } from "react-redux";
 
 export function FileUploaderForm() {
     const [isDragging, setIsDragging] = useState(false);
     const [uploadFile, { isLoading }] = useUploadFileDocumentMutation();
-    const userId = useSelector((state: RootState) => state.user.userId);
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -64,7 +62,6 @@ export function FileUploaderForm() {
         if (!data.file) return;
         try {
             await uploadFile({
-                userId: userId!,
                 file: data.file,
                 title: data.title,
             }).unwrap();

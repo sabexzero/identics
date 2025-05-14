@@ -14,7 +14,3 @@ export interface IPostRegister {
     password: string;
     name: string;
 }
-
-export interface IRefreshResponse {
-    userId: number;
-}

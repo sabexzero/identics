@@ -1,4 +1,4 @@
-import type React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,53 +35,60 @@ import {
     Check,
     Loader2,
     KeyRound,
+    Eye,
+    EyeOff,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useEditSettingsMutation, useGetSettingsQuery } from "@/api/settingsApi";
+import { toast } from "sonner";
+import { ErrorHandler } from "@/api/store.ts";
+import { useCreateApiKeyMutation } from "@/api/profileApi";
 
 const ApiSettings: React.FC = () => {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
-    const [isRegenerating, setIsRegenerating] = useState(false);
+    const [showKey, setShowKey] = useState(false);
+
+    const { data: settings, isLoading: settingsLoading } = useGetSettingsQuery();
+    const [createApiKey, { isLoading: isRegenerating }] = useCreateApiKeyMutation();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
-            apiKey: "sk_test_abcdefghijklmnopqrstuvwxyz123456789",
-            enableApi: true,
-            rateLimitPerMinute: 60,
-            allowedDomains: "example.com, mysite.org",
-            webhookUrl: "https://example.com/webhook",
-            notifyOnCompletion: true,
-            apiVersion: "v2",
-            logApiCalls: true,
+            apiKey: settings?.apiKey || "",
+            isWebHookNotificationsEnabled: settings?.isWebHookNotificationsEnabled,
+            isApiCallsLoggingEnabled: settings?.isApiCallsLoggingEnabled,
+            apiWebhookUrl: settings?.apiWebhookUrl || "",
         },
     });
 
-    const onSubmit = (data: z.infer<typeof schema>) => {
-        setIsSubmitting(true);
-        console.log(data);
-        // Simulate API call
-        setTimeout(() => {
-            setIsSubmitting(false);
-            setIsSuccess(true);
-            setTimeout(() => setIsSuccess(false), 2000);
-        }, 1000);
+    const [editSettings, { isLoading, isSuccess }] = useEditSettingsMutation();
+
+    const onRegenerating = async () => {
+        try {
+            const result = await createApiKey().unwrap();
+            form.setValue("apiKey", result.keyValue);
+        } catch (error) {
+            toast.error("Ошибка!", {
+                description: `Возникла ошибка при генерации API ключа: ${(error as ErrorHandler).data.error}`,
+            });
+        }
     };
 
-    const regenerateApiKey = () => {
-        setIsRegenerating(true);
-        // Simulate API call
-        setTimeout(() => {
-            const newKey =
-                "sk_test_" +
-                Math.random().toString(36).substring(2, 15) +
-                Math.random().toString(36).substring(2, 15);
-            form.setValue("apiKey", newKey);
-            setIsRegenerating(false);
-        }, 1000);
+    const onSubmit = async (data: z.infer<typeof schema>) => {
+        try {
+            await editSettings({
+                ...settings!,
+                apiWebhookUrl: data.apiWebhookUrl || "",
+                isApiCallsLoggingEnabled: data.isApiCallsLoggingEnabled,
+                isWebHookNotificationsEnabled: data.isWebHookNotificationsEnabled,
+            }).unwrap();
+        } catch (error) {
+            toast.error("Ошибка!", {
+                description: `Возникла ошибка при сохранении настроек: ${(error as ErrorHandler).data.error}`,
+            });
+        }
     };
 
     const copyApiKey = () => {
@@ -89,6 +96,15 @@ const ApiSettings: React.FC = () => {
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
     };
+
+    useEffect(() => {
+        form.reset({
+            apiKey: settings?.apiKey,
+            isWebHookNotificationsEnabled: settings?.isWebHookNotificationsEnabled,
+            isApiCallsLoggingEnabled: settings?.isApiCallsLoggingEnabled,
+            apiWebhookUrl: settings?.apiWebhookUrl || "",
+        });
+    }, [form, settingsLoading, settings]);
 
     return (
         <div className="space-y-6">
@@ -141,12 +157,33 @@ const ApiSettings: React.FC = () => {
                                                     </div>
                                                     <div className="flex space-x-2">
                                                         <FormControl>
-                                                            <Input
-                                                                {...field}
-                                                                type="password"
-                                                                readOnly
-                                                                className="h-11 pr-24 font-mono text-sm transition-all border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary"
-                                                            />
+                                                            <div className="relative w-full">
+                                                                <Input
+                                                                    {...field}
+                                                                    type={
+                                                                        showKey
+                                                                            ? "text"
+                                                                            : "password"
+                                                                    }
+                                                                    readOnly
+                                                                    className="h-10 pr-24 font-mono text-sm transition-all border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary"
+                                                                />
+                                                                {showKey ? (
+                                                                    <EyeOff
+                                                                        className="absolute cursor-pointer right-2.5 top-3 h-4 w-4 text-muted-foreground"
+                                                                        onClick={() =>
+                                                                            setShowKey(false)
+                                                                        }
+                                                                    />
+                                                                ) : (
+                                                                    <Eye
+                                                                        className="absolute cursor-pointer right-2.5 top-3 h-4 w-4 text-muted-foreground"
+                                                                        onClick={() =>
+                                                                            setShowKey(true)
+                                                                        }
+                                                                    />
+                                                                )}
+                                                            </div>
                                                         </FormControl>
                                                         <TooltipProvider>
                                                             <Tooltip>
@@ -156,7 +193,7 @@ const ApiSettings: React.FC = () => {
                                                                         size="icon"
                                                                         variant="outline"
                                                                         onClick={copyApiKey}
-                                                                        className="h-11 w-11 transition-all border-muted-foreground/20 hover:border-primary hover:bg-primary/5"
+                                                                        className="h-10 w-10 transition-all border-muted-foreground/20 hover:border-primary hover:bg-primary/5"
                                                                     >
                                                                         {isCopied ? (
                                                                             <Check className="h-4 w-4 text-green-500" />
@@ -181,8 +218,8 @@ const ApiSettings: React.FC = () => {
                                                                         type="button"
                                                                         size="icon"
                                                                         variant="outline"
-                                                                        onClick={regenerateApiKey}
-                                                                        className="h-11 w-11 transition-all border-muted-foreground/20 hover:border-primary hover:bg-primary/5"
+                                                                        onClick={onRegenerating}
+                                                                        className="h-10 w-10 transition-all border-muted-foreground/20 hover:border-primary hover:bg-primary/5"
                                                                         disabled={isRegenerating}
                                                                     >
                                                                         {isRegenerating ? (
@@ -220,7 +257,7 @@ const ApiSettings: React.FC = () => {
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <FormField
                                             control={form.control}
-                                            name="notifyOnCompletion"
+                                            name="isWebHookNotificationsEnabled"
                                             render={({ field }) => (
                                                 <FormItem className="flex flex-row items-center justify-between rounded-xl border border-primary/10 p-4 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
                                                     <div className="space-y-1">
@@ -248,7 +285,7 @@ const ApiSettings: React.FC = () => {
 
                                         <FormField
                                             control={form.control}
-                                            name="logApiCalls"
+                                            name="isApiCallsLoggingEnabled"
                                             render={({ field }) => (
                                                 <FormItem className="flex flex-row items-center justify-between rounded-xl border border-primary/10 p-4 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
                                                     <div className="space-y-1">
@@ -275,7 +312,7 @@ const ApiSettings: React.FC = () => {
 
                                         <FormField
                                             control={form.control}
-                                            name="webhookUrl"
+                                            name="apiWebhookUrl"
                                             render={({ field }) => (
                                                 <FormItem className="space-y-4 p-4 rounded-xl border border-primary/10 shadow-sm">
                                                     <div className="flex items-center gap-2">
@@ -309,11 +346,11 @@ const ApiSettings: React.FC = () => {
                                 <Button
                                     type="submit"
                                     className="h-11 px-6 w-full md:w-auto relative overflow-hidden group"
-                                    disabled={isSubmitting || isSuccess}
+                                    disabled={isLoading}
                                 >
                                     <span className="absolute inset-0 translate-y-full group-hover:translate-y-0 bg-primary/90 transition-transform duration-300 ease-out"></span>
                                     <span className="relative z-10 group-hover:text-white transition-colors duration-300 flex items-center gap-2">
-                                        {isSubmitting ? (
+                                        {isLoading ? (
                                             <>
                                                 <Loader2 className="h-4 w-4 animate-spin" />
                                                 Сохранение...

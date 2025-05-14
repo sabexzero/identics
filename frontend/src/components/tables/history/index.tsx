@@ -26,15 +26,16 @@ import { useGetTagsQuery } from "@/api/tagsApi";
 import DeleteDocumentDialog from "@/components/dialogs/history/documents/delete.tsx";
 import EditDocumentDialog from "@/components/dialogs/history/documents/create.tsx";
 import { formatDate } from "@/lib/utils.ts";
-import { useSelector } from "react-redux";
-import { RootState } from "@/api/store.ts";
 import { TablePagination } from "@/components/tables/pagination";
 import { LoadingSpinner } from "@/components/ui/loading-spinner.tsx";
 
-export default function HistoryTable() {
+interface HistoryTableProps {
+    search: string;
+}
+
+export default function HistoryTable({ search }: HistoryTableProps) {
     const navigate = useNavigate();
     const idRef = useRef<number>(null!);
-    const userId = useSelector((state: RootState) => state.user.userId);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(10);
@@ -44,13 +45,11 @@ export default function HistoryTable() {
     const [editDocumentDialogOpen, setEditDocumentDialogOpen] = useState<boolean>(false);
 
     const { data, isLoading } = useGetDocumentsQuery({
-        userId: userId!,
         page: currentPage - 1,
         size: itemsPerPage,
+        searchTerm: search,
     });
-    const { data: userTags } = useGetTagsQuery({
-        userId: userId!,
-    });
+    const { data: userTags } = useGetTagsQuery();
 
     const handleSizeChange = (size: number) => {
         setItemsPerPage(size);

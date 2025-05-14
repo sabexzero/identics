@@ -12,8 +12,8 @@ import { Input } from "@/components/ui/input.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
 import { cn } from "@/lib/utils.ts";
 import { tagsApi, useGetDocumentTagsQuery, useGetTagsQuery } from "@/api/tagsApi";
-import { ErrorHandler, RootState } from "@/api/store.ts";
-import { useDispatch, useSelector } from "react-redux";
+import { ErrorHandler } from "@/api/store.ts";
+import { useDispatch } from "react-redux";
 import { useEditDocumentTagsMutation } from "@/api/documentApi";
 
 interface EditTagsFormProps {
@@ -24,11 +24,9 @@ interface EditTagsFormProps {
 const EditTagsForm: React.FC<EditTagsFormProps> = ({ id, onOpenChange }) => {
     const [search, setSearch] = useState<string>("");
     const dispatch = useDispatch();
-    const userId = useSelector((state: RootState) => state.user.userId);
 
-    const { data: allTags } = useGetTagsQuery({ userId: userId! });
+    const { data: allTags } = useGetTagsQuery();
     const { data: documentTags, isLoading: isDocumentLoading } = useGetDocumentTagsQuery({
-        userId: userId!,
         id: id,
     });
     const [editDocuments, { isLoading }] = useEditDocumentTagsMutation();
@@ -54,18 +52,18 @@ const EditTagsForm: React.FC<EditTagsFormProps> = ({ id, onOpenChange }) => {
             tag.hexString.toLowerCase().includes(search.trim().toLowerCase())
     );
 
-    // Обработка отправки формы
     const handleSubmit = async (values: z.infer<typeof schema>) => {
         try {
             await editDocuments({
-                userId: userId!,
                 id: id,
                 tagsIds: values.tags,
             }).unwrap();
             toast.success("Изменения успешно применены!");
             dispatch(tagsApi.util.invalidateTags(["UpdateExactTags"]));
         } catch (error) {
-            toast.error(`Ошибка: ${(error as ErrorHandler).data?.error || "Unknown error"}`);
+            toast.error("Ошибка", {
+                description: `Возникла ошибка при изменении тега: ${(error as ErrorHandler).data?.error}`,
+            });
         } finally {
             onOpenChange();
         }

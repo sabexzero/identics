@@ -1,32 +1,23 @@
-interface IUserIdBase {
-    userId: number;
-    id: number;
-}
-
 interface ITagsBase {
     id: number;
     name: string;
-    userId: number;
 }
 
 // ==================== Запросы ====================
 export interface IUpdateDocument {
-    userId: number;
     title: string;
 }
 
 export interface IGetDocuments {
     page: number;
     size: number;
-    userId: number;
     tagIds?: number[];
-    search?: string;
+    searchTerm?: string;
     sortBy?: "title" | "date";
     sortDirection?: "asc" | "desc";
 }
 
 export interface IGetDocumentById {
-    userId: number;
     id: number;
 }
 
@@ -38,12 +29,12 @@ export interface IUploadFileDocument extends IUpdateDocument {
     file: File;
 }
 
-export interface IAdditionalDocumentCheck extends IUserIdBase {
+export interface IAdditionalDocumentCheck {
+    id: number;
     plagiarism: boolean;
     ai: boolean;
 }
 
-// ==================== Ответы ====================
 export interface IGetDocumentsResponse {
     totalElements: number;
     totalPages: number;
@@ -118,7 +109,8 @@ export interface IGetDocumentByIdResponse {
     }[];
 }
 
-export interface IEditDocumentTags extends IUserIdBase {
+export interface IEditDocumentTags {
+    id: number;
     tagsIds: number[];
 }
 
@@ -132,7 +124,8 @@ export interface IUploadDocumentResponse {
     tags: ITagsBase[];
 }
 
-export interface IEditDocument extends IUserIdBase {
+export interface IEditDocument {
+    id: number;
     tagsIds: number[];
     title: string;
 }

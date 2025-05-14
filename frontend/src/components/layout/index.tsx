@@ -24,7 +24,7 @@ export default function Layout() {
     const [open, setOpen] = useState(false);
 
     const userId = useSelector((state: RootState) => state.user.userId);
-    const { data: profile } = useGetProfileQuery({ userId: userId! });
+    const { data: profile } = useGetProfileQuery();
 
     const { notifications, markAllAsRead, markAsRead } = useNotifications({
         url: `${base_url}/api/ws`,

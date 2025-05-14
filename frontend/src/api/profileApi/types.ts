@@ -1,8 +1,4 @@
-export interface IGetProfile {
-    userId: number;
-}
-
-export interface IEditProfile extends IGetProfile {
+export interface IEditProfile {
     name: string;
     email: string;
     city?: string;
@@ -17,4 +13,15 @@ export interface IProfileResponse {
     checksAvailable: number;
     email: string;
     checksUsed: number;
+}
+
+export interface ICreateApiKeyResponse {
+    id: number;
+    userId: number;
+    keyValue: string;
+    name: string;
+    createdAt: string;
+    lastUsedAt: string;
+    expiresAt: string;
+    enabled: boolean;
 }

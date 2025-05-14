@@ -15,16 +15,13 @@ import { useNavigate } from "react-router-dom";
 import { useGetDocumentsQuery } from "@/api/documentApi";
 import { formatDate } from "@/lib/utils.ts";
 import TextUploaderForm from "@/components/forms/dashboard/text";
-import { useSelector } from "react-redux";
-import { RootState } from "@/api/store.ts";
 
 export default function DashboardPage() {
     const [activeTab, setActiveTab] = useState("text");
+
     const navigate = useNavigate();
-    const userId = useSelector((state: RootState) => state.user.userId);
 
     const { data } = useGetDocumentsQuery({
-        userId: userId!,
         page: 0,
         size: 3,
         sortBy: "date",

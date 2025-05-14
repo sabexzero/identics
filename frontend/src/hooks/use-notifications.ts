@@ -25,9 +25,7 @@ interface useNotificationsOptions {
 export function useNotifications({ url, onMessage }: useNotificationsOptions) {
     const userId = useSelector((state: RootState) => state.user.userId);
 
-    const { data } = useGetNotificationsQuery({
-        userId: userId!,
-    });
+    const { data } = useGetNotificationsQuery();
     const [readNotification] = useReadNotificationsMutation();
     const [readAllNotifications] = useReadAllNotificationsMutation();
 
@@ -96,9 +94,7 @@ export function useNotifications({ url, onMessage }: useNotificationsOptions) {
 
     const markAllAsRead = useCallback((userId: number | null) => {
         if (userId) {
-            readAllNotifications({
-                userId: userId!,
-            });
+            readAllNotifications();
             setNotifications([]);
         }
     }, []);
@@ -106,7 +102,6 @@ export function useNotifications({ url, onMessage }: useNotificationsOptions) {
     const markAsRead = useCallback((userId: number | null, id: number) => {
         if (userId) {
             readNotification({
-                userId: userId,
                 id: id,
             });
             setNotifications((prev) => [...prev.filter((item) => item.id !== id)]);

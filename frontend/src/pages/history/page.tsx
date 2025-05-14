@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import HistoryTable from "@/components/tables/history";
+import { useDebounce } from "use-debounce";
 
 export default function HistoryPage() {
     const [searchQuery, setSearchQuery] = useState("");
+    const [search] = useDebounce(searchQuery, 500);
 
     return (
         <div className="grid gap-6">
@@ -28,7 +30,7 @@ export default function HistoryPage() {
                 </div>
             </div>
 
-            <HistoryTable />
+            <HistoryTable search={search} />
         </div>
     );
 }

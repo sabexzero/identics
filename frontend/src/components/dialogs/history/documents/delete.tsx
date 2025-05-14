@@ -10,9 +10,8 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { AnimatedDialogContent, AnimatedDialogWrapper } from "@/components/ui/animated-dialog.tsx";
 import { useDeleteDocumentByIdMutation } from "@/api/documentApi";
-import { ErrorHandler, RootState } from "@/api/store.ts";
+import { ErrorHandler } from "@/api/store.ts";
 import { toast } from "sonner";
-import { useSelector } from "react-redux";
 
 interface DeleteDocumentDialogProps {
     id: number;
@@ -26,21 +25,19 @@ export default function DeleteDocumentDialog({
     onOpenChange,
 }: DeleteDocumentDialogProps) {
     const [deleteDocument, { isLoading: isDeleting }] = useDeleteDocumentByIdMutation();
-    const userId = useSelector((state: RootState) => state.user.userId);
 
     const handleDeleteDocument = async () => {
         try {
             await deleteDocument({
-                userId: userId!,
                 id: id,
-            });
+            }).unwrap();
 
             onOpenChange();
             toast.success("Документ успешно удален!");
         } catch (error) {
-            toast.error(
-                `Возникла ошибка при удалении документа: ${(error as ErrorHandler).data.error}`
-            );
+            toast.error("Ошибка!", {
+                description: `Возникла ошибка при удалении документа: ${(error as ErrorHandler).data.error}`,
+            });
         }
     };
 

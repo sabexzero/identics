@@ -1,32 +1,28 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "@/api/authApi";
-import {
-    IGetNotificationResponse,
-    INotification,
-    IReadNotification,
-} from "@/api/notificationApi/types.ts";
+import { IGetNotificationResponse, IReadNotification } from "@/api/notificationApi/types.ts";
 
 export const notificationApi = createApi({
     reducerPath: "notificationApi",
     baseQuery: baseQueryWithReauth,
     endpoints: (build) => ({
-        getNotifications: build.query<IGetNotificationResponse, INotification>({
-            query: ({ userId }) => {
-                return `/api/v1/${userId}/notifications`;
+        getNotifications: build.query<IGetNotificationResponse, void>({
+            query: () => {
+                return `/api/v1/notifications`;
             },
         }),
-        readAllNotifications: build.mutation<IGetNotificationResponse, INotification>({
-            query: ({ userId }) => {
+        readAllNotifications: build.mutation<IGetNotificationResponse, void>({
+            query: () => {
                 return {
-                    url: `/api/v1/${userId}/notifications/read`,
+                    url: `/api/v1/notifications/read`,
                     method: "PUT",
                 };
             },
         }),
         readNotifications: build.mutation<IGetNotificationResponse, IReadNotification>({
-            query: ({ userId, id }) => {
+            query: ({ id }) => {
                 return {
-                    url: `/api/v1/${userId}/notifications/${id}/read`,
+                    url: `/api/v1/notifications/${id}/read`,
                     method: "PUT",
                 };
             },

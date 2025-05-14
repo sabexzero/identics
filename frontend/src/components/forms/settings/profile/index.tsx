@@ -35,19 +35,13 @@ import { toast } from "sonner";
 import { useLogoutMutation } from "@/api/authApi";
 import { useNavigate } from "react-router-dom";
 import { getInitials } from "@/lib/utils.ts";
-import { useSelector } from "react-redux";
-import { RootState } from "@/api/store.ts";
 import { useEditProfileMutation, useGetProfileQuery } from "@/api/profileApi";
 
 const ProfileSettings = () => {
     const [logout] = useLogoutMutation();
     const navigate = useNavigate();
 
-    const userId = useSelector((state: RootState) => state.user.userId);
-    const { data: profile, isSuccess: isProfileSuccess } = useGetProfileQuery(
-        { userId: userId! },
-        { skip: !userId }
-    );
+    const { data: profile, isSuccess: isProfileSuccess } = useGetProfileQuery();
 
     const [editProfile, { isLoading, isSuccess }] = useEditProfileMutation();
 
@@ -73,7 +67,6 @@ const ProfileSettings = () => {
     const onSubmit = async (data: z.infer<typeof schema>) => {
         try {
             await editProfile({
-                userId: userId!,
                 name: data.name,
                 email: data.email,
             }).unwrap();

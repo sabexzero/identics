@@ -12,23 +12,15 @@ import HistoryPage from "@/pages/history/page.tsx";
 import Layout from "@/components/layout";
 import { Provider } from "react-redux";
 import { store } from "./api/store.ts";
-import "./index.css";
 import ReviewPage from "@/pages/review/page.tsx";
 import Settings from "@/pages/settings/page.tsx";
 import useAuth from "./hooks/use-auth.ts";
+import "./index.css";
 
 function ProtectedRoute() {
     const { isAuthenticated } = useAuth();
 
-    if (isAuthenticated === null) {
-        return (
-            <div className="blur-sm transition-all duration-300">
-                <Outlet />
-            </div>
-        );
-    }
-
-    if (isAuthenticated) {
+    if (isAuthenticated || isAuthenticated === null) {
         return (
             <div className="transition-all duration-500">
                 <Outlet />

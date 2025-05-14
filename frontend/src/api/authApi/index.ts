@@ -1,10 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import {
-    IPostLogin,
-    IPostLoginResponse,
-    IPostRegister,
-    IRefreshResponse,
-} from "@/api/authApi/types";
+import { IPostLogin, IPostLoginResponse, IPostRegister } from "@/api/authApi/types";
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -45,7 +40,6 @@ export const baseQueryWithReauth: BaseQueryFn<
             localStorage.setItem("accessToken", newAccessToken);
             result = await baseQuery(args, api, extraOptions);
         } else {
-            console.log("LOGOUT");
             await baseQuery({ url: "/auth/signout", method: "POST" }, api, extraOptions);
         }
     }
@@ -81,7 +75,7 @@ export const authApi = createApi({
                 credentials: "include",
             }),
         }),
-        refresh: build.mutation<IRefreshResponse, void>({
+        refresh: build.mutation<void, void>({
             query: () => ({
                 url: "/api/v1/auth/refresh-token",
                 method: "POST",

@@ -1,8 +1,4 @@
-export interface IGetTags {
-    userId: number;
-}
-
-export interface IGetDocumentsTag extends IGetTags {
+export interface IGetDocumentsTag {
     id: number;
 }
 
@@ -16,15 +12,6 @@ export interface ITagsResponse {
     hexString: string;
 }
 
-export interface ICreateTagResponse extends Omit<ITagsResponse, "id"> {
-    userId: number;
-}
-
 export interface IDeleteTag {
     id: number;
-    userId: number;
-}
-
-export interface IEditTag extends ITagsResponse {
-    userId: number;
 }

@@ -1,7 +1,3 @@
-export interface INotification {
-    userId: number;
-}
-
 export interface IGetNotificationResponse {
     items: {
         id: number;
@@ -14,6 +10,6 @@ export interface IGetNotificationResponse {
     }[];
 }
 
-export interface IReadNotification extends INotification {
+export interface IReadNotification {
     id: number;
 }

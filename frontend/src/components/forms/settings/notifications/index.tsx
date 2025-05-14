@@ -1,4 +1,4 @@
-import type React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -24,20 +24,17 @@ import {
 import { Bell, Mail, Globe, FileCheck, Check, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useEditSettingsMutation, useGetSettingsQuery } from "@/api/settingsApi";
-import { RootState } from "@/api/store.ts";
-import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
 const NotificationSettings: React.FC = () => {
-    const userId = useSelector((state: RootState) => state.user.userId);
-    const { data: settings } = useGetSettingsQuery({ userId: userId! }, { skip: !userId });
+    const { data: settings, isLoading: settingsLoading } = useGetSettingsQuery();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
             telegramNotifications: false,
             browserNotifications: false,
-            isCompleteCheckNotificationsEnabled: true,
+            isCompleteCheckNotificationsEnabled: settings?.isCompleteCheckNotificationsEnabled,
         },
     });
 
@@ -47,14 +44,22 @@ const NotificationSettings: React.FC = () => {
         try {
             await editSettings({
                 ...settings!,
-                userId: userId!,
                 isCompleteCheckNotificationsEnabled: data.isCompleteCheckNotificationsEnabled,
-            });
+            }).unwrap();
         } catch (error) {
-            toast.error("Ошибка!", { description: "Возникла ошибка при сохранении настроек!" });
-            console.error(error);
+            toast.error("Ошибка!", {
+                description: `Возникла ошибка при сохранении настроек: ${(error as ErrorHandler).data.error}`,
+            });
         }
     };
+
+    useEffect(() => {
+        form.reset({
+            telegramNotifications: false,
+            browserNotifications: false,
+            isCompleteCheckNotificationsEnabled: settings?.isCompleteCheckNotificationsEnabled,
+        });
+    }, [settingsLoading, settings, form]);
 
     return (
         <div className="space-y-6">

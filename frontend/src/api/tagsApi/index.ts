@@ -1,10 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import {
-    ICreateTagResponse,
     IDeleteTag,
-    IEditTag,
     IGetDocumentsTag,
-    IGetTags,
     IGetTagsResponse,
     ITagsResponse,
 } from "@/api/tagsApi/types.ts";
@@ -15,22 +12,22 @@ export const tagsApi = createApi({
     baseQuery: baseQueryWithReauth,
     tagTypes: ["UpdateTags", "UpdateExactTags"],
     endpoints: (build) => ({
-        getTags: build.query<IGetTagsResponse, IGetTags>({
+        getTags: build.query<IGetTagsResponse, void>({
             providesTags: ["UpdateTags"],
-            query: ({ userId }) => {
-                return `/api/v1/${userId}/tags`;
+            query: () => {
+                return `/api/v1/tags`;
             },
         }),
         getDocumentTags: build.query<IGetTagsResponse, IGetDocumentsTag>({
             providesTags: ["UpdateTags", "UpdateExactTags"],
-            query: ({ userId, id }) => {
-                return `/api/v1/${userId}/documents/${id}/tags`;
+            query: ({ id }) => {
+                return `/api/v1/documents/${id}/tags`;
             },
         }),
-        createTag: build.mutation<ITagsResponse, ICreateTagResponse>({
+        createTag: build.mutation<ITagsResponse, Omit<ITagsResponse, "id">>({
             invalidatesTags: ["UpdateTags"],
-            query: ({ userId, name, hexString }) => ({
-                url: `/api/v1/${userId}/tags`,
+            query: ({ name, hexString }) => ({
+                url: `/api/v1/tags`,
                 method: "POST",
                 body: {
                     name: name,
@@ -40,15 +37,15 @@ export const tagsApi = createApi({
         }),
         deleteTag: build.mutation<void, IDeleteTag>({
             invalidatesTags: ["UpdateTags"],
-            query: ({ userId, id }) => ({
-                url: `/api/v1/${userId}/tags/${id}`,
+            query: ({ id }) => ({
+                url: `/api/v1/tags/${id}`,
                 method: "DELETE",
             }),
         }),
-        editTag: build.mutation<ITagsResponse, IEditTag>({
+        editTag: build.mutation<ITagsResponse, ITagsResponse>({
             invalidatesTags: ["UpdateTags"],
-            query: ({ userId, id, name, hexString }) => ({
-                url: `/api/v1/${userId}/tags/${id}`,
+            query: ({ id, name, hexString }) => ({
+                url: `/api/v1/tags/${id}`,
                 method: "PUT",
                 body: {
                     name: name,

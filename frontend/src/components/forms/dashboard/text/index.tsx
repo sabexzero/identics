@@ -7,14 +7,12 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { ErrorHandler, RootState } from "@/api/store.ts";
+import { ErrorHandler } from "@/api/store.ts";
 import { schema } from "@/components/forms/dashboard/text/schema.ts";
 import { useUploadTextDocumentMutation } from "@/api/documentApi";
-import { useSelector } from "react-redux";
 
 export default function TextUploaderForm() {
     const [uploadTextDocument, { isLoading }] = useUploadTextDocumentMutation();
-    const userId = useSelector((state: RootState) => state.user.userId);
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -26,7 +24,6 @@ export default function TextUploaderForm() {
     const onTextUpload = async (values: z.infer<typeof schema>) => {
         try {
             await uploadTextDocument({
-                userId: userId!,
                 content: values.content,
                 title: values.title,
             }).unwrap();

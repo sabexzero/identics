@@ -21,7 +21,7 @@ export const documentApi = createApi({
     endpoints: (build) => ({
         getDocuments: build.query<IGetDocumentsResponse, IGetDocuments>({
             providesTags: ["UpdateTable"],
-            query: ({ userId, tagIds, page, size, search, sortDirection, sortBy }) => {
+            query: ({ tagIds, page, size, searchTerm, sortDirection, sortBy }) => {
                 const searchParams = new URLSearchParams();
                 if (tagIds) {
                     for (const tagId of tagIds) {
@@ -32,8 +32,8 @@ export const documentApi = createApi({
                 searchParams.set("page", page.toString());
                 searchParams.set("size", size.toString());
 
-                if (search) {
-                    searchParams.set("search", search);
+                if (searchTerm) {
+                    searchParams.set("searchTerm", searchTerm);
                 }
 
                 if (sortDirection) {
@@ -44,26 +44,26 @@ export const documentApi = createApi({
                     searchParams.set("sortBy", sortBy);
                 }
 
-                return `/api/v1/${userId}/documents?${searchParams.toString()}`;
+                return `/api/v1/documents?${searchParams.toString()}`;
             },
         }),
         getDocumentById: build.query<IGetDocumentByIdResponse, IGetDocumentById>({
-            query: ({ userId, id }) => {
-                return `/api/v1/${userId}/documents/${id}`;
+            query: ({ id }) => {
+                return `/api/v1/documents/${id}`;
             },
         }),
         deleteDocumentById: build.mutation<IGetDocumentByIdResponse, IGetDocumentById>({
             invalidatesTags: ["UpdateTable"],
-            query: ({ userId, id }) => ({
-                url: `/api/v1/${userId}/documents/${id}`,
+            query: ({ id }) => ({
+                url: `/api/v1/documents/${id}`,
                 method: "DELETE",
             }),
         }),
         uploadTextDocument: build.mutation<IUploadDocumentResponse, IUploadTextDocument>({
             invalidatesTags: ["UpdateTable"],
-            query: ({ userId, title, content }) => {
+            query: ({ title, content }) => {
                 return {
-                    url: `/api/v1/${userId}/documents/text`,
+                    url: `/api/v1/documents/text`,
                     method: "POST",
                     body: {
                         title: title,
@@ -75,21 +75,21 @@ export const documentApi = createApi({
         }),
         uploadFileDocument: build.mutation<IUploadDocumentResponse, IUploadFileDocument>({
             invalidatesTags: ["UpdateTable"],
-            query: ({ userId, title, file }) => {
+            query: ({ title, file }) => {
                 const searchParams = new URLSearchParams();
                 const formData = new FormData();
                 formData.append("file", file);
                 searchParams.set("title", title);
 
                 return {
-                    url: `/api/v1/${userId}/documents/file?${searchParams}`,
+                    url: `/api/v1/documents/file?${searchParams}`,
                     method: "POST",
                     body: formData,
                 };
             },
         }),
         additionalDocumentCheck: build.mutation<void, IAdditionalDocumentCheck>({
-            query: ({ userId, id, ai, plagiarism }) => {
+            query: ({ id, ai, plagiarism }) => {
                 const searchParams = new URLSearchParams();
 
                 if (plagiarism) {
@@ -101,15 +101,15 @@ export const documentApi = createApi({
                 }
 
                 return {
-                    url: `/api/v1/${userId}/documents/${id}/check?${searchParams}`,
+                    url: `/api/v1/documents/${id}/check?${searchParams}`,
                     method: "POST",
                 };
             },
         }),
         editDocumentTags: build.mutation<IUploadDocumentResponse, IEditDocumentTags>({
             invalidatesTags: ["UpdateTable"],
-            query: ({ userId, id, tagsIds }) => ({
-                url: `/api/v1/${userId}/documents/${id}`,
+            query: ({ id, tagsIds }) => ({
+                url: `/api/v1/documents/${id}`,
                 method: "PATCH",
                 body: {
                     tagIds: tagsIds,
@@ -118,8 +118,8 @@ export const documentApi = createApi({
         }),
         editDocument: build.mutation<IUploadDocumentResponse, IEditDocument>({
             invalidatesTags: ["UpdateTable"],
-            query: ({ userId, id, tagsIds, title }) => ({
-                url: `/api/v1/${userId}/documents/${id}`,
+            query: ({ id, tagsIds, title }) => ({
+                url: `/api/v1/documents/${id}`,
                 method: "PUT",
                 body: {
                     tagIds: tagsIds,
