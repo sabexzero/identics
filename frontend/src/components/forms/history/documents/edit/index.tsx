@@ -29,7 +29,7 @@ export default function EditDocumentForm({
         resolver: zodResolver(schema),
         defaultValues: {
             title: "",
-            tags: [],
+            tags: tagsIds,
         },
     });
 
@@ -46,13 +46,15 @@ export default function EditDocumentForm({
             toast.error("Ошибка", {
                 description: `Возникла ошибка при удалении документа: ${(error as ErrorHandler).data.error}`,
             });
+        } finally {
+            onOpenChange();
         }
     };
 
     return (
         <Form {...form}>
-            <AnimatedDialogWrapper timing={1}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <AnimatedDialogWrapper timing={1}>
                     <FormField
                         control={form.control}
                         name="title"
@@ -63,7 +65,7 @@ export default function EditDocumentForm({
                                     <Input
                                         id="title"
                                         type="text"
-                                        autoComplete="email"
+                                        autoComplete="title"
                                         disabled={isLoading}
                                         {...field}
                                     />
@@ -72,19 +74,19 @@ export default function EditDocumentForm({
                             </FormItem>
                         )}
                     />
-                </form>
-            </AnimatedDialogWrapper>
+                </AnimatedDialogWrapper>
 
-            <AnimatedDialogWrapper timing={2}>
-                <DialogFooter className="mt-4">
-                    <Button onClick={onOpenChange} variant="outline">
-                        Отмена
-                    </Button>
-                    <Button type="submit" disabled={isLoading}>
-                        {isLoading ? "Сохранение..." : "Сохранить изменения"}
-                    </Button>
-                </DialogFooter>
-            </AnimatedDialogWrapper>
+                <AnimatedDialogWrapper timing={2}>
+                    <DialogFooter className="mt-4">
+                        <Button onClick={onOpenChange} variant="outline">
+                            Отмена
+                        </Button>
+                        <Button type="submit" disabled={isLoading}>
+                            {isLoading ? "Сохранение..." : "Сохранить изменения"}
+                        </Button>
+                    </DialogFooter>
+                </AnimatedDialogWrapper>
+            </form>
         </Form>
     );
 }

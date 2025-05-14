@@ -2,35 +2,27 @@
 
 import { Dialog, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog.tsx";
 import { AnimatedDialogContent, AnimatedDialogWrapper } from "@/components/ui/animated-dialog.tsx";
-import EditDocumentForm from "@/components/forms/history/documents/edit";
+import CreateReviewReportForm from "@/components/forms/review";
 
 interface DeleteDocumentDialogProps {
-    id: number;
     open: boolean;
     onOpenChange: () => void;
-    tags: number[];
 }
 
-export default function EditDocumentDialog({
-    id,
-    open,
-    onOpenChange,
-    tags,
-}: DeleteDocumentDialogProps) {
+export default function CreateReviewReport({ open, onOpenChange }: DeleteDocumentDialogProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <AnimatedDialogContent className="space-y-4">
                 <AnimatedDialogWrapper timing={0}>
                     <DialogHeader>
-                        <DialogTitle>Редактирование документа</DialogTitle>
+                        <DialogTitle>Заполнение информации</DialogTitle>
                         <DialogDescription>
-                            Документ нельзя будет восстановить! Вы уверены что хотите переименовать
-                            документ?
+                            Для получения отчета осталось заполнить, необходимую для его генерации,
+                            информацию
                         </DialogDescription>
                     </DialogHeader>
                 </AnimatedDialogWrapper>
-
-                <EditDocumentForm tagsIds={tags} id={id} onOpenChange={onOpenChange} />
+                <CreateReviewReportForm onOpenChange={onOpenChange} />
             </AnimatedDialogContent>
         </Dialog>
     );

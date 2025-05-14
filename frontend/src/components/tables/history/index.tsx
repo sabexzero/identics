@@ -8,7 +8,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, CheckCircle, Download, Eye, Plus } from "lucide-react";
+import { AlertCircle, CheckCircle, Eye, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { useGetDocumentsQuery } from "@/api/documentApi";
@@ -37,6 +37,7 @@ interface HistoryTableProps {
 export default function HistoryTable({ search, tag }: HistoryTableProps) {
     const navigate = useNavigate();
     const idRef = useRef<number>(null!);
+    const tagsRef = useRef<number[]>(null!);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(10);
@@ -62,8 +63,13 @@ export default function HistoryTable({ search, tag }: HistoryTableProps) {
         setCurrentPage(page);
     };
 
-    const handleModal = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, id: number) => {
+    const handleModal = (
+        e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+        id: number,
+        tags: number[]
+    ) => {
         idRef.current = id;
+        tagsRef.current = tags;
         e.stopPropagation();
     };
 
@@ -92,6 +98,7 @@ export default function HistoryTable({ search, tag }: HistoryTableProps) {
                     open={editDocumentDialogOpen}
                     onOpenChange={() => setEditDocumentDialogOpen(false)}
                     id={idRef.current}
+                    tags={tagsRef.current}
                 />
 
                 <Table>
@@ -102,6 +109,7 @@ export default function HistoryTable({ search, tag }: HistoryTableProps) {
                             <TableHead className="w-[10%] text-center">Содержание ИИ</TableHead>
                             <TableHead className="w-[10%] text-center">Оригинальность</TableHead>
                             <TableHead className="text-center w-[10%]">Отчет</TableHead>
+                            <TableHead className="text-right w-[10%]"></TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -129,7 +137,11 @@ export default function HistoryTable({ search, tag }: HistoryTableProps) {
                                                                     : "black",
                                                             }}
                                                             onClick={(e) => {
-                                                                handleModal(e, item.id);
+                                                                handleModal(
+                                                                    e,
+                                                                    item.id,
+                                                                    item.tags.map((t) => t.id)
+                                                                );
                                                                 setEditTagsDialogOpen(true);
                                                             }}
                                                         >
@@ -141,7 +153,11 @@ export default function HistoryTable({ search, tag }: HistoryTableProps) {
                                                     variant="outline"
                                                     className="cursor-pointer px-1 aspect-square border-dashed hover:border-black hover:text-xl transition-all duration-200"
                                                     onClick={(e) => {
-                                                        handleModal(e, item.id);
+                                                        handleModal(
+                                                            e,
+                                                            item.id,
+                                                            item.tags.map((t) => t.id)
+                                                        );
                                                         setEditTagsDialogOpen(true);
                                                     }}
                                                 >
@@ -153,7 +169,11 @@ export default function HistoryTable({ search, tag }: HistoryTableProps) {
                                                 variant="secondary"
                                                 className="cursor-pointer border-dashed px-1"
                                                 onClick={(e) => {
-                                                    handleModal(e, item.id);
+                                                    handleModal(
+                                                        e,
+                                                        item.id,
+                                                        item.tags.map((t) => t.id)
+                                                    );
                                                     setEditTagsDialogOpen(true);
                                                 }}
                                             >
@@ -209,40 +229,44 @@ export default function HistoryTable({ search, tag }: HistoryTableProps) {
                                             <Eye className="h-4 w-4" />
                                             <span className="sr-only">Просмотр</span>
                                         </Button>
-                                        <Button variant="ghost" size="icon">
-                                            <a href={item.reportUrl} target="_blank">
-                                                <Download className="h-4 w-4" />
-                                                <span className="sr-only">Скачать</span>
-                                            </a>
-                                        </Button>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost">...</Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent className="w-40">
-                                                <DropdownMenuLabel>Действия</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuGroup>
-                                                    <DropdownMenuItem
-                                                        onClick={(e) => {
-                                                            handleModal(e, item.id);
-                                                            setEditDocumentDialogOpen(true);
-                                                        }}
-                                                    >
-                                                        Переименовать
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onClick={(e) => {
-                                                            handleModal(e, item.id);
-                                                            setDeleteDocumentDialogOpen(true);
-                                                        }}
-                                                    >
-                                                        Удалить
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuGroup>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
                                     </div>
+                                </TableCell>
+                                <TableCell>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost">...</Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className="w-40">
+                                            <DropdownMenuLabel>Действия</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuGroup>
+                                                <DropdownMenuItem
+                                                    onClick={(e) => {
+                                                        handleModal(
+                                                            e,
+                                                            item.id,
+                                                            item.tags.map((t) => t.id)
+                                                        );
+                                                        setEditDocumentDialogOpen(true);
+                                                    }}
+                                                >
+                                                    Переименовать
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onClick={(e) => {
+                                                        handleModal(
+                                                            e,
+                                                            item.id,
+                                                            item.tags.map((t) => t.id)
+                                                        );
+                                                        setDeleteDocumentDialogOpen(true);
+                                                    }}
+                                                >
+                                                    Удалить
+                                                </DropdownMenuItem>
+                                            </DropdownMenuGroup>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </TableCell>
                             </TableRow>
                         ))}

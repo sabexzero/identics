@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
@@ -36,13 +36,15 @@ import { useLogoutMutation } from "@/api/authApi";
 import { useNavigate } from "react-router-dom";
 import { getInitials } from "@/lib/utils.ts";
 import { useEditProfileMutation, useGetProfileQuery } from "@/api/profileApi";
+import { ErrorHandler } from "@/api/store.ts";
+import SettingsDeleteProfileDialog from "@/components/dialogs/settings/delete.tsx";
 
 const ProfileSettings = () => {
-    const [logout] = useLogoutMutation();
+    const [open, onOpenChange] = useState(false);
     const navigate = useNavigate();
+    const [logout] = useLogoutMutation();
 
     const { data: profile, isSuccess: isProfileSuccess } = useGetProfileQuery();
-
     const [editProfile, { isLoading, isSuccess }] = useEditProfileMutation();
 
     const form = useForm<z.infer<typeof schema>>({
@@ -59,8 +61,9 @@ const ProfileSettings = () => {
             localStorage.clear();
             navigate("/auth");
         } catch (error) {
-            console.error(error);
-            toast.error("Возникла ошибка при выходе из аккаунта");
+            toast.error("Ошибка!", {
+                description: `Возникла ошибка при выходе из аккаунта: ${(error as ErrorHandler).data.error}`,
+            });
         }
     };
 
@@ -71,10 +74,10 @@ const ProfileSettings = () => {
                 email: data.email,
             }).unwrap();
         } catch (error) {
-            toast.error("Ошибка!", { description: "Возникла ошибка при попытке изменить профиль" });
-            console.error(error);
+            toast.error("Ошибка!", {
+                description: `Возникла ошибка при попытке изменить профиль: ${(error as ErrorHandler).data.error}`,
+            });
         }
-        console.log(data);
     };
 
     useEffect(() => {
@@ -87,183 +90,190 @@ const ProfileSettings = () => {
     }, [isProfileSuccess, profile, form]);
 
     return (
-        <div className="space-y-6">
-            <Card className="border border-primary/10 shadow-lg shadow-primary/5 overflow-hidden">
-                <CardHeader className="pb-4">
-                    <div className="flex items-center gap-4">
-                        <div className="relative group">
-                            <Avatar className="h-20 w-20 border-4 border-background shadow-xl">
-                                <AvatarImage src="/placeholder.svg?height=80&width=80" />
-                                <AvatarFallback className="bg-primary/10 text-primary text-xl font-semibold">
-                                    {getInitials(form.getValues().name)}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                <Upload className="h-6 w-6 text-white" />
-                            </div>
-                        </div>
-                        <div>
-                            <CardTitle className="text-2xl font-bold">Профиль</CardTitle>
-                            <CardDescription className="text-base">
-                                Управление личной информацией и настройками аккаунта
-                            </CardDescription>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent className="pb-6">
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            <div className="space-y-4">
-                                <FormField
-                                    control={form.control}
-                                    name="name"
-                                    render={({ field }) => (
-                                        <FormItem className="space-y-2">
-                                            <Label
-                                                htmlFor="name"
-                                                className="flex items-center gap-2 text-base font-medium"
-                                            >
-                                                <User className="h-4 w-4 text-muted-foreground" />
-                                                ФИО
-                                            </Label>
-                                            <FormControl>
-                                                <Input
-                                                    id="name"
-                                                    {...field}
-                                                    className="h-11 px-4 transition-all border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="email"
-                                    render={({ field }) => (
-                                        <FormItem className="space-y-2">
-                                            <Label
-                                                htmlFor="email"
-                                                className="flex items-center gap-2 text-base font-medium"
-                                            >
-                                                <Mail className="h-4 w-4 text-muted-foreground" />
-                                                Email адрес
-                                            </Label>
-                                            <FormControl>
-                                                <Input
-                                                    id="email"
-                                                    {...field}
-                                                    className="h-11 px-4 transition-all border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-
-                            <div className="pt-2">
-                                <Button
-                                    type="submit"
-                                    className="h-11 px-6 w-full md:w-auto relative overflow-hidden"
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? (
-                                        <>
-                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                            Сохранение...
-                                        </>
-                                    ) : isSuccess ? (
-                                        <>
-                                            <Check className="h-4 w-4 mr-2" />
-                                            Сохранено!
-                                        </>
-                                    ) : (
-                                        "Сохранить изменения"
-                                    )}
-                                </Button>
-                            </div>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
-
-            <Card className="border border-destructive/10 shadow-lg shadow-destructive/5">
-                <CardHeader className="pb-2">
-                    <CardTitle className="text-xl font-bold">Действия с аккаунтом</CardTitle>
-                    <CardDescription>
-                        Будьте осторожны с этими действиями — некоторые из них необратимы
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="pb-6">
-                    <div className="space-y-3">
-                        <div className="p-4 rounded-lg border border-muted-foreground/10 bg-muted/30 hover:bg-muted/50 transition-colors">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-full bg-muted-foreground/10">
-                                        <LogOut className="h-5 w-5 text-muted-foreground" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-medium">Выйти со всех устройств</h3>
-                                        <p className="text-sm text-muted-foreground">
-                                            Завершить все активные сессии кроме текущей
-                                        </p>
-                                    </div>
+        <>
+            <SettingsDeleteProfileDialog open={open} onOpenChange={() => onOpenChange(false)} />
+            <div className="space-y-6">
+                <Card className="border border-primary/10 shadow-lg shadow-primary/5 overflow-hidden">
+                    <CardHeader className="pb-4">
+                        <div className="flex items-center gap-4">
+                            <div className="relative group">
+                                <Avatar className="h-20 w-20 border-4 border-background shadow-xl">
+                                    <AvatarImage src="/placeholder.svg?height=80&width=80" />
+                                    <AvatarFallback className="bg-primary/10 text-primary text-xl font-semibold">
+                                        {getInitials(form.getValues().name)}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                    <Upload className="h-6 w-6 text-white" />
                                 </div>
-                                <Button variant="outline" size="sm" onClick={handleLogout}>
-                                    Выйти
-                                </Button>
+                            </div>
+                            <div>
+                                <CardTitle className="text-2xl font-bold">Профиль</CardTitle>
+                                <CardDescription className="text-base">
+                                    Управление личной информацией и настройками аккаунта
+                                </CardDescription>
                             </div>
                         </div>
+                    </CardHeader>
+                    <CardContent className="pb-6">
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                                <div className="space-y-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="name"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <Label
+                                                    htmlFor="name"
+                                                    className="flex items-center gap-2 text-base font-medium"
+                                                >
+                                                    <User className="h-4 w-4 text-muted-foreground" />
+                                                    ФИО
+                                                </Label>
+                                                <FormControl>
+                                                    <Input
+                                                        id="name"
+                                                        {...field}
+                                                        className="h-11 px-4 transition-all border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary"
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <Label
+                                                    htmlFor="email"
+                                                    className="flex items-center gap-2 text-base font-medium"
+                                                >
+                                                    <Mail className="h-4 w-4 text-muted-foreground" />
+                                                    Email адрес
+                                                </Label>
+                                                <FormControl>
+                                                    <Input
+                                                        id="email"
+                                                        {...field}
+                                                        className="h-11 px-4 transition-all border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary"
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
 
-                        <Separator className="my-2" />
+                                <div className="pt-2">
+                                    <Button
+                                        type="submit"
+                                        className="h-11 px-6 w-full md:w-auto relative overflow-hidden"
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                Сохранение...
+                                            </>
+                                        ) : isSuccess ? (
+                                            <>
+                                                <Check className="h-4 w-4 mr-2" />
+                                                Сохранено!
+                                            </>
+                                        ) : (
+                                            "Сохранить изменения"
+                                        )}
+                                    </Button>
+                                </div>
+                            </form>
+                        </Form>
+                    </CardContent>
+                </Card>
 
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <div className="p-4 rounded-lg border border-destructive/10 bg-destructive/5 hover:bg-destructive/10 transition-colors cursor-pointer">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2 rounded-full bg-destructive/10">
-                                                <UserX className="h-5 w-5 text-destructive" />
-                                            </div>
-                                            <div>
-                                                <h3 className="font-medium">Удалить аккаунт</h3>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Удалить аккаунт и все связанные данные
-                                                </p>
-                                            </div>
+                <Card className="border border-destructive/10 shadow-lg shadow-destructive/5">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-xl font-bold">Действия с аккаунтом</CardTitle>
+                        <CardDescription>
+                            Будьте осторожны с этими действиями — некоторые из них необратимы
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pb-6">
+                        <div className="space-y-3">
+                            <div className="p-4 rounded-lg border border-muted-foreground/10 bg-muted/30 hover:bg-muted/50 transition-colors">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-full bg-muted-foreground/10">
+                                            <LogOut className="h-5 w-5 text-muted-foreground" />
                                         </div>
-                                        <Button variant="destructive" size="sm">
-                                            Удалить
-                                        </Button>
+                                        <div>
+                                            <h3 className="font-medium">Выйти со всех устройств</h3>
+                                            <p className="text-sm text-muted-foreground">
+                                                Завершить все активные сессии кроме текущей
+                                            </p>
+                                        </div>
                                     </div>
+                                    <Button variant="outline" size="sm" onClick={handleLogout}>
+                                        Выйти
+                                    </Button>
                                 </div>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Вы действительно хотите удалить аккаунт?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Это действие полностью удалит ваш аккаунт и все данные. Это
-                                        действие необратимо.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Отмена</AlertDialogCancel>
-                                    <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/65">
-                                        Удалить аккаунт
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </div>
-                </CardContent>
-                <CardFooter className="py-3 text-xs text-muted-foreground italic">
-                    Удаление аккаунта приведет к потере всех данных и не может быть отменено
-                </CardFooter>
-            </Card>
-        </div>
+                            </div>
+
+                            <Separator className="my-2" />
+
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <div className="p-4 rounded-lg border border-destructive/10 bg-destructive/5 hover:bg-destructive/10 transition-colors cursor-pointer">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 rounded-full bg-destructive/10">
+                                                    <UserX className="h-5 w-5 text-destructive" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-medium">Удалить аккаунт</h3>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Удалить аккаунт и все связанные данные
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                onClick={() => onOpenChange(true)}
+                                                variant="destructive"
+                                                size="sm"
+                                            >
+                                                Удалить
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            Вы действительно хотите удалить аккаунт?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Это действие полностью удалит ваш аккаунт и все данные.
+                                            Это действие необратимо.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Отмена</AlertDialogCancel>
+                                        <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/65">
+                                            Удалить аккаунт
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="py-3 text-xs text-muted-foreground italic">
+                        Удаление аккаунта приведет к потере всех данных и не может быть отменено
+                    </CardFooter>
+                </Card>
+            </div>
+        </>
     );
 };
 

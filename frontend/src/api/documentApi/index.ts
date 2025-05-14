@@ -10,6 +10,8 @@ import {
     IUploadDocumentResponse,
     IUploadFileDocument,
     IUploadTextDocument,
+    IUploadInfoForReport,
+    IUploadInfoForReportResponse,
 } from "./types.ts";
 import { ErrorHandler } from "@/api/store.ts";
 import { baseQueryWithReauth } from "@/api/authApi";
@@ -125,12 +127,22 @@ export const documentApi = createApi({
                 },
             }),
         }),
+        uploadInfoForReport: build.mutation<IUploadInfoForReportResponse, IUploadInfoForReport>({
+            query: ({ id, ...rest }) => ({
+                url: `/api/v1/documents/report/${id}`,
+                method: "POST",
+                body: {
+                    ...rest,
+                },
+            }),
+        }),
     }),
 });
 
 export const {
     useGetDocumentsQuery,
     useGetDocumentByIdQuery,
+    useUploadInfoForReportMutation,
     useDeleteDocumentByIdMutation,
     useUploadTextDocumentMutation,
     useUploadFileDocumentMutation,

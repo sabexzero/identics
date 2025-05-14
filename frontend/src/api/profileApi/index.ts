@@ -30,7 +30,19 @@ export const profileApi = createApi({
                 method: "POST",
             }),
         }),
+        deleteProfile: build.mutation<void, void>({
+            invalidatesTags: ["UpdateProfile"],
+            query: () => ({
+                url: `/api/v1/profile`,
+                method: "DELETE",
+            }),
+        }),
     }),
 });
 
-export const { useGetProfileQuery, useEditProfileMutation, useCreateApiKeyMutation } = profileApi;
+export const {
+    useGetProfileQuery,
+    useEditProfileMutation,
+    useDeleteProfileMutation,
+    useCreateApiKeyMutation,
+} = profileApi;

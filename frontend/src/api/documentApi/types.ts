@@ -79,28 +79,20 @@ export interface IGetDocumentsResponse {
 
 export interface IGetDocumentByIdResponse {
     title: string;
-    date: string;
+    checkDate: string;
     wordCount: number;
-    similarity: number;
     uniqueness: number;
     aiContent: number;
-    status: string;
-    processingTime: string;
-    highlights: {
-        id: string;
-        text: string;
-        highlighted: boolean;
-        similarity: number;
-        source: string;
-    }[];
+    reportUrl: string;
+    processingTime: number;
     sources: {
-        id: string;
-        title: string;
-        url: string;
-        author: string;
-        year: number;
-        similarity: number;
-        matchedWords: number;
+        sourceInfo: string;
+        sourceUrl: string;
+        firstPos: number;
+        secondPos: number;
+        text: string;
+        startCharIndex: number;
+        endCharIndex: number;
     }[];
     tags: {
         id: number;
@@ -128,4 +120,17 @@ export interface IEditDocument {
     id: number;
     tagsIds: number[];
     title: string;
+}
+
+export interface IUploadInfoForReport {
+    id: number;
+    university: string;
+    student: string;
+    reviewer: string;
+    department: string;
+    format: string;
+}
+
+export interface IUploadInfoForReportResponse {
+    url: string;
 }
