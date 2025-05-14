@@ -12,7 +12,7 @@ export const schema = z.object({
     file: z
         .instanceof(File)
         .refine((file) => file.size <= MAX_FILE_SIZE, {
-            message: "Файл должен быть меньше 5MB",
+            message: "Файл должен быть меньше 10MB",
         })
         .refine((file) => ACCEPTED_FILE_TYPES.includes(file.type), {
             message: "Поддерживаются только .doc, .docx, .pdf и .txt файлы",
