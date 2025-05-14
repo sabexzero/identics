@@ -202,8 +202,11 @@ export function AppSidebar({ name, checksUsed, email }: AppSidebarProps) {
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
 
-                            <SidebarMenuItem>
-                                <SidebarMenuButton tooltip="Помощь">
+                            <SidebarMenuItem onClick={() => navigate("/dashboard/support")}>
+                                <SidebarMenuButton
+                                    isActive={location.pathname === "/dashboard/support"}
+                                    tooltip="Помощь"
+                                >
                                     <HelpCircle />
                                     <span>Помощь и поддержка</span>
                                 </SidebarMenuButton>

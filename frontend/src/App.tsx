@@ -16,6 +16,7 @@ import ReviewPage from "@/pages/review/page.tsx";
 import Settings from "@/pages/settings/page.tsx";
 import useAuth from "./hooks/use-auth.ts";
 import "./index.css";
+import HelpAndSupportPage from "@/pages/support";
 
 function ProtectedRoute() {
     const { isAuthenticated } = useAuth();
@@ -41,6 +42,7 @@ function AnimatedRoutes() {
                 <Route path="/dashboard" element={<Layout />}>
                     <Route index element={<DashboardPage />} />
                     <Route path="/dashboard/history" element={<HistoryPage />} />
+                    <Route path="/dashboard/support" element={<HelpAndSupportPage />} />
                     <Route path="/dashboard/review/:id" element={<ReviewPage />} />
                     <Route path="/dashboard/settings" element={<Settings />} />
                 </Route>

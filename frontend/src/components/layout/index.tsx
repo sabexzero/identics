@@ -1,8 +1,7 @@
 import { AppSidebar } from "@/components/layout/sidebar";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button.tsx";
-import { Bell, Check, CheckCheck, House, Info, Search } from "lucide-react";
-import { Input } from "@/components/ui/input.tsx";
+import { Bell, Check, CheckCheck, House, Info } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar.tsx";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
@@ -47,7 +46,7 @@ export default function Layout() {
                     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
                         <SidebarTrigger />
 
-                        <div className="flex flex-1 items-center justify-end gap-4">
+                        <div className="flex flex-1 items-center justify-end gap-2">
                             <Button
                                 variant="outline"
                                 onClick={() => navigate("/dashboard")}
@@ -55,16 +54,6 @@ export default function Layout() {
                             >
                                 <House />
                             </Button>
-                            <form>
-                                <div className="relative">
-                                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        type="search"
-                                        placeholder="Поиск..."
-                                        className="w-full bg-background pl-8 md:w-[100px] lg:w-[200px]"
-                                    />
-                                </div>
-                            </form>
 
                             <Popover open={open} onOpenChange={setOpen}>
                                 <PopoverTrigger asChild>
