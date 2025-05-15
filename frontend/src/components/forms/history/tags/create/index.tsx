@@ -89,7 +89,7 @@ export default function CreateTagsForm({ onOpenChange }: CreateTagsFormProps) {
                 >
                     <Badge
                         style={{
-                            maxWidth: "320px",
+                            maxWidth: "min(75vw, 300px)",
                             backgroundColor: nameValue.length > 0 ? colorValue : "white",
                             minHeight: 32,
                             fontSize: "2rem",

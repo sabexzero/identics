@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs.t
 import CreateTagsForm from "@/components/forms/history/tags/create";
 import EditTagsForm from "@/components/forms/history/tags/edit";
 import { AnimatePresence, motion } from "framer-motion";
+import { cn } from "@/lib/utils.ts";
+import { useResponsive } from "@/hooks/use-responsive.tsx";
 
 interface EditTagsDialogProps {
     id: number;
@@ -20,6 +22,7 @@ interface EditTagsDialogProps {
 export default function EditTagsDialog({ id, open, onOpenChange }: EditTagsDialogProps) {
     const [tab, setTab] = useState<"create" | "edit">("edit");
     const [prevHeight, setPrevHeight] = useState<number>(0);
+    const { isMobile } = useResponsive();
     const contentRef = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
@@ -35,7 +38,7 @@ export default function EditTagsDialog({ id, open, onOpenChange }: EditTagsDialo
 
     return (
         <Dialog open={open} onOpenChange={handleOnOpenChange}>
-            <DialogContent className="sm:max-w-[425px] max-w-[300px]">
+            <DialogContent className="sm:max-w-[425px] max-w-[90%]">
                 <DialogHeader>
                     <DialogTitle>Редактирование тегов</DialogTitle>
                     <DialogDescription>
@@ -44,9 +47,13 @@ export default function EditTagsDialog({ id, open, onOpenChange }: EditTagsDialo
                 </DialogHeader>
 
                 <Tabs value={tab} onValueChange={(value) => setTab(value as "create" | "edit")}>
-                    <TabsList className="w-full">
-                        <TabsTrigger value="edit">Добавить существующий</TabsTrigger>
-                        <TabsTrigger value="create">Создать новый</TabsTrigger>
+                    <TabsList className={cn("w-full", isMobile && "max-w-[75vw]")}>
+                        <TabsTrigger className="whitespace-pre-wrap" value="edit">
+                            Добавить
+                        </TabsTrigger>
+                        <TabsTrigger className="whitespace-pre-wrap" value="create">
+                            Создать
+                        </TabsTrigger>
                     </TabsList>
 
                     <div className="relative overflow-hidden">

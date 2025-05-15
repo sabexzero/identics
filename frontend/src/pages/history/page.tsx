@@ -12,12 +12,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils.ts";
+import { useResponsive } from "@/hooks/use-responsive.tsx";
 
 export default function HistoryPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedTag, setSelectedTag] = useState("");
 
     const [search] = useDebounce(searchQuery, 500);
+    const { isMobile } = useResponsive();
 
     const { data: tags } = useGetTagsQuery();
 
@@ -31,7 +34,7 @@ export default function HistoryPage() {
                     </p>
                 </div>
 
-                <div className="flex gap-2 sm:gap-4">
+                <div className={cn("flex gap-2 sm:gap-4", isMobile && "flex-col")}>
                     <div className="relative w-full md:w-64">
                         <Select value={selectedTag} onValueChange={setSelectedTag}>
                             <SelectTrigger className="w-full">
@@ -55,7 +58,7 @@ export default function HistoryPage() {
                         <Input
                             type="search"
                             placeholder="Поиск по документам..."
-                            className="w-full pl-8"
+                            className="w-full pl-8 text-[14px]"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />

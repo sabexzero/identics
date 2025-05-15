@@ -43,7 +43,7 @@ export default function ReviewPage() {
                             </div>
                             <div className="flex items-center space-x-1 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
                                 <Clock className="h-3.5 w-3.5" />
-                                <span>{document?.processingTime}</span>
+                                <span>{document?.processingTime} с.</span>
                             </div>
                         </div>
                     </CardHeader>

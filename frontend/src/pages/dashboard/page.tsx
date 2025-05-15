@@ -39,7 +39,7 @@ export default function DashboardPage() {
 
             <div className="grid gap-6 grid-cols-1 xl:grid-cols-7">
                 <div className="xl:col-span-4">
-                    <Card>
+                    <Card className="pt-6 pb-0">
                         <CardHeader>
                             <CardTitle>Проверка на плагиат</CardTitle>
                             <CardDescription>

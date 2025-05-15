@@ -19,7 +19,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -38,6 +37,7 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
     SidebarSeparator,
+    useSidebar,
 } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -50,6 +50,7 @@ import {
 import { useLogoutMutation } from "@/api/authApi";
 import { toast } from "sonner";
 import logo from "../../../assets/logo.svg";
+import { getInitials } from "@/lib/utils.ts";
 
 interface Menu {
     reports: boolean;
@@ -65,6 +66,7 @@ interface AppSidebarProps {
 export function AppSidebar({ name, checksUsed, email }: AppSidebarProps) {
     const navigate = useNavigate();
     const location = useLocation();
+    const { setOpenMobile } = useSidebar();
 
     const [logout] = useLogoutMutation();
 
@@ -91,6 +93,11 @@ export function AppSidebar({ name, checksUsed, email }: AppSidebarProps) {
         }));
     };
 
+    const onSidebarNavigate = (url: string) => {
+        navigate(url);
+        setOpenMobile(false);
+    };
+
     return (
         <Sidebar variant="sidebar" className="px-0 py-0">
             <SidebarHeader className="pb-0 gap-4">
@@ -102,9 +109,6 @@ export function AppSidebar({ name, checksUsed, email }: AppSidebarProps) {
                         <span className="text-lg font-semibold">TextSource</span>
                     </div>
                 </div>
-                <div className="pb-2">
-                    <Input placeholder="Поиск..." className="h-9" />
-                </div>
             </SidebarHeader>
 
             <SidebarContent className="overflow-hidden">
@@ -112,7 +116,7 @@ export function AppSidebar({ name, checksUsed, email }: AppSidebarProps) {
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            <SidebarMenuItem onClick={() => navigate("/dashboard")}>
+                            <SidebarMenuItem onClick={() => onSidebarNavigate("/dashboard")}>
                                 <SidebarMenuButton
                                     isActive={location.pathname === "/dashboard"}
                                     tooltip="Панель управления"
@@ -122,7 +126,9 @@ export function AppSidebar({ name, checksUsed, email }: AppSidebarProps) {
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
 
-                            <SidebarMenuItem onClick={() => navigate("/dashboard/history")}>
+                            <SidebarMenuItem
+                                onClick={() => onSidebarNavigate("/dashboard/history")}
+                            >
                                 <SidebarMenuButton
                                     isActive={location.pathname === "/dashboard/history"}
                                     tooltip="История проверок"
@@ -192,7 +198,9 @@ export function AppSidebar({ name, checksUsed, email }: AppSidebarProps) {
                     <SidebarGroupLabel>Система</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            <SidebarMenuItem onClick={() => navigate("/dashboard/settings")}>
+                            <SidebarMenuItem
+                                onClick={() => onSidebarNavigate("/dashboard/settings")}
+                            >
                                 <SidebarMenuButton
                                     tooltip="Настройки"
                                     isActive={location.pathname === "/dashboard/settings"}
@@ -202,7 +210,9 @@ export function AppSidebar({ name, checksUsed, email }: AppSidebarProps) {
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
 
-                            <SidebarMenuItem onClick={() => navigate("/dashboard/support")}>
+                            <SidebarMenuItem
+                                onClick={() => onSidebarNavigate("/dashboard/support")}
+                            >
                                 <SidebarMenuButton
                                     isActive={location.pathname === "/dashboard/support"}
                                     tooltip="Помощь"
@@ -254,11 +264,7 @@ export function AppSidebar({ name, checksUsed, email }: AppSidebarProps) {
                                                 alt="User"
                                             />
                                             <AvatarFallback className="text-xs">
-                                                {name
-                                                    ?.split(" ")
-                                                    .map(([c]) => c)
-                                                    .slice(0, 2)
-                                                    .join("")}
+                                                {getInitials(name || "")}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="flex flex-col items-start">
@@ -278,13 +284,7 @@ export function AppSidebar({ name, checksUsed, email }: AppSidebarProps) {
                                             src="/placeholder.svg?height=40&width=40"
                                             alt="User"
                                         />
-                                        <AvatarFallback>
-                                            {name
-                                                ?.split(" ")
-                                                .map(([c]) => c)
-                                                .slice(0, 2)
-                                                .join("")}
-                                        </AvatarFallback>
+                                        <AvatarFallback>{getInitials(name || "")}</AvatarFallback>
                                     </Avatar>
                                     <div className="flex flex-col">
                                         <span className="font-medium">{name}</span>
