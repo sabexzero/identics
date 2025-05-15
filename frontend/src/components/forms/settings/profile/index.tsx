@@ -20,17 +20,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Mail, LogOut, UserX, Upload, Check, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { useLogoutMutation } from "@/api/authApi";
 import { useNavigate } from "react-router-dom";
@@ -223,49 +212,28 @@ const ProfileSettings = () => {
 
                             <Separator className="my-2" />
 
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <div className="p-4 rounded-lg border border-destructive/10 bg-destructive/5 hover:bg-destructive/10 transition-colors cursor-pointer">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-2 rounded-full bg-destructive/10">
-                                                    <UserX className="h-5 w-5 text-destructive" />
-                                                </div>
-                                                <div>
-                                                    <h3 className="font-medium">Удалить аккаунт</h3>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        Удалить аккаунт и все связанные данные
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                onClick={() => onOpenChange(true)}
-                                                variant="destructive"
-                                                size="sm"
-                                            >
-                                                Удалить
-                                            </Button>
+                            <div className="p-4 rounded-lg border border-destructive/10 bg-destructive/5 hover:bg-destructive/10 transition-colors cursor-pointer">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-full bg-destructive/10">
+                                            <UserX className="h-5 w-5 text-destructive" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-medium">Удалить аккаунт</h3>
+                                            <p className="text-sm text-muted-foreground">
+                                                Удалить аккаунт и все связанные данные
+                                            </p>
                                         </div>
                                     </div>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            Вы действительно хотите удалить аккаунт?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Это действие полностью удалит ваш аккаунт и все данные.
-                                            Это действие необратимо.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Отмена</AlertDialogCancel>
-                                        <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/65">
-                                            Удалить аккаунт
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                                    <Button
+                                        onClick={() => onOpenChange(true)}
+                                        variant="destructive"
+                                        size="sm"
+                                    >
+                                        Удалить
+                                    </Button>
+                                </div>
+                            </div>
                         </div>
                     </CardContent>
                     <CardFooter className="py-3 text-xs text-muted-foreground italic">

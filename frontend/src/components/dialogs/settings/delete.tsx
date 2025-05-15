@@ -43,10 +43,10 @@ export default function SettingsDeleteProfileDialog({
             <AnimatedDialogContent>
                 <AnimatedDialogWrapper timing={0}>
                     <DialogHeader>
-                        <DialogTitle>Удаление документа</DialogTitle>
+                        <DialogTitle>Удаление аккаунта</DialogTitle>
                         <DialogDescription>
-                            Документ нельзя будет восстановить! Вы уверены что хотите удалить
-                            документ?
+                            Аккаунт нельзя будет восстановить! Вы уверены что хотите удалить
+                            аккаунт?
                         </DialogDescription>
                     </DialogHeader>
                 </AnimatedDialogWrapper>
@@ -56,7 +56,11 @@ export default function SettingsDeleteProfileDialog({
                         <Button onClick={onOpenChange} variant="outline">
                             Отмена
                         </Button>
-                        <Button onClick={handleDeleteProfile} disabled={isDeleting}>
+                        <Button
+                            onClick={handleDeleteProfile}
+                            variant="destructive"
+                            disabled={isDeleting}
+                        >
                             {isDeleting ? "Удаление..." : "Удалить"}
                         </Button>
                     </DialogFooter>
